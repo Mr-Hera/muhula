@@ -60,6 +60,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::post('contact-us-save','Content\ContentController@contactUsSave')->name('contact.us.save');
     Route::get('faq','Content\ContentController@faq')->name('faq');
     Route::get('privacy-policy','Content\ContentController@privacyPolicy')->name('privacy.policy');
+    Route::get('privacy-policy',[ContentController::class, 'privacyPolicy'])->name('privacy.policy');
     //Route::get('terms-conditions','Content\ContentController@termCondition')->name('term.condition');
     Route::get('disclaimer','Content\ContentController@disclaimer')->name('disclaimer');
     Route::any('news','Content\ContentController@newsList')->name('news.list');

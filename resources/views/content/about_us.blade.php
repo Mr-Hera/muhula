@@ -8,7 +8,7 @@
 @endsection
 @section('content')
 <div class="inner-banner position-relative">
-         <img src="{{ url('public/images/about-bg.png') }}" alt="" class="inner-banner-bg position-absolute">
+         <img src="{{asset('images/about-bg.png')}}" alt="" class="inner-banner-bg position-absolute">
          <div class="container">
             <div class="inner-banner-txt">
                <nav aria-label="breadcrumb">
@@ -23,7 +23,9 @@
       </div>
 
       <section class="about-1 position-relative">
-         <span class="abt-sec1-bg position-absolute"><img src="{{ url('public/images/abt-sec1-bg.png') }}" alt="" class="img-fit"></span>
+        <span class="abt-sec1-bg position-absolute">
+            <img src="{{asset('images/abt-sec1-bg.png.png')}}" alt="" class="img-fit">
+        </span>
          <div class="about-deets-sec">
             <div class="container">
                <div class="row align-items-stretch">
@@ -36,9 +38,11 @@
                            <div class="col-sm-6 col-6">
                               <em><img src="{{ url('public/images/abt-dt2.png') }}" alt="" class="img-fit"></em>
                            </div> -->
-                           <div class="col-12">
-                           <em><img src="{{ url('public/images/abt-dt1.png') }}" alt="" class="img-fit"></em>
-                           </div>
+                            <div class="col-12">
+                                <em>
+                                    <img src="{{asset('images/abt-dt1.png')}}" alt="" class="img-fit">
+                                </em>
+                            </div>
                         </div>
                      </div>
                   </div>
@@ -76,37 +80,37 @@
                         <div class="abt-why-bx position-relative">
                            <span class="whybx-num d-flex justify-content-center align-items-center">1</span>
                            <div class="why-bx-txt d-flex">
-                              <img src="{{ url('public/images/why-1.png') }}" alt="">
-                              <div class="why-mn-txt">
-                                 <h3>Register on Muhula.com</h3>
-                                 <p>Register your school on muhula.com and let prospective learners know more about your school and communicate important information, such as your programs, mission, and history.</p>
-                              </div>
+                                <img src="{{asset('images/why-1.png')}}" alt="" >
+                                <div class="why-mn-txt">
+                                    <h3>Register on Muhula.com</h3>
+                                    <p>Register your school on muhula.com and let prospective learners know more about your school and communicate important information, such as your programs, mission, and history.</p>
+                                </div>
                            </div>
-                           <img src="{{ url('public/images/why-dots.png') }}" alt="" class="why-dots position-absolute">
+                           <img src="{{asset('images/why-dots.png')}}" alt="" class="why-dots position-absolute">
                         </div>
                      </div>
                      <div class="col-lg-4 col-md-4">
                         <div class="abt-why-bx position-relative">
                            <span class="whybx-num d-flex justify-content-center align-items-center">2</span>
                            <div class="why-bx-txt d-flex">
-                              <img src="{{ url('public/images/why-2.png') }}" alt="">
-                              <div class="why-mn-txt">
-                                 <h3>Search & Choose School</h3>
-                                 <p>On muhula.com you can find school(s) that are best suited to your learning needs. Explore common considerations, including costs, facilities, courses, and student resources and services.</p>
-                              </div>
+                                <img src="{{asset('images/why-2.png')}}" alt="" >
+                                <div class="why-mn-txt">
+                                    <h3>Search & Choose School</h3>
+                                    <p>On muhula.com you can find school(s) that are best suited to your learning needs. Explore common considerations, including costs, facilities, courses, and student resources and services.</p>
+                                </div>
                            </div>
-                           <img src="{{ url('public/images/why-dots.png') }}" alt="" class="why-dots position-absolute">
+                           <img src="{{asset('images/why-dots.png')}}" alt="" class="why-dots position-absolute">
                         </div>
                      </div>
                      <div class="col-lg-4 col-md-4">
                         <div class="abt-why-bx abt-why-last position-relative">
                            <span class="whybx-num d-flex justify-content-center align-items-center">3</span>
                            <div class="why-bx-txt d-flex">
-                              <img src="{{ url('public/images/why-3.png') }}" alt="">
-                              <div class="why-mn-txt">
-                                 <h3>Claim School & reply to reviews</h3>
-                                 <p>You can claim and manage your school on  muhula.com by sharing up to date information. Our reviews on Muhula.com are community driven and help learners gain better understanding of your institution.</p>
-                              </div>
+                                <img src="{{asset('images/why-3.png')}}" alt="" >
+                                <div class="why-mn-txt">
+                                    <h3>Claim School & reply to reviews</h3>
+                                    <p>You can claim and manage your school on  muhula.com by sharing up to date information. Our reviews on Muhula.com are community driven and help learners gain better understanding of your institution.</p>
+                                </div>
                            </div>
                         </div>
                      </div>
