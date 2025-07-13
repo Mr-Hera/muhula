@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ContentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
     //for static page
     Route::get('about-us','Content\ContentController@aboutUs')->name('about.us');
+    Route::get('about-us', [ContentController::class, 'aboutUs'])->name('about.us');
     Route::get('contact-us','Content\ContentController@contactUs')->name('contact.us');
     Route::post('contact-us-save','Content\ContentController@contactUsSave')->name('contact.us.save');
     Route::get('faq','Content\ContentController@faq')->name('faq');
