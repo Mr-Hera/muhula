@@ -14,4 +14,9 @@ class ContentController extends Controller
 
         return view('content.privacy_policy');
     }
+
+    public function disclaimer(){
+
+        return view('content.disclaimer');
+    }
 }
