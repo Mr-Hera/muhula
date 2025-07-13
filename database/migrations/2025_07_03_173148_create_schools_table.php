@@ -17,8 +17,8 @@ class CreateSchoolsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug');
-            $table->foreignId('level_id')->constrained('school_levels')->cascadeOnDelete();
-            $table->foreignId('type_id')->constrained('school_types')->cascadeOnDelete();
+            $table->foreignId('school_level_id')->constrained('school_levels')->cascadeOnDelete();
+            $table->foreignId('school_type_id')->constrained('school_types')->cascadeOnDelete();
             $table->foreignId('curriculum_id')->constrained('curricula')->cascadeOnDelete();
             $table->enum('ownership', ['Public', 'Private']);
             $table->enum('gender_admission', ['Male', 'Female', 'Mixed']);

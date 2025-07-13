@@ -10,11 +10,10 @@ class SchoolType extends Model
 {
     use HasFactory;
 
-    protected $table = 'school_type';
+    protected $table = 'school_types';
     protected $guarded = [];
 
     public function getTotalSchool(){
-
          return $this->hasMany('App\Models\SchoolToType','school_type_id','id');
     }
 
