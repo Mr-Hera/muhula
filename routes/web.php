@@ -57,6 +57,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::get('about-us','Content\ContentController@aboutUs')->name('about.us');
     Route::get('about-us', [ContentController::class, 'aboutUs'])->name('about.us');
     Route::get('contact-us','Content\ContentController@contactUs')->name('contact.us');
+    Route::get('contact-us',[ContentController::class, 'contactUs'])->name('contact.us');
     Route::post('contact-us-save','Content\ContentController@contactUsSave')->name('contact.us.save');
     Route::get('faq',[ContentController::class, 'faq'])->name('faq');
     Route::get('privacy-policy',[ContentController::class, 'privacyPolicy'])->name('privacy.policy');

@@ -15,7 +15,7 @@
 @endsection
 @section('content')
 <div class="inner-banner position-relative">
-         <img src="{{ url('public/images/contact-banner.png') }}" alt="" class="inner-banner-bg position-absolute">
+         <img src="{{asset('images/contact-banner.png')}}" alt="" class="inner-banner-bg position-absolute">
          <div class="container">
             <div class="inner-banner-txt">
                <nav aria-label="breadcrumb">
@@ -32,8 +32,8 @@
       <scection class="contact-outr position-relative">
          
          <div class="contact-pap-inr position-relative">
-            <span class="cont-icon1 position-absolute"><img src="{{ url('public/images/abt-sec1-bg.png') }}" alt="" class="img-fit"></span>
-         <span class="cont-icon2 position-absolute"><img src="{{ url('public/images/mis-vis-icon.png') }}" alt="" class="img-fit"></span>
+            <span class="cont-icon1 position-absolute"><img src="{{asset('images/abt-sec1-bg.png')}}" alt="" class="img-fit"></span>
+         <span class="cont-icon2 position-absolute"><img src="{{asset('images/mis-vis-icon.png')}}" alt="" class="img-fit"></span>
             <div class="container">
             @include('includes.message')
                <div class="row align-items-stretch">

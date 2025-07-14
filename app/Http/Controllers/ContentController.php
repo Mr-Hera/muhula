@@ -24,4 +24,9 @@ class ContentController extends Controller
 
         return view('content.faq');
     }
+
+    public function contactUs(){
+
+        return view('content.contact_us');
+    }
 }
