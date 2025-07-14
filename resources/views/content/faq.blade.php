@@ -8,7 +8,7 @@
 @endsection
 @section('content')
 <section class="inner_banner">
-         <img src="{{ url('public/images/faq-banner.png') }}" alt="" class="innr-bnnr-img ">
+         <img src="{{asset('images/faq-banner.png')}}" alt="" class="innr-bnnr-img">
          <div class="in-bn-txt">
             <div class="container ">
                <nav aria-label="breadcrumb">
@@ -23,8 +23,8 @@
       </section>
 
       <section class="faq_sec position-relative">
-         <span class="cont-icon1 position-absolute faq-icon"><img src="{{ url('public/images/abt-sec1-bg.png') }}" alt="" class="img-fit"></span>
-         <span class="cont-icon2 position-absolute faq-icon"><img src="{{ url('public/images/mis-vis-icon.png') }}" alt="" class="img-fit"></span>
+         <span class="cont-icon1 position-absolute faq-icon"><img src="{{asset('images/abt-sec1-bg.png')}}" alt=""  class="img-fit"></span>
+         <span class="cont-icon2 position-absolute faq-icon"><img src="{{asset('images/mis-vis-icon.png')}}" alt="" class="img-fit"></span>
          <div class="container">
             <div class="row">
                <div class="col-12">

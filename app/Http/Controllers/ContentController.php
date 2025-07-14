@@ -19,4 +19,9 @@ class ContentController extends Controller
 
         return view('content.disclaimer');
     }
+
+    public function faq(){
+
+        return view('content.faq');
+    }
 }
