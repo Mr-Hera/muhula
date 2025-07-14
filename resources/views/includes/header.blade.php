@@ -14,7 +14,7 @@
                      <li class="nav-item">
                         <a class="nav-link" href="{{ route('home') }}">Home</a>
                      </li>
-                     @php
+                     {{-- @php
                      $school_typee = App\Models\SchoolType::orderBy('id','asc')->get();
                      @endphp
                      @if(@$school_typee)
@@ -23,7 +23,15 @@
                         <a class="nav-link school_type" href="javascript:;" data-school_type="{{ @$type->id }}">{{ @$type->school_type }}</a>
                      </li>
                      @endforeach
-                     @endif
+                     @endif --}}
+                     @foreach($school_levels as $level)
+                        <li class="nav-item">
+                           <a class="nav-link school_type" href="javascript:;" data-school_type="{{ $level->id }}">
+                                 {{ $level->name }}
+                           </a>
+                        </li>
+                     @endforeach
+                     
                      {{--<li class="nav-item">
                         <a class="nav-link" href="#">primary</a>
                      </li>
