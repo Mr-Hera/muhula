@@ -331,68 +331,33 @@
                       <div class="sub-txt"><h3>Colleges<span>(2045)</span></h3></div>
                      </a>
                   </div>--}}
-                  @if(@$school_levels)
-                  @foreach($school_levels as $level)
-                  @if($level->name == "Nursery")
-                  @php
-                   $school_id = App\Models\SchoolToType::where('school_type_id',@$level->id)->distinct()->pluck('school_master_id')->toArray();
-                   $totalSchool = App\Models\SchoolMaster::whereIn('id',@$school_id)->where('status','A')->count();
-                  @endphp
-                  <div class="subject-box">
-                     <a href="javascript:;" class="school_type" data-school_type="{{ @$level->id }}">
-                        <div class="sub-img">
-                           <img src="{{ asset('images/type1.png') }}" alt="">
+                  @if($school_levels && $school_levels->count())
+                     @foreach($school_levels as $level)
+                        @php
+                              $levelName = strtolower($level->name); // e.g., 'nursery'
+                              $imageNumber = match($levelName) {
+                                 'nursery' => '1',
+                                 'primary' => '2',
+                                 'secondary' => '3',
+                                 'college' => '4',
+                                 default => '1'
+                              };
+                              $schoolCount = $schoolLevelCounts[$levelName] ?? 0;
+                        @endphp
+
+                        <div class="subject-box">
+                              <a href="javascript:;" class="school_type" data-school_type="{{ $level->id }}">
+                                 <div class="sub-img">
+                                    <img src="{{ asset("images/type{$imageNumber}.png") }}" alt="{{ $level->name }}">
+                                 </div>
+                                 <div class="sub-txt">
+                                    <h3>{{ $level->name }} <span>({{ $schoolCount }})</span></h3>
+                                 </div>
+                              </a>
                         </div>
-                        <div class="sub-txt"><h3>{{ $level->name == "Nursery" ?? "Nursery" }}<span>({{ $schoolLevelCounts["nursery"] }})</span></h3></div>
-                     </a>
-                  </div>
-                   @endif
-                   @if(@$type->id == "Primary")
-                   @php
-                   $school_id = App\Models\SchoolToType::where('school_type_id',@$type->id)->distinct()->pluck('school_master_id')->toArray();
-                   $totalSchool = App\Models\SchoolMaster::whereIn('id',@$school_id)->where('status','A')->count();
-                  @endphp
-                  <div class="subject-box">
-                     <a href="javascript:;"  class="school_type" data-school_type="{{ @$type->id }}">
-                        <div class="sub-img">
-                           <img src="{{ asset('images/type2.png') }}" alt="">
-                        </div>
-                        <div class="sub-txt"><h3>{{ @$type->school_type }}<span>({{ @$totalSchool }})</span></h3></div>
-                     </a>
-                  </div>
-                  @endif
-                  @if(@$type->id == "Secondary")
-                  @php
-                   $school_id = App\Models\SchoolToType::where('school_type_id',@$type->id)->distinct()->pluck('school_master_id')->toArray();
-                   $totalSchool = App\Models\SchoolMaster::whereIn('id',@$school_id)->where('status','A')->count();
-                  @endphp
-                  <div class="subject-box">
-                     <a href="javascript:;"  class="school_type" data-school_type="{{ @$type->id }}">
-                        <div class="sub-img">
-                           <img src="{{ asset('images/type3.png') }}" alt="">
-                        </div>
-                        <div class="sub-txt"><h3>{{ @$type->school_type }}<span>({{ @$totalSchool }})</span></h3></div>
-                     </a>
-                  </div>
-                   @endif
-                   @if(@$type->id == "College")
-                   @php
-                   $school_id = App\Models\SchoolToType::where('school_type_id',@$type->id)->distinct()->pluck('school_master_id')->toArray();
-                   $totalSchool = App\Models\SchoolMaster::whereIn('id',@$school_id)->where('status','A')->count();
-                  @endphp
-                  <div class="subject-box">
-                     <a href="javascript:;"  class="school_type" data-school_type="{{ @$type->id }}">
-                        <div class="sub-img">
-                           <img src="{{ asset('images/type4.png') }}" alt="">
-                        </div>
-                        <div class="sub-txt"><h3>{{ @$type->school_type }}<span>({{ @$totalSchool }})</span></h3></div>
-                     </a>
-                  </div>
-                  @endif
-                  @endforeach
+                     @endforeach
                   @endif
                </div>
-              
             </div>
          </div>
       </section>
@@ -452,19 +417,20 @@
                  <input type="hidden" name="town" id="schoolTown">
                 </form>
                <div class="curriculam_info">
-                  @if(@$boards)
-                  @foreach($boards as $data)
-                  @php
-                   $school_id1 = App\Models\SchoolToBoard::where('board_id',@$data->id)->distinct()->pluck('school_master_id')->toArray();
-                   $totalSchool1 = App\Models\SchoolMaster::whereIn('id',@$school_id1)->where('status','A')->count();
-                  @endphp
-                  <div class="curriculam_box">
-                     <a href="javascript:;" class="school_board" data-school_board="{{ @$data->id }}">
-                        <h2>{{ @$data->board_name }}</h2>
-                        <p>{{ $totalSchool1 }} School <img src="{{ asset('images/chevrone.png') }}" alt=""></p>
-                     </a>
-                  </div>
-                  @endforeach
+                  @if($curricula && $curricula->count())
+                     @foreach($curricula as $curriculum)
+                        <div class="curriculam_box">
+                              <a href="javascript:;" class="school_board" data-school_board="{{ $curriculum->id }}">
+                                 <h2>{{ $curriculum->name }}</h2>
+                                 <p>
+                                    {{ $curriculum->schools_count }} School{{ $curriculum->schools_count !== 1 ? 's' : '' }}
+                                    <img src="{{ asset('images/chevrone.png') }}" alt="">
+                                 </p>
+                              </a>
+                        </div>
+                     @endforeach
+                  @else
+                     <p class="text-center text-muted">No curriculum records found.</p>
                   @endif
                </div>
             </div>
@@ -484,7 +450,7 @@
 
                <div class="featured-location-inr">
                   <div class="owl-carousel owl_produs owl-theme owl_produs owl-loaction position-relative">
-                     @if(@$cities)
+                     {{-- @if(@$cities)
                      @foreach($cities as $data)
                      <div class="item">
                         @foreach($data as $city)
@@ -497,11 +463,21 @@
                         @endforeach
                      </div>
                      @endforeach
+                     @endif --}}
+                     @if($county && $county->count())
+                        @foreach($county->chunk(2) as $group)
+                           <div class="item">
+                                 @foreach($group as $c)
+                                    <div class="loc_box">
+                                       <a href="javascript:;" class="town" data-town="{{ $c->id }}">
+                                             <h2>{{ $c->name }}<span>({{ $c->schools_count ?? 0 }})</span></h2>
+                                             <img src="{{ asset('images/chevrone.png') }}" alt="">
+                                       </a>
+                                    </div>
+                                 @endforeach
+                           </div>
+                        @endforeach
                      @endif
-
-                    
-
-
                   </div>
                </div>
             </div>
