@@ -12,10 +12,10 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $data['school_levels'] = SchoolLevel::all();
-        $data['curricula'] = Curriculum::all();
-        $data['county'] = County::all();
-        $data['news_articles'] = NewsArticle::all();
+        $school_levels = SchoolLevel::all();
+        $curricula = Curriculum::withCount(['schools'])->get();
+        $county = County::withCount('schools')->get();
+        $news_articles = NewsArticle::all();
 
         // Retrieve total school counts per school type by name
         $schoolLevelCounts = SchoolLevel::whereIn('name', ['Nursery', 'Primary', 'Secondary', 'College'])
@@ -25,11 +25,17 @@ class HomeController extends Controller
             ->mapWithKeys(function ($count, $name) {
                 return [strtolower($name) => $count];
             });
-        // dd($data["school_levels"]);
+        // dd($curricula);
 
         // Add individual keys to data array
-        $data = array_merge($data, $schoolLevelCounts->toArray());
+        // $data = array_merge($data, $schoolLevelCounts->toArray());
         
-        return view('home.index')->with([$data, $schoolLevelCounts]);
+        return view('home.index')->with([
+            'school_levels' => $school_levels,
+            'curricula' => $curricula,
+            'county' => $county,
+            'news_articles' => $news_articles,
+            'schoolLevelCounts' => $schoolLevelCounts
+        ]);
     }
 }
