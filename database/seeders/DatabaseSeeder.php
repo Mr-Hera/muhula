@@ -13,7 +13,10 @@ use Database\Seeders\WardsTableSeeder;
 use Database\Seeders\SchoolLevelSeeder;
 use Database\Seeders\ConstituencySeeder;
 use Database\Seeders\CountiesTableSeeder;
+use Database\Seeders\SchoolUniformSeeder;
+use Database\Seeders\CountriesTableSeeder;
 use Database\Seeders\ConstituenciesTableSeeder;
+use Database\Seeders\SchoolOperationHourSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,6 +30,12 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         $this->call([
             CountiesTableSeeder::class,
+            CountriesTableSeeder::class,
+            SchoolUniformSeeder::class,
+            SchoolContactSeeder::class,
+            SchoolAddressSeeder::class,
+            SchoolOperationHourSeeder::class,
+            ExtendedSchoolServiceSeeder::class,
             ConstituencySeeder::class,
             WardSeeder::class,
             ConstituenciesTableSeeder::class,
