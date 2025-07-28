@@ -2,228 +2,104 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\County;
+use App\Models\School;
+use App\Models\Country;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class SchoolController extends Controller
 {
     public function addSchoolStep1($id=null){
-        $data['schoolDetails'] = SchoolMaster::where(DB::raw('md5(id)'),@$id)->first();
-        if(@Auth::user()){
-        //SchoolMaster::where('school_name','=',null)->delete();
-        return view('listSchool.add_school_step1')->with($data);
-        }else{
-            Session::put(['type'=>'LS']);
-            return redirect()->route('login');
-        }
-        return view('listSchool.add_school_step1');
+      $schoolDetails = School::where(DB::raw('id'),@$id)->first();
+      // if(Auth::user()){
+      //   return view('listSchool.add_school_step1')->with([
+      //     'school_details' => $schoolDetails,
+      //   ]);
+      // }else{
+      //   Session::put(['type'=>'LS']);
+      //   return redirect()->route('login');
+      // }
+      return view('listSchool.add_school_step1')->with([
+        'school_details' => $schoolDetails,
+      ]);
     }
 
     public function addSchoolStep1Save(Request $request){
-        if($request->school_master_id != null){
+      // dd($request);
+      if($request->school_master_id != null){
 
-        $upd = [];
-        $upd['school_register'] = $request->school_register;
-        $upd['school_same_address'] = $request->school_same_address?$request->school_same_address:null;
-        $upd['no_of_school'] = $request->no_of_school?$request->no_of_school:null;
+      $upd = [];
+      $upd['school_register'] = $request->school_register;
+      $upd['school_same_address'] = $request->school_same_address?$request->school_same_address:null;
+      $upd['no_of_school'] = $request->no_of_school?$request->no_of_school:null;
 
-        SchoolMaster::where('id',$request->school_master_id)->update($upd);
-        return redirect()->route('add.school.step2',[md5(@$request->school_master_id)]);
+      SchoolMaster::where('id',$request->school_master_id)->update($upd);
+      return redirect()->route('add.school.step2',[md5(@$request->school_master_id)]);
 
-        }
+      }
 
-        $ins = [];
-        $ins['user_id'] = Auth::user()->id;
-        $ins['school_register'] = $request->school_register;
-        $ins['school_same_address'] = $request->school_same_address?$request->school_same_address:null;
-        $ins['no_of_school'] = $request->no_of_school?$request->no_of_school:null;
-        session(['school_register'=>$ins['school_register']]);
-        session(['school_same_address'=>$ins['school_same_address']]);
-        session(['no_of_school'=>$ins['no_of_school']]);
-        //$create = SchoolMaster::create($ins);
-        return redirect()->route('add.school.step2');
-        // if($create){
-        //      //session()->flash('success','School registered successfully');
-        //      return redirect()->route('add.school.step2');
-        // }else{
-
-        //     return redirect()->back()->with('error','Something went wrong');
-        // }
-        
+      $ins = [];
+      $ins['user_id'] = Auth::user()->id;
+      $ins['school_register'] = $request->school_register;
+      $ins['school_same_address'] = $request->school_same_address?$request->school_same_address:null;
+      $ins['no_of_school'] = $request->no_of_school?$request->no_of_school:null;
+      session(['school_register'=>$ins['school_register']]);
+      session(['school_same_address'=>$ins['school_same_address']]);
+      session(['no_of_school'=>$ins['no_of_school']]);
+      //$create = SchoolMaster::create($ins);
+      return redirect()->route('add.school.step2');
     }
 
-      public function addSchoolStep2($id=null){
-        //    $data['country'] = Country::get();
-        //   $data['schoolDetails'] = SchoolMaster::where(DB::raw('md5(id)'),@$id)->first();
-        //   $data['cities'] = City::where('country_id',@$data['schoolDetails']->country)->orderBy('city','asc')->get();
-        //   $data['contact_info'] = SchoolContact::where('school_master_id',@$data['schoolDetails']->id)->get();
-          return view('listSchool.add_school_step2');
-      }
+    public function addSchoolStep2($id=null){
+      $countries = Country::all();
+      $counties = County::all();
+      
+      return view('listSchool.add_school_step2')->with([
+        'countries' => $countries,
+        'counties' => $counties,
+      ]);
+    }
 
-      public function addSchoolStep2Save(Request $request){
+    public function addSchoolStep2Save(Request $request){
+      // dd($request);
+      $validated = $request->validate([
+        'school_name'      => 'required|string|max:255',
+        'about_school'     => 'required|string|max:5000',
+        'contact_title'    => 'required|array|min:1',
+        'contact_title.*'  => 'required|string|max:255',
+        'contact_email'    => 'required|array|min:1',
+        'contact_email.*'  => 'required|email|max:255',
+        'contact_phone'    => 'required|array|min:1',
+        'contact_phone.*'  => 'required|string|max:20',
+        'country'          => 'required|integer|exists:countries,id',
+        'county'             => 'required|integer|exists:counties,id',
+        'full_address'     => 'required|string|max:500',
+        'google_location'  => 'nullable|string|max:500',
+      ]);
+      // Store in session under a single key
+      $stepData = [
+          'school_name'      => $validated['school_name'],
+          'about_school'     => $validated['about_school'],
+          'contact_title'    => $validated['contact_title'],
+          'contact_email'    => $validated['contact_email'],
+          'contact_phone'    => $validated['contact_phone'],
+          'country'          => $validated['country'],
+          'town'             => $validated['town'],
+          'full_address'     => $validated['full_address'],
+          'google_location'  => $validated['google_location'] ?? null,
+      ];
 
-        $this->validate($request, [
-            //'g-recaptcha-response' => new Captcha(),  
-            'school_name'  =>['required'],
-            //'year_of_establishment'   =>['required'],         
-          ]);
-            if($request->school_master_id){
-            
-            $schooDetails = SchoolMaster::where('id',$request->school_master_id)->first();    
-            $upd = [];
-            //$upd['school_register'] = $request->school_register;
-            //$upd['school_same_address'] = $request->school_same_address;
-            //$upd['no_of_school'] = $request->no_of_school;
-            $upd['school_name'] = $request->school_name;
-            $upd['about_school'] = @$request->about_school?@$request->about_school:null;
-            $upd['about_school_facility'] = @$request->about_school_facility?@$request->about_school_facility:null;
-            //$upd['contact_email'] = $request->contact_email;
-            //$upd['contact_phone'] = $request->contact_phone;
-            $upd['country'] = $request->country;
-            //$upd['constituency'] = $request->constituency;
-            //$upd['town'] = $request->town;
-            $upd['full_address'] = $request->full_address;
-            $upd['google_location'] = $request->google_location;
-            $upd['google_lat'] = $request->google_lat;
-            $upd['google_long'] = $request->google_long;
-            $slug = Str::slug($request->school_name,"-");
-            $upd['slug'] = @$slug."-".@$schooDetails->id;
+      // retrieving about data as follows
+      // $step2 = Session::get('school_creation.step2');
+      // $schoolName = $step2['school_name'] ?? '';
 
-            if($request->other_town != null){
-
-                $check_city = City::where('city',trim($request->other_town))->first();
-                if(!$check_city){
-
-                    $insCity = [];
-                    $insCity['city'] = $request->other_town;
-                    $insCity['country_id'] = $request->country;
-                    $createCity = City::create($insCity);
-
-                    $upd['town'] = @$createCity->id;
-                }else{
-
-                  $upd['town'] = @$check_city->id;
-                }
-            }else{
-
-              $upd['town'] = $request->town;
-            }
-
-
-            $update =  SchoolMaster::where('id',@$request->school_master_id)->update($upd);
-
-            if ($request->has('contact_title')) {
-              SchoolContact::where('school_master_id', @$schooDetails->id)->delete();
-              foreach ($request->contact_title as $key => $value) {
-                  if (!empty($request->contact_title[$key]) && (!empty($request->contact_email[$key]) || !empty($request->contact_phone[$key]))) {
-                      $insContact = [
-                          'contact_title' => $request->contact_title[$key],
-                          'contact_email' => $request->contact_email[$key],
-                          'contact_phone' => $request->contact_phone[$key],
-                          'school_master_id' => @$schooDetails->id,
-                      ];
-          
-                      // Check if contact already exists
-                      $existingContact = SchoolContact::where('school_master_id', @$schooDetails->id)
-                          ->where('contact_title', $request->contact_title[$key])->first();
-          
-                      if (!$existingContact) {
-                          SchoolContact::create($insContact);
-                      }
-                  }
-              }
-          }
-            
-            if(@$update){
-              session(['school_register'=>null]);
-              session(['school_same_address'=>null]);
-              session(['no_of_school'=>null]);
-                session()->flash('success','School basic information updated successfully');
-                return redirect()->route('add.school.step3',[md5(@$schooDetails->id)]);
-            }else{
-
-                return redirect()->back()->with('error','Something went wrong');
-              }   
-            }else{
-
-              $ins = [];
-              $ins['user_id'] = Auth::user()->id;
-              $ins['school_register'] = $request->school_register;
-              $ins['school_same_address'] = $request->school_same_address;
-              $ins['no_of_school'] = $request->no_of_school;
-              $ins['school_name'] = $request->school_name;
-              $ins['about_school'] = @$request->about_school?@$request->about_school:null;
-              $ins['about_school_facility'] = @$request->about_school_facility?@$request->about_school_facility:null;
-              //$ins['contact_email'] = $request->contact_email;
-              //$ins['contact_phone'] = $request->contact_phone;
-              $ins['country'] = $request->country;
-              //$ins['constituency'] = $request->constituency;
-              //$ins['town'] = $request->town;
-              $ins['full_address'] = $request->full_address;
-              $ins['google_location'] = $request->google_location;
-              $ins['google_lat'] = $request->google_lat;
-              $ins['google_long'] = $request->google_long;
-
-
-              if($request->other_town != null){
-
-                $check_city = City::where('city',trim($request->other_town))->first();
-                if(!$check_city){
-
-                    $insCity = [];
-                    $insCity['city'] = $request->other_town;
-                    $insCity['country_id'] = $request->country;
-                    $createCity = City::create($insCity);
-
-                    $ins['town'] = @$createCity->id;
-                }else{
-
-                  $ins['town'] = @$check_city->id;
-                }
-            }else{
-
-              $ins['town'] = $request->town;
-            }
-
-               $create = SchoolMaster::create($ins);
-
-               if ($request->has('contact_title')) {
-                foreach ($request->contact_title as $key => $value) {
-                    if (!empty($request->contact_title[$key]) && (!empty($request->contact_email[$key]) || !empty($request->contact_phone[$key]))) {
-                        $insContact = [
-                            'contact_title' => $request->contact_title[$key],
-                            'contact_email' => $request->contact_email[$key],
-                            'contact_phone' => $request->contact_phone[$key],
-                            'school_master_id' => $create->id,
-                        ];
-            
-                        // Check if contact already exists
-                        $existingContact = SchoolContact::where('school_master_id', $create->id)
-                            ->where('contact_title', $request->contact_title[$key])->first();
-            
-                        if (!$existingContact) {
-                            SchoolContact::create($insContact);
-                        }
-                    }
-                }
-            }            
-
-               if($create){
-                 $updateSlug = [];
-                 $slug = Str::slug($request->school_name,"-");
-                 $updateSlug['slug'] = @$slug."-".@$create->id;
-                 SchoolMaster::where('id',@$create->id)->update($updateSlug);
-                 session(['school_register'=>null]);
-                 session(['school_same_address'=>null]);
-                 session(['no_of_school'=>null]);
-                return redirect()->route('add.school.step3',[md5(@$create->id)]);
-               }else{
-
-                return redirect()->back()->with('error','Something went wrong');
-               }
-
-            }
-
-      }
+      Session::put('school_creation.step2', $stepData);
+      
+      return redirect()->route('school.create.step3'); // go to next step
+    }
 
       public function addSchoolStep3($id=null){
         // $data['schoolDetails'] = SchoolMaster::where(DB::raw('md5(id)'),@$id)->first();

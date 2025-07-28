@@ -90,107 +90,46 @@
                      </div>
                      <form action="{{ route('add.school.step2.save') }}" method="post" enctype="multipart/form-data" id="schoolForm">
                         @csrf
-                        <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                        <input type="hidden" name="school_register" id="" value="{{ session()->get('school_register') }}">
-                        <input type="hidden" name="school_same_address" id="" value="{{ session()->get('school_same_address') }}">
-                        <input type="hidden" name="no_of_school" id="" value="{{ session()->get('no_of_school') }}">
                         <div class="ad-schl-card adscl-crd2">
                            <div class="row">
                               <div class="col-12">
                                  <div class="dash_input">
                                     <label>School Name</label>
-                                    <input type="text" name="school_name" id="school_name" placeholder="Enter here">
+                                    <input type="text" name="school_name" id="school_name" placeholder="Enter school name...">
                                  </div>
                               </div>
                               
                               <div class="col-12">
                                  <div class="dash_input mb-0 mt-2" id="aboutSchoolBox">
                                     <label>About the school</label>
-                                    <textarea placeholder="Enter here" name="about_school" id="about_school"></textarea>
+                                    <textarea name="about_school" id="about_school" placeholder="Describe school here..."></textarea>
                                  </div>
-                                 <div class="add-grade agree">
-                                    <div class="radiobx">
-                                       <label for="">About the school’s academic performance
-                                          <input type="checkbox" id="aboutSchoolcheck" checked="">
-                                          <span class="checkbox"></span>
-                                       </label>
-                                    </div>
-                                 </div>
-                                 
                               </div>
-
-                              <div class="col-12">
-                                 <div class="dash_input mb-0 mt-2" id="schoolFaciBox">
-                                    <label>About the school’s facilities</label>
-                                    <textarea placeholder="Enter here" name="about_school_facility" id="about_school_facility"></textarea>
-                                 </div>
-                                 <div class="add-grade agree">
-                                 <div class="radiobx">
-                                 <label for="">About the school’s culture/extra curricula activities
-                                 <input type="checkbox" id="schoolFacicheck" checked="">
-                                 <span class="checkbox"></span>
-                               </label>
-                               </div>
-                               <div class="radiobx">
-                                 <label for="">None of the above/ I'll add these later
-                                 <input type="checkbox" name="" id="noneAbove">
-                                 <span class="checkbox"></span>
-                               </label>
-                               </div>
-                              </div>
-                              </div>
-                              
                            </div>
                         </div>
                         <div class="ad-schl-card adscl-crd3 add-more-btn more-contact-info">
                            <a href="javascript:;" class="addMore"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add More</a>
                            <h2>Contact Information</h2>
-                            {{-- @if(@$contact_info->isNotEmpty())
-                            @foreach($contact_info as $key => $contact)
-                           <div class="row position-relative mr-15">
-                              <div class="col-lg-4 col-md-4">
-                                 <div class="dash_input">
-                                    <label>Contact Title <small>(Optional)</small></label>
-                                    <input type="text" name="contact_title[]" id="contact_title{{ @$key+1 }}" placeholder="Enter here" value="{{ @$contact->contact_title }}">
-                                 </div>
-                              </div>
-                              <div class="col-lg-4 col-md-4">
-                                 <div class="dash_input">
-                                    <label>Email <small>(Optional)</small></label>
-                                    <input type="text" name="contact_email[]" id="contact_email{{ @$key+1 }}" placeholder="Enter here" value="{{ @$contact->contact_email }}">
-                                 </div>
-                              </div>
-                              <div class="col-lg-4 col-md-4">
-                                 <div class="dash_input">
-                                    <label>Phone <small>(Optional)</small></label>
-                                    <input type="text" name="contact_phone[]" id="contact_phone{{ @$key+1 }}" placeholder="Enter here" value="{{ @$contact->contact_phone }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                 </div>
-                              </div>
-                              <a href="{{ route('delete.contact',@$contact->id) }}" class="del-row position-absolute"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                           </div>
-                           @endforeach
-                           @else --}}
                            <div class="row">
-                           <div class="col-lg-4 col-md-4">
+                              <div class="col-lg-4 col-md-4">
                                  <div class="dash_input">
-                                    <label>Contact Title <small>(Optional)</small></label>
-                                    <input type="text" name="contact_title[]" id="contact_title1"  placeholder="Enter here" value="{{ old('contact_email',@$schoolDetails->contact_email) }}">
+                                    <label>Contact Full Names <small>(Optional)</small></label>
+                                    <input type="text" name="contact_title[]" id="contact_title1"  placeholder="Enter here..." value="{{ old('contact_email',@$schoolDetails->contact_email) }}">
                                  </div>
                               </div>
                               <div class="col-lg-4 col-md-4">
                                  <div class="dash_input">
                                     <label>Email <small>(Optional)</small></label>
-                                    <input type="text" name="contact_email[]" id="contact_email1" placeholder="Enter here" value="{{ old('contact_email',@$schoolDetails->contact_email) }}">
+                                    <input type="text" name="contact_email[]" id="contact_email1" placeholder="Enter here..." value="{{ old('contact_email',@$schoolDetails->contact_email) }}">
                                  </div>
                               </div>
                               <div class="col-lg-4 col-md-4">
                                  <div class="dash_input">
                                     <label>Phone <small>(Optional)</small></label>
-                                    <input type="text" name="contact_phone[]" id="contact_phone1" placeholder="Enter here" value="{{ old('contact_phone',@$schoolDetails->contact_phone) }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                    <input type="text" name="contact_phone[]" id="contact_phone1" placeholder="Enter here..." value="{{ old('contact_phone',@$schoolDetails->contact_phone) }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
                                  </div>
                               </div>
                            </div>
-                           {{-- @endif --}}
                         </div>
                         <div class="ad-schl-card adscl-crd5">
                            <h2>Address Information</h2>
@@ -200,54 +139,48 @@
                                     <label>Country</label>
                                     <select name="country" id="country">
                                        <option value="">Select</option>
-                                       {{-- @foreach($country as $data)
-                                       <option value="{{ @$data->id }}" @if(@$schoolDetails->country == @$data->id) selected @endif>{{ @$data->name }}</option>
-                                       @endforeach --}}
+                                       @foreach($countries as $country)
+                                          <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                       @endforeach
                                     </select>
                                  </div>
                               </div>
-                              {{--<div class="col-lg-6 col-md-6">
-                                 <div class="dash_input">
-                                    <label>constituency</label>
-                                    <input type="text" name="constituency" id="constituency" placeholder="Enter here" value="{{ old('constituency',@$schoolDetails->constituency) }}">
-                                 </div>
-                              </div>--}}
                               <div class="col-lg-6 col-md-6">
-                              <div class="dash_input">
+                                 <div class="dash_input">
                                     <label>Town
                                        <span class="d-inlne-block ml-1 tooltip-main position-relative">
                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
                                        <div class="tooltip-body position-absolute">If town is missing scroll to bottom & select other to add missing town.</div>
                                        </span>
                                     </label>
-                                    <select name="town" id="town">
+                                    <select name="county" id="county">
                                        <option value="">Select</option>
-                                       {{-- @foreach($cities as $data)
-                                       <option value="{{ @$data->id }}" @if(@$schoolDetails->town == @$data->id) selected @endif>{{ @$data->city }}</option>
-                                       @endforeach --}}
+                                       @foreach($counties as $county)
+                                       <option value="{{ $county->id }}">{{ @$county->name }}</option>
+                                       @endforeach
                                        <option value="0">Other</option>
                                     </select>
                                  </div>
                               </div>
-                              <div class="col-lg-6 col-md-6" style="display:none;" id="otherTown">
+                              {{-- <div class="col-lg-6 col-md-6" style="display:none;" id="otherTown">
                                  <div class="dash_input">
                                     <label>Other Town</label>
                                     <input type="text" name="other_town" id="other_town" placeholder="Enter here">
                                  </div>
-                              </div>
+                              </div> --}}
                               <div class="col-12">
                                  <div class="dash_input">
                                     <label>Full Address</label>
-                                    <input type="text" name="full_address" id="full_address" placeholder="Enter here" value="{{ old('full_address',@$schoolDetails->full_address) }}">
+                                    <input type="text" name="full_address" id="full_address" placeholder="Enter here..."/>
                                  </div>
                               </div>
                               <div class="col-12">
                                  <div class="dash_input position-relative g-map">
-                                    <label>Google map location</label>
-                                    <input type="text" name="google_location" id="google_location" placeholder="Enter / pest Here"  value="{{ @$schoolDetails->google_location }}">
+                                    <label>Google map link</label>
+                                    <input type="text" name="google_location" id="google_location" placeholder="Paste link here..."/>
                                     <img src="{{ asset('images/google-map.png') }}" alt="" class="position-absolute">
-                                    <input type="hidden" name="google_lat" id="lat" value="{{old('google_lat',@$schoolDetails->google_lat)}}">
-                                    <input type="hidden" name="google_long" id="long" value="{{old('google_long',@$schoolDetails->google_long)}}">
+                                    {{-- <input type="hidden" name="google_lat" id="lat" value="{{old('google_lat',@$schoolDetails->google_lat)}}">
+                                    <input type="hidden" name="google_long" id="long" value="{{old('google_long',@$schoolDetails->google_long)}}"> --}}
                                  </div>
                               </div>
                            </div>

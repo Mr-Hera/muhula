@@ -86,7 +86,7 @@
                            </ul>
                         </div>
                      </div>
-                     <form action="{{ route('add.school.step1.save') }}" method="post" id="SchollForm">
+                     <form action="{{ route('add.school.step1.save') }}" method="POST" id="SchollForm">
                         @csrf
                         <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
                         <div class="ad-schl-card adscl-crd10">
