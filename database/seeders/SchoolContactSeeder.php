@@ -15,7 +15,7 @@ class SchoolContactSeeder extends Seeder
     {
         DB::table('school_contacts')->insert([
             [
-                'position' => 'Principal',
+                'contact_position_id' => 1,
                 'full_names' => 'John Mwangi',
                 'email' => 'john.mwangi@example.com',
                 'phone_no' => '+254712345678',
@@ -23,7 +23,7 @@ class SchoolContactSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'position' => 'Deputy Principal',
+                'contact_position_id' => 2,
                 'full_names' => 'Mary Wanjiku',
                 'email' => 'mary.wanjiku@example.com',
                 'phone_no' => '+254711223344',
@@ -31,7 +31,7 @@ class SchoolContactSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'position' => 'Head Teacher',
+                'contact_position_id' => 4,
                 'full_names' => 'Samuel Otieno',
                 'email' => 'samuel.otieno@example.com',
                 'phone_no' => '+254700998877',
@@ -39,7 +39,7 @@ class SchoolContactSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'position' => 'School Administrator',
+                'contact_position_id' => 3,
                 'full_names' => 'Grace Njeri',
                 'email' => null,
                 'phone_no' => '+254733445566',
@@ -47,7 +47,7 @@ class SchoolContactSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'position' => 'Bursar',
+                'contact_position_id' => 1,
                 'full_names' => 'Peter Kiprotich',
                 'email' => 'peter.kiprotich@example.com',
                 'phone_no' => null,

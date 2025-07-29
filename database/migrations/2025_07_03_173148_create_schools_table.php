@@ -19,7 +19,7 @@ class CreateSchoolsTable extends Migration
             $table->string('name');
             $table->string('description');
             $table->string('slug');
-            $table->string('religion')->nullable();
+            $table->foreignId('religion_id')->constrained()->cascadeOnDelete();
             $table->foreignId('county_id')->constrained()->cascadeOnDelete();
             $table->foreignId('country_id')->constrained()->cascadeOnDelete();
             $table->foreignId('school_uniform_id')->constrained()->cascadeOnDelete();

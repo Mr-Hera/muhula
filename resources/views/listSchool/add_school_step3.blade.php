@@ -89,10 +89,10 @@
                      </div>
                     
                         <div class="ad-schl-card adscl-crd2">
-                        <form action="{{ route('add.school.step3.save') }}" method="post" enctype="multipart/form-data" id="schoolForm">
+                        <form action="{{ route('add.school.step3.save') }}" method="POST" enctype="multipart/form-data" id="schoolForm">
                         @csrf
-                        <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                        <input type="hidden" name="status" id="stepStatus">
+                        {{-- <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
+                        <input type="hidden" name="status" id="stepStatus"> --}}
                            <div class="row">
                               <div class="col-12">
                                  <div class="dash_input">
@@ -109,9 +109,9 @@
                                        </div>
                                        <div class="col-lg-6 col-sm-6">
                                           <div class="uploaded-img position-relative">
-                                              @if(@$schoolDetails->school_logo != null)
+                                              {{-- @if(@$schoolDetails->school_logo != null)
                                               <img src="{{ URL::to('storage/app/public/images/school_logo') }}/{{ @$schoolDetails->school_logo }}" alt="">
-                                              @endif
+                                              @endif --}}
                                              {{--<a href="#" class="upld-img-del position-absolute">
                                                 <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M8.25 2.75L2.75 8.25" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -127,16 +127,14 @@
                                  <div class="check_gender adscl-type">
                                     <ul>
                                        <li>
-                                          {{-- <input type="radio" name="public_private" id="gender_01" @if(@$schoolDetails->public_private == 'PB') checked @elseif(!$schoolDetails) checked @endif value="PB"> --}}
-                                          <input type="radio" name="public_private" id="gender_01"value="PB">
-                                          <label for="gender_01">
+                                          <input type="radio" name="ownership_type" id="ownership_type_public" value="Public">
+                                          <label for="ownership_type_public">
                                              <p>Public</p>
                                           </label>
                                        </li>
                                        <li>
-                                          {{-- <input type="radio" name="public_private" id="gender_02" value="PR"  @if(@$schoolDetails->public_private == 'PR') checked @endif> --}}
-                                          <input type="radio" name="public_private" id="gender_02" value="PR">
-                                          <label for="gender_02">
+                                          <input type="radio" name="ownership_type" id="ownership_type_private" value="Private">
+                                          <label for="ownership_type_private">
                                              <p>Private</p>
                                           </label>
                                        </li>
@@ -146,18 +144,18 @@
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Year of Establishment <small>(Optional)</small></label>
-                                    <input type="text" name="year_of_establishment" id="year_of_establishment" placeholder="Enter here" value="{{ old('year_of_establishment',@$schoolDetails->year_of_establishment) }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                    <input type="text" name="year_of_establishment" id="year_of_establishment" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>School Type</label>
-                                    <select multiple name="school_type[]" id="school_type" class="filter-multi-select">
-                                     {{-- @foreach($school_type as $data)
-                                     <option value="{{ @$data->id }}"@if(in_array(@$data->id,@$school_to_type)) selected @endif >{{ @$data->school_type }}</option>
-                                     @endforeach --}}
+                                    <label>School Levels</label>
+                                    <select multiple name="school_level_id[]" id="school_level" class="filter-multi-select">
+                                       @foreach($school_levels as $level)
+                                          <option value="{{ $level->id }}" >{{ $level->name }}</option>
+                                       @endforeach
                                    </select>
-                                   <label id="school_type[]-error" class="error" for="school_type[]" style="display:none;">This field is required.</label>
+                                   <label id="school_level[]-error" class="error" for="school_level[]" style="display:none;">This field is required.</label>
                                  </div>
                                  
                               </div>
@@ -165,18 +163,18 @@
                                  <div class="dash_input">
                                     <label>Board</label>
                                     <ul class="category-ul agree d-flex justify-content-start align-items-center flex-wrap row-gap-2">
-                                       @if(@$board)
-                                       @foreach($board as $key=>$data)
-                                       <li>
-                                          <div class="radiobx">
-                                             <label for="">{{ @$data->board_name }}
-                                                  <input type="checkbox" value="{{ @$data->id }}" data-board_name="{{ @$data->board_name }}" name="board[]"  id="agree{{ @$key+1 }}"
-                                                   class="quote-label" @if(in_array(@$data->id, @$school_to_board)) checked @endif>
-                                                  <span class="checkbox"></span>
-                                              </label>
-                                          </div>
-                                       </li>
-                                       @endforeach
+                                       @if($school_curricula)
+                                          @foreach($school_curricula as $curriculum)
+                                             <li>
+                                                <div class="radiobx">
+                                                   <label for="">{{ $curriculum->name }}
+                                                      <input type="checkbox" value="{{ $curriculum->name }}" curriculum-board_name="{{ $curriculum->board_name }}" name="curricula[]"  id="{{ $curriculum->name }}"
+                                                         class="quote-label" />
+                                                      <span class="checkbox"></span>
+                                                   </label>
+                                                </div>
+                                             </li>
+                                          @endforeach
                                        @endif
                                        <li>
                                           <div class="radiobx">
@@ -190,12 +188,12 @@
                                     <label id="board[]-error" class="error" for="board[]" style="display:none;">This field is required.</label>
                                  </div>
                               </div>
-                              <div class="col-lg-6 col-md-6" id="otherPet1" style="display:none;">
+                              {{-- <div class="col-lg-6 col-md-6" id="otherPet1" style="display:none;">
                                  <div class="dash_input">
                                     <label>Other Board</label>
                                     <input type="text" name="other_board" id="other_board" value="" placeholder="Enter here">
                                  </div>
-                              </div>
+                              </div> --}}
                               
                               <div class="clearfix"></div>
                               <div class="col-lg-6 col-md-6">
@@ -205,19 +203,19 @@
                                  <div class="check_gender adscl-type">
                                     <ul>
                                        <li>
-                                          <input type="radio" name="gender" id="gender_01" value="M" @if(@$schoolDetails->gender == 'M') checked @elseif(!@$schoolDetails) checked @endif>
-                                          <label for="gender_01">
+                                          <input type="radio" name="gender_is_male" id="gender_is_male" value="Male" />
+                                          <label for="gender_is_male">
                                              <p>Male</p>
                                           </label>
                                        </li>
                                        <li>
-                                          <input type="radio" name="gender" id="gender_02" value="F" @if(@$schoolDetails->gender == 'F') checked @endif>
-                                          <label for="gender_02">
+                                          <input type="radio" name="gender_is_female" id="gender_is_female" value="Female" />
+                                          <label for="gender_is_female">
                                              <p>Female</p>
                                           </label>
                                        </li>
                                        <li>
-                                          <input type="radio" name="gender" id="gender_03" value="B" @if(@$schoolDetails->gender == 'B') checked @endif>
+                                          <input type="radio" name="gender_is_mixed" id="gender_is_mixed" value="Mixed" />
                                           <label for="gender_02">
                                              <p>Both</p>
                                           </label>
@@ -233,19 +231,19 @@
                                  <div class="check_gender adscl-type adscl-tp2">
                                     <ul>
                                        <li>
-                                          <input type="radio" name="boarding_type" id="gender_04" value="D" @if(@$schoolDetails->boarding_type == 'D') checked @elseif(!@$schoolDetails) checked @endif>
+                                          <input type="radio" name="school_type_id" id="gender_04" value="{{ $school_types_day->id }}" />
                                           <label for="gender_01">
                                              <p>Day</p>
                                           </label>
                                        </li>
                                        <li>
-                                          <input type="radio" name="boarding_type" id="gender_05" value="B" @if(@$schoolDetails->boarding_type == 'B') checked @endif>
+                                          <input type="radio" name="school_type_id" id="gender_05" value="{{ $school_types_boarding->id }}"/>
                                           <label for="gender_02">
                                              <p>Boarding</p>
                                           </label>
                                        </li>
                                        <li>
-                                          <input type="radio" name="boarding_type" id="gender_06" value="DB" @if(@$schoolDetails->boarding_type == 'DB') checked @endif>
+                                          <input type="radio" name="school_type_id" id="gender_06" value="{{ $school_types_day_n_boarding->id }}"/>
                                           <label for="gender_02">
                                              <p>Day & boarding</p>
                                           </label>
@@ -258,12 +256,11 @@
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label style="text-transform: none !important;">What is your Relationship with this School?</label>
-                                    <select name="relationship_id" id="relationship_id">
+                                    <select name="contact_relationship_id" id="contact_relationship_id">
                                         <option value="">Select</option>
-                                         {{-- @foreach($relationship as $data)
-                                         <option value="{{ @$data->id }}" @if(@$schoolDetails->relationship_id == @$data->id) selected @endif>{{ @$data->relationship }}</option>
-                                         @endforeach --}}
-                                         <option value="0">Other</option>
+                                         @foreach($school_contact_positions as $position)
+                                          <option value="{{ $position->id }}" >{{ $position->name }}</option>
+                                         @endforeach
                                     </select>
                                  </div>
                               </div>
@@ -279,9 +276,9 @@
                                     <label>Religion <small>(Optional)</small></label>
                                     <select name="religion_id" id="religion_id">
                                         <option value="">Select</option>
-                                         {{-- @foreach($religion as $data)
-                                         <option value="{{ @$data->id }}" @if(@$schoolDetails->religion_id == @$data->id) selected @endif>{{ @$data->religion_name }}</option>
-                                         @endforeach --}}
+                                         @foreach($school_religion as $religion)
+                                         <option value="{{ $religion->id }}">{{ $religion->name }}</option>
+                                         @endforeach
                                     </select>
                                  </div>
                               </div>
@@ -292,17 +289,17 @@
                               <div class="col-12">
                                 <div class="amenities-select">
                                  <div class="row">
-                                    @if(@$facilities)
-                                    @foreach($facilities as $data)
-                                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                       <div class="radiobx amn-div">
-                                          <label for="">{{ @$data->facilities_name }}
-                                               <input type="checkbox" name="facilities[]" value="{{ @$data->id }}" @if(in_array(@$data->id, @$school_facilities)) checked @endif>
-                                               <span class="checkbox"></span>
-                                           </label>
-                                       </div>
-                                    </div>
-                                    @endforeach
+                                    @if($facilities)
+                                       @foreach($facilities as $facility)
+                                          <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                             <div class="radiobx amn-div">
+                                                <label for="">{{ $facility->name }}
+                                                   <input type="checkbox" name="facilities[]" value="{{ $facility->id }}"/>
+                                                   <span class="checkbox"></span>
+                                                </label>
+                                             </div>
+                                          </div>
+                                       @endforeach
                                     @endif
                                  </div>
                                  <label id="facilities[]-error" class="error" for="facilities[]" style="display:none;">This field is required.</label>
@@ -325,22 +322,22 @@
                            <h2>Uniform</h2>
                            <form action="{{ route('add.school.step3.uniform.save') }}" method="post" enctype="multipart/form-data" id="uniformForm">
                             @csrf
-                            <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                            <input type="hidden" name="school_uniform_id" id="">                         
+                            {{-- <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
+                            <input type="hidden" name="school_uniform_id" id="">                          --}}
                            <div class="row">
                            
                                  <div class="col-12">
                                     <div class="uni-type">
-                                       <label for="" class="uni-label">
-                                          <input type="radio" name="uniform_type" value="M" checked>
+                                       <label for="uniform_type_male" class="uni-label">
+                                          <input type="radio" name="uniform_type" id="uniform_type_male" value="Male" checked>
                                           <span class="uni-text"><img src="{{ asset('images/uni-male.png') }}" alt="">Male</span>                            
                                        </label>
-                                       <label for="" class="uni-label">
-                                          <input type="radio" name="uniform_type" value="F">
+                                       <label for="uniform_type_female" class="uni-label">
+                                          <input type="radio" name="uniform_type" id="uniform_type_female" value="Female">
                                           <span class="uni-text"><img src="{{ asset('images/uni-female.png') }}" alt="">Female</span>                            
                                        </label>
-                                       <label for="" class="uni-label">
-                                          <input type="radio" name="uniform_type" value="U">
+                                       <label for="uniform_type_mixed" class="uni-label">
+                                          <input type="radio" name="uniform_type" id="uniform_type_mixed" value="Mixed">
                                           <span class="uni-text"><img src="{{ asset('images/uni-unisex.png') }}" alt="">Unisex</span>                            
                                        </label>
                                     </div>
@@ -413,221 +410,7 @@
                            </div> 
                            </form>                      
                         </div>
-                        {{--<div class="ad-schl-card adscl-crd7">
-                           <h2>School Rules</h2>
-                           <form action="{{ route('add.school.step3.rules.save') }}" method="post" enctype="multipart/form-data" id="rulesForm">
-                            @csrf
-                            <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                           <div class="row">
-                                 <div class="col-12">
-                                    <div class="dash_input">
-                                       <ul class="rules-list">
-                                          <li style="text-transform: none !important;">
-                                             Meals offered
-                                             <label class="switch">
-                                                <input type="checkbox" name="meal_offer" value="Y" @if(@$schoolDetails->meal_offer == 'Y') checked @endif>
-                                                <span class="slider round"></span>
-                                             </label>
-                                          </li>
-                                          <li style="text-transform: none !important;">
-                                             Special needs catered
-                                             <label class="switch">
-                                                <input type="checkbox" name="special_need_catered" value="Y" @if(@$schoolDetails->special_need_catered == 'Y') checked @endif>
-                                                <span class="slider round"></span>
-                                             </label>
-                                          </li>
-                                          <li style="text-transform: none !important;">
-                                             School transport available
-                                             <label class="switch">
-                                                <input type="checkbox" name="school_transport_available" value="Y" @if(@$schoolDetails->school_transport_available == 'Y') checked @endif>
-                                                <span class="slider round"></span>
-                                             </label>
-                                          </li>
-                                       </ul>
-                                    </div>
-                                 </div>
-                                 <div class="col-12">
-                                    <h3 class="ratio-hd">Day learning period</h3>
-                                    <div class="row">
-                                       <div class="col-sm-6 col-12">
-                                          <div class="dash_input">
-                                             <label>From</label>
-                                             <select name="day_learn_period_from" id="day_learn_period_from">
-                                             @foreach (range(1,17) as $number) 
-                                             @if($number < 10)
-                                              @php
-                                              $time1 = '0'.@$number.':00';
-                                              @endphp
-                                             <option value="{{ @$time1 }}" @if(date('H:i',strtotime(@$schoolDetails->day_learn_period_from)) == $time1) selected="" @endif>{{ @$time1 }}</option>
-                                              @else
-                                              @php
-                                              $time2 = @$number.':00';
-                                              @endphp
-                                             <option value="{{$time2}}"  @if(date('H:i',strtotime(@$schoolDetails->day_learn_period_from)) == $time2) selected="" @endif>{{@$time2}}</option>
-                                              @endif
-                                               @endforeach
-                                             </select>
-                                          </div>
-                                       </div>
-                                       <div class="col-sm-6 col-6">
-                                          <div class="dash_input">
-                                             <label>Until</label>
-                                             <select name="day_learn_period_until" id="day_learn_period_until">
-                                             @foreach (range(1,17) as $number) 
-                                             @if($number < 10)
-                                              @php
-                                              $time1 = '0'.@$number.':00';
-                                              @endphp
-                                             <option value="{{ @$time1 }}" @if(date('H:i',strtotime(@$schoolDetails->day_learn_period_until)) == $time1) selected="" @endif>{{ @$time1 }}</option>
-                                              @else
-                                              @php
-                                              $time2 = @$number.':00';
-                                              @endphp
-                                             <option value="{{$time2}}"  @if(date('H:i',strtotime(@$schoolDetails->day_learn_period_until)) == $time2) selected="" @endif>{{@$time2}}</option>
-                                              @endif
-                                               @endforeach
-                                             </select>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <div class="col-12">
-                                    <h3 class="ratio-hd mt-3p">Evening Studies</h3>
-                                    <div class="row">
-                                       <div class="col-sm-6 col-12">
-                                          <div class="dash_input">
-                                             <label>From</label>
-                                             <select name="evening_studies_from" id="evening_studies_from">
-                                             @foreach (range(17,24) as $number) 
-                                             @if($number < 10)
-                                              @php
-                                              $time1 = '0'.@$number.':00';
-                                              @endphp
-                                             <option value="{{ @$time1 }}" @if(date('H:i',strtotime(@$schoolDetails->evening_studies_from)) == $time1) selected="" @endif>{{ @$time1 }}</option>
-                                              @else
-                                              @php
-                                              $time2 = @$number.':00';
-                                              @endphp
-                                             <option value="{{$time2}}"   @if(date('H:i',strtotime(@$schoolDetails->evening_studies_from)) == $time2) selected="" @endif>{{@$time2}}</option>
-                                              @endif
-                                               @endforeach
-                                             </select>
-                                          </div>
-                                       </div>
-                                       <div class="col-sm-6 col-6">
-                                          <div class="dash_input">
-                                             <label>Until</label>
-                                             <select name="evening_studies_until" id="evening_studies_until">
-                                             @foreach (range(17,24) as $number) 
-                                             @if($number < 10)
-                                              @php
-                                              $time1 = '0'.@$number.':00';
-                                              @endphp
-                                             <option value="{{ @$time1 }}"  @if(date('H:i',strtotime(@$schoolDetails->evening_studies_until)) == $time1) selected="" @endif>{{ @$time1 }}</option>
-                                              @else
-                                              @php
-                                              $time2 = @$number.':00';
-                                              @endphp
-                                             <option value="{{$time2}}" @if(date('H:i',strtotime(@$schoolDetails->evening_studies_until)) == $time2) selected="" @endif>{{@$time2}}</option>
-                                              @endif
-                                               @endforeach
-                                             </select>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <div class="col-12">
-                                     <button class="submit-ratio" type="submit">+ &nbsp;Save</button>
-                                 </div>
-                             </div>
-                           </form>                        
-                        </div>
-                        <div class="ad-schl-card adscl-crd7">
-                           <h2>Teacher-Student ratio</h2>
-                           <form action="{{ route('add.school.step3.ratio.save') }}" method="post" enctype="multipart/form-data" id="ratioForm">
-                            @csrf
-                            <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                            <input type="hidden" name="teacher_student_ratio" id="teacher_student_ratio" value="{{ @$schoolDetails->teacher_student_ratio?@$schoolDetails->teacher_student_ratio:'0' }}"> 
-                           <div class="row">
-                                 <div class="col-12">
-                                    <div class="dash_input">
-                                       <label>Teacher-Student ratio</label>
-                                       <div class="ratio-counter">
-                                          <span id="minus-btn">
-                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                             </svg>                                          
-                                          </span>
-                                          <h6 id="count"></h6>
-                                          <span id="plus-btn">
-                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 5V19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                             </svg>                                          
-                                          </span>
-                                       </div>
-                                       <label for="" id="ratio_error" class="error" style="display:none;"></label>
-                                    </div>
-                                 </div>
-                                 <div class="col-12">
-                                    <h3 class="ratio-hd">Students</h3>
-                                    <div class="row">
-                                       <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                                          <div class="dash_input">
-                                             <label>Total</label>
-                                             <input type="text" name="total_student" id="total_student" placeholder="Enter here" value="{{ @$schoolDetails->total_student }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                             <label id="total_student-error" class="error" for="total_student" style="display:none;">Plese enter valid number</label>
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-4 col-md-4 col-sm-4 col-6">
-                                          <div class="dash_input">
-                                             <label>Boys</label>
-                                             <input type="text" name="student_boys" id="student_boys" placeholder="Enter here" value="{{ @$schoolDetails->student_boys }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-4 col-md-4 col-sm-4 col-6">
-                                          <div class="dash_input">
-                                             <label>Girls</label>
-                                             <input type="text" name="student_girls" id="student_girls" placeholder="Enter here" value="{{ @$schoolDetails->student_girls }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <div class="col-12">
-                                    <h3 class="ratio-hd mt-3p">Teachers</h3>
-                                    <div class="row">
-                                       <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                                          <div class="dash_input">
-                                             <label>Total</label>
-                                             <input type="text" name="total_teacher" id="total_teacher" placeholder="Enter here" value="{{ @$schoolDetails->total_teacher }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-4 col-md-4 col-sm-4 col-6">
-                                          <div class="dash_input">
-                                             <label>Male</label>
-                                             <input type="text" name="teacher_male" id="teacher_male" placeholder="Enter here" value="{{ @$schoolDetails->teacher_male }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-4 col-md-4 col-sm-4 col-6">
-                                          <div class="dash_input">
-                                             <label>Female</label>
-                                             <input type="text" name="teacher_female" id="teacher_female" placeholder="Enter here" value="{{ @$schoolDetails->teacher_female }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                          </div>
-                                       </div>
-                                       <div class="col-12">
-                                          <button class="submit-ratio" type="submit">+ &nbsp;Save</button>
-                                       </div>
-                                    </div>
-                                 </div>
-                             </div>
-                           </form>                        
-                        </div>--}}
-
-                        
-
-                    
-                  
-                           <div class="ad-schl-card adscl-crd4">
+                        <div class="ad-schl-card adscl-crd4">
                            <div class="ad-schl-sub-go mt-0">
                               <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
                                  <button type="submit" id="submitBtn" data-value="CO">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -644,7 +427,6 @@
                               <p>Step 3 Of 9</p>
                            </div>
                         </div>
-            
                   </div>
                </div>
                <div class="col-lg-4">

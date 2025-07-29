@@ -17,30 +17,42 @@ class School extends Model
     use HasFactory;
 
     public function level() 
-    { return $this->belongsTo(SchoolLevel::class); 
+    { 
+        return $this->belongsTo(SchoolLevel::class); 
     }
     
     public function type() 
-    { return $this->belongsTo(SchoolType::class); 
+    { 
+        return $this->belongsTo(SchoolType::class); 
     }
     
     public function curriculum() 
-    { return $this->belongsTo(Curriculum::class); 
+    { 
+        return $this->belongsTo(Curriculum::class); 
     }
     
     public function county() 
-    { return $this->belongsTo(County::class); 
+    { 
+        return $this->belongsTo(County::class); 
     }
     
     public function constituency() 
-    { return $this->belongsTo(Constituency::class); 
+    { 
+        return $this->belongsTo(Constituency::class); 
     }
     
     public function ward() 
-    { return $this->belongsTo(Ward::class); 
+    { 
+        return $this->belongsTo(Ward::class); 
     }
     
     public function courses() 
-    { return $this->belongsToMany(Course::class, 'school_courses'); 
+    { 
+        return $this->belongsToMany(Course::class, 'school_courses'); 
+    }
+
+    public function facilities()
+    {
+        return $this->belongsToMany(Facility::class)->withTimestamps();
     }
 }

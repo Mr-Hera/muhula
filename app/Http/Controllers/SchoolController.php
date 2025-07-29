@@ -5,280 +5,196 @@ namespace App\Http\Controllers;
 use App\Models\County;
 use App\Models\School;
 use App\Models\Country;
+use App\Models\Facility;
+use App\Models\Religion;
+use App\Models\Curriculum;
+use App\Models\SchoolType;
+use App\Models\SchoolLevel;
 use Illuminate\Http\Request;
+use App\Models\SchoolUniform;
+use App\Models\ContactPosition;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class SchoolController extends Controller
 {
-    public function addSchoolStep1($id=null){
-      $schoolDetails = School::where(DB::raw('id'),@$id)->first();
-      // if(Auth::user()){
-      //   return view('listSchool.add_school_step1')->with([
-      //     'school_details' => $schoolDetails,
-      //   ]);
-      // }else{
-      //   Session::put(['type'=>'LS']);
-      //   return redirect()->route('login');
-      // }
-      return view('listSchool.add_school_step1')->with([
-        'school_details' => $schoolDetails,
-      ]);
+  public function addSchoolStep1($id=null){
+    $schoolDetails = School::where(DB::raw('id'),@$id)->first();
+    // if(Auth::user()){
+    //   return view('listSchool.add_school_step1')->with([
+    //     'school_details' => $schoolDetails,
+    //   ]);
+    // }else{
+    //   Session::put(['type'=>'LS']);
+    //   return redirect()->route('login');
+    // }
+    return view('listSchool.add_school_step1')->with([
+      'school_details' => $schoolDetails,
+    ]);
+  }
+
+  public function addSchoolStep1Save(Request $request){
+    // dd($request);
+    if($request->school_master_id != null){
+
+    $upd = [];
+    $upd['school_register'] = $request->school_register;
+    $upd['school_same_address'] = $request->school_same_address?$request->school_same_address:null;
+    $upd['no_of_school'] = $request->no_of_school?$request->no_of_school:null;
+
+    SchoolMaster::where('id',$request->school_master_id)->update($upd);
+    return redirect()->route('add.school.step2',[md5(@$request->school_master_id)]);
+
     }
 
-    public function addSchoolStep1Save(Request $request){
-      // dd($request);
-      if($request->school_master_id != null){
+    $ins = [];
+    $ins['user_id'] = Auth::user()->id;
+    $ins['school_register'] = $request->school_register;
+    $ins['school_same_address'] = $request->school_same_address?$request->school_same_address:null;
+    $ins['no_of_school'] = $request->no_of_school?$request->no_of_school:null;
+    session(['school_register'=>$ins['school_register']]);
+    session(['school_same_address'=>$ins['school_same_address']]);
+    session(['no_of_school'=>$ins['no_of_school']]);
+    //$create = SchoolMaster::create($ins);
+    return redirect()->route('add.school.step2');
+  }
 
-      $upd = [];
-      $upd['school_register'] = $request->school_register;
-      $upd['school_same_address'] = $request->school_same_address?$request->school_same_address:null;
-      $upd['no_of_school'] = $request->no_of_school?$request->no_of_school:null;
-
-      SchoolMaster::where('id',$request->school_master_id)->update($upd);
-      return redirect()->route('add.school.step2',[md5(@$request->school_master_id)]);
-
-      }
-
-      $ins = [];
-      $ins['user_id'] = Auth::user()->id;
-      $ins['school_register'] = $request->school_register;
-      $ins['school_same_address'] = $request->school_same_address?$request->school_same_address:null;
-      $ins['no_of_school'] = $request->no_of_school?$request->no_of_school:null;
-      session(['school_register'=>$ins['school_register']]);
-      session(['school_same_address'=>$ins['school_same_address']]);
-      session(['no_of_school'=>$ins['no_of_school']]);
-      //$create = SchoolMaster::create($ins);
-      return redirect()->route('add.school.step2');
-    }
-
-    public function addSchoolStep2($id=null){
-      $countries = Country::all();
-      $counties = County::all();
-      
-      return view('listSchool.add_school_step2')->with([
-        'countries' => $countries,
-        'counties' => $counties,
-      ]);
-    }
-
-    public function addSchoolStep2Save(Request $request){
-      // dd($request);
-      $validated = $request->validate([
-        'school_name'      => 'required|string|max:255',
-        'about_school'     => 'required|string|max:5000',
-        'contact_title'    => 'required|array|min:1',
-        'contact_title.*'  => 'required|string|max:255',
-        'contact_email'    => 'required|array|min:1',
-        'contact_email.*'  => 'required|email|max:255',
-        'contact_phone'    => 'required|array|min:1',
-        'contact_phone.*'  => 'required|string|max:20',
-        'country'          => 'required|integer|exists:countries,id',
-        'county'             => 'required|integer|exists:counties,id',
-        'full_address'     => 'required|string|max:500',
-        'google_location'  => 'nullable|string|max:500',
-      ]);
-      // Store in session under a single key
-      $stepData = [
-          'school_name'      => $validated['school_name'],
-          'about_school'     => $validated['about_school'],
-          'contact_title'    => $validated['contact_title'],
-          'contact_email'    => $validated['contact_email'],
-          'contact_phone'    => $validated['contact_phone'],
-          'country'          => $validated['country'],
-          'town'             => $validated['town'],
-          'full_address'     => $validated['full_address'],
-          'google_location'  => $validated['google_location'] ?? null,
-      ];
-
-      // retrieving about data as follows
-      // $step2 = Session::get('school_creation.step2');
-      // $schoolName = $step2['school_name'] ?? '';
-
-      Session::put('school_creation.step2', $stepData);
-      
-      return redirect()->route('school.create.step3'); // go to next step
-    }
-
-      public function addSchoolStep3($id=null){
-        // $data['schoolDetails'] = SchoolMaster::where(DB::raw('md5(id)'),@$id)->first();
-        // $data['school_type'] = SchoolType::get();
-        // $data['board'] = Board::where('id','!=',5)->get();
-        // $data['language'] = Language::get();
-        // $data['religion'] = Religion::get();
-        // $data['facilities'] = Facilities::get();
-        // $data['relationship'] = SchoolRelationship::get();
-        // if($data['schoolDetails'] == null){
-
-        //   return redirect()->back()->with('error','Something went wrong');
-        // }
-        // $data['school_facilities'] = SchoolToFacilities::where('school_master_id',@$data['schoolDetails']->id)->pluck('facilities_id')->toArray();
-        // $data['school_to_type'] = SchoolToType::where('school_master_id',@$data['schoolDetails']->id)->pluck('school_type_id')->toArray();
-        // $data['school_uniform'] = SchoolUniform::where('school_master_id',@$data['schoolDetails']->id)->get();
-        // $data['school_to_board'] = SchoolToBoard::where('school_master_id',@$data['schoolDetails']->id)->pluck('board_id')->toArray();
-        return view('listSchool.add_school_step3');
-      }
-
-      public function addSchoolStep3Save(Request $request){
-        
-        if($request->school_master_id){
-            
-            $schooDetails = SchoolMaster::where('id',$request->school_master_id)->first();    
-            $upd = [];
-            //$upd['school_name'] = $request->school_name;
-            $upd['year_of_establishment'] = $request->year_of_establishment;
-            $upd['public_private'] = $request->public_private;
-            //$upd['school_type_id'] = $request->school_type_id;
-            $upd['religion_id'] = $request->religion_id;
-            $upd['gender'] = $request->gender;
-            $upd['boarding_type'] = $request->boarding_type;
-
-            if($request->other_relationship != null){
-                $AvailableRalation = SchoolRelationship::where('relationship',trim($request->other_relationship))->first();
-                if($AvailableRalation == null){
-                    $other_relationship = trim($request->other_relationship);
-                   $createRelation = SchoolRelationship::create(['relationship'=>$other_relationship]);
-                  
-                   $upd['relationship_id'] = @$createRelation->id;
-                }else{
-
-                   $upd['relationship_id'] = @$AvailableRalation->id;
-                }
-            }else{
-
-               $upd['relationship_id'] = $request->relationship_id;
-            }
-            if($request->school_logo){
-
-              $image = $request->school_logo;
-              $filename = time() . '-' . rand(1000, 9999) . '.' . $image->getClientOriginalExtension();
-              Storage::putFileAs('public/images/school_logo', $image, $filename);
-              $upd['school_logo'] = $filename;
-              @unlink(storage_path('app/public/images/school_logo/' . @$schooDetails->school_logo));
-            
-            }
-
-            if(@$request->school_type){
-                //dd(@$request->subject);
-
-                $school_type = @$request->school_type;
+  public function addSchoolStep2(){
+    $countries = Country::all();
+    $counties = County::all();
     
-                 $multi_schooltypes = array_filter($school_type);
-                if(@$multi_schooltypes) {
+    return view('listSchool.add_school_step2')->with([
+      'countries' => $countries,
+      'counties' => $counties,
+    ]);
+  }
 
-                    $schooDetails->school_types()->sync(@$multi_schooltypes);
+  public function addSchoolStep2Save(Request $request){
+    // dd($request);
+    $validated = $request->validate([
+      'school_name'      => 'required|string|max:255',
+      'about_school'     => 'required|string|max:5000',
+      'contact_title'    => 'required|array|min:1',
+      'contact_title.*'  => 'required|string|max:255',
+      'contact_email'    => 'required|array|min:1',
+      'contact_email.*'  => 'required|email|max:255',
+      'contact_phone'    => 'required|array|min:1',
+      'contact_phone.*'  => 'required|string|max:20',
+      'country'          => 'required|integer|exists:countries,id',
+      'county'             => 'required|integer|exists:counties,id',
+      'full_address'     => 'required|string|max:500',
+      'google_location'  => 'nullable|string|max:500',
+    ]);
+    // Store in session under a single key
+    $stepData = [
+        'school_name'      => $validated['school_name'],
+        'about_school'     => $validated['about_school'],
+        'contact_title'    => $validated['contact_title'],
+        'contact_email'    => $validated['contact_email'],
+        'contact_phone'    => $validated['contact_phone'],
+        'country'          => $validated['country'],
+        'county'             => $validated['county'],
+        'full_address'     => $validated['full_address'],
+        'google_location'  => $validated['google_location'] ?? null,
+    ];
 
-                }
+    // retrieving about data as follows
+    // $step2 = Session::get('school_creation.step2');
+    // $schoolName = $step2['school_name'] ?? '';
 
-             }
-
-             if(@$request->board || @$request->other_board){
-              //dd(@$request->subject);
-              $boards = @$request->board;
-            if(@$request->other_board){
-              $board_r = @$request->other_board;
-              $board_arr = explode(",", $board_r);
-              $boardData = [];
-              foreach($board_arr as $board){
-                  $board = trim($board);
-                  $exists = Board::where('board_name', $board)->first();
-                  if(!@$exists){
-                      $boardd = Board::create(["board_name"=>$board]);
-                      array_push($boardData, $boardd->id);
-                  } else {
-                      array_push($boardData, $exists->id);
-                  }
-              }
-             }
-             //$multi_boards = [];
-              if(@$boardData == null) {
-                  $multi_boards =array_filter($boards); 
-                  $schooDetails->school_boards()->sync($multi_boards);
-   
-              }
-              else if($boards && @$boardData){
-                  $multi_boards =array_filter($boards);
-                  $com_board = array_merge($multi_boards,@$boardData);
-                  $uni_board = array_unique($com_board);
-                  $schooDetails->school_boards()->sync($uni_board);
-              }
-              else if(@$boardData){
-
-                $schooDetails->school_boards()->sync($boardData);
-              }
-            }
-
-            $update =  SchoolMaster::where('id',@$request->school_master_id)->update($upd);
-
-
-
-            if(@$request->facilities)
-            {
-            $facilities = @$request->facilities;
-            // return $skill;
-            foreach ($facilities as $item) {
-                $insFacilities = [];
-                $insFacilities['school_master_id'] = $request->school_master_id;
-                $insFacilities['facilities_id'] = @$item;
-                if(@$item){
-                    $checkAvailable =  SchoolToFacilities::where('school_master_id', @$request->school_master_id)->where('facilities_id', @$item)->first();
-                    if ($checkAvailable == null) {
-                        SchoolToFacilities::create($insFacilities);
-                    }
-                }
+    Session::put('school_creation.step2', $stepData);
     
-            }
-            SchoolToFacilities::where('school_master_id', @$request->school_master_id)->whereNotIn('facilities_id', @$facilities)->delete();
-            }
-            if(@$request->other_facilities)
-                {
-                    $order_facilities = explode(",", @$request->other_facilities);
-                    // return $skill;
-                    foreach ($order_facilities as $item) {
-                        $ins = [];
-                        $ins['facilities_name'] = @$item;
-                        if(@$item){
-                            $item = trim($item);
-                            $checkAvailable =  Facilities::where('facilities_name', @$item)->first();
-                            if ($checkAvailable == null) {
-                                $createFacility = Facilities::create($ins);
+    return redirect()->route('add.school.step3'); // go to next step
+  }
+
+  public function addSchoolStep3(){
+    $school_levels = SchoolLevel::all();
+    $school_types_day = SchoolType::where('name', 'Day')->first();
+    $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
+    $school_types_day_n_boarding = SchoolType::where('name', 'Day')->first();
+    $school_curricula = Curriculum::all();
+    $school_uniforms = SchoolUniform::all();
+    $school_contact_positions = ContactPosition::all();
+    $school_religion = Religion::all();
+    $facilities = Facility::all();
     
-                                $insotherF = [];
-                                $insotherF['school_master_id'] = @$request->school_master_id;
-                                $insotherF['facilities_id'] = @$createFacility->id;
-                                SchoolToFacilities::create($insotherF);
-                            }else
-                            {
-                                $insotherF = [];
-                                $insotherF['school_master_id'] = @$request->school_master_id;
-                                $insotherF['facilities_id'] = @$checkAvailable->id;
-                                SchoolToFacilities::create($insotherF);
-                            }
-                        }
-    
-                    }
-                    // JobToSkill::where('job_id', @$job->id)->whereNotIn('skill_id', @$skill)->delete();
-                }
-            
-            if(@$update){
+    return view('listSchool.add_school_step3')->with([
+      'school_levels' => $school_levels,
+      'school_types_day' => $school_types_day,
+      'school_types_boarding' => $school_types_boarding,
+      'school_types_day_n_boarding' => $school_types_day_n_boarding,
+      'school_curricula' => $school_curricula,
+      'school_uniforms' => $school_uniforms,
+      'school_contact_positions' => $school_contact_positions,
+      'school_religion' => $school_religion,
+      'facilities' => $facilities,
+    ]);
+  }
 
-                session()->flash('success','School basic information updated successfully');
-                if(@$request->status == 'CO'){
+  public function addSchoolStep3Save(Request $request)
+  {
+    // dd($request);
+    $validated = $request->validate([
+        'ownership_type'         => 'required|string|in:Private,Public',
+        'year_of_establishment'  => 'required|digits:4|integer|min:1900|max:' . now()->year,
 
-                  return redirect()->route('add.school.step4',[md5(@$schooDetails->id)]);
-                }else{
+        'school_level_id'        => 'required|array|min:1',
+        'school_level_id.*'      => 'required|integer|exists:school_levels,id',
 
-                  return redirect()->route('add.school.step3',[md5(@$schooDetails->id)]);
-                }
-                
-            }else{
+        'curricula'              => 'required|array|min:1',
+        'curricula.*'            => 'required|string|max:255',
 
-                return redirect()->back()->with('error','Something went wrong');
-              }   
-            }
-         
-      }
+        'gender_is_mixed'        => 'required|string|in:Mixed,Boys,Girls',
+
+        'school_type_id'         => 'required|integer|exists:school_types,id',
+
+        'contact_relationship_id'=> 'required|integer|exists:contact_positions,id',
+        'other_relationship'     => 'nullable|string|max:255',
+
+        'religion_id'            => 'required|integer|exists:religions,id',
+
+        'facilities'             => 'required|array|min:1',
+        'facilities.*'           => 'required|integer|exists:facilities,id',
+
+        'other_facilities'       => 'nullable|string|max:255',
+
+        'school_logo'            => 'nullable|file|mimes:jpeg,png,jpg|max:2048', // 2MB max
+    ]);
+
+    // Handle file upload
+    // $schoolLogoPath = null;
+    // if ($request->hasFile('school_logo')) {
+    //     $schoolLogoPath = $request->file('school_logo')->store(
+    //         'school_logo', 'public' // assumes `public` disk is configured
+    //     );
+    // }
+
+    $image = $request->file('school_logo');
+    $image_name = $image->getClientOriginalName();
+    // dd($image_name);
+
+    $schoolLogoPath = $image->storeAs('school_logo', $image_name, 'public');
+
+    $stepData = [
+        'ownership_type'          => $validated['ownership_type'],
+        'year_of_establishment'  => $validated['year_of_establishment'],
+        'school_level_id'        => $validated['school_level_id'],
+        'curricula'              => $validated['curricula'],
+        'gender_is_mixed'        => $validated['gender_is_mixed'],
+        'school_type_id'         => $validated['school_type_id'],
+        'contact_relationship_id'=> $validated['contact_relationship_id'],
+        'other_relationship'     => $validated['other_relationship'],
+        'religion_id'            => $validated['religion_id'],
+        'facilities'             => $validated['facilities'],
+        'other_facilities'       => $validated['other_facilities'],
+        'school_logo_path'       => $schoolLogoPath,
+    ];
+
+    Session::put('school_creation.step3', $stepData);
+
+    return redirect()->route('add.school.step4');
+  }
 
 
     public function addSchoolStep3UniformSave(Request $request){
