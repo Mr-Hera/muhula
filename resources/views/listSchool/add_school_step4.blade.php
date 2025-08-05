@@ -91,35 +91,23 @@
                         
                        
                         <div class="ad-schl-card adscl-crd7">
-                           <h2>School Rules</h2>
+                           <h2>School Services Offered</h2>
                            <form action="{{ route('add.school.step4.rules.save') }}" method="post" enctype="multipart/form-data" id="rulesForm">
-                            @csrf
-                            <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                           <div class="row">
+                              @csrf
+                              
+                              <div class="row">
                                  <div class="col-12">
                                     <div class="dash_input">
                                        <ul class="rules-list">
-                                          <li style="text-transform: none !important;">
-                                             Meals offered
-                                             <label class="switch">
-                                                <input type="checkbox" name="meal_offer" value="Y" @if(@$schoolDetails->meal_offer == 'Y') checked @endif>
-                                                <span class="slider round"></span>
-                                             </label>
-                                          </li>
-                                          <li style="text-transform: none !important;">
-                                             Special needs catered
-                                             <label class="switch">
-                                                <input type="checkbox" name="special_need_catered" value="Y" @if(@$schoolDetails->special_need_catered == 'Y') checked @endif>
-                                                <span class="slider round"></span>
-                                             </label>
-                                          </li>
-                                          <li style="text-transform: none !important;">
-                                             School transport available
-                                             <label class="switch">
-                                                <input type="checkbox" name="school_transport_available" value="Y" @if(@$schoolDetails->school_transport_available == 'Y') checked @endif>
-                                                <span class="slider round"></span>
-                                             </label>
-                                          </li>
+                                          @foreach ($extended_school_services as $service)
+                                             <li style="text-transform: none !important;">
+                                                {{ $service->name }}
+                                                <label class="switch">
+                                                   <input type="checkbox" name="extended_school_services_id[]" value="{{ $service->id }}"/>
+                                                   <span class="slider round"></span>
+                                                </label>
+                                             </li>
+                                          @endforeach
                                        </ul>
                                     </div>
                                  </div>
@@ -130,20 +118,20 @@
                                           <div class="dash_input">
                                              <label>From</label>
                                              <select name="day_learn_period_from" id="day_learn_period_from">
-                                             <option value="">Select</option>  
-                                             @foreach (range(1,17) as $number) 
-                                             @if($number < 10)
-                                              @php
-                                              $time1 = '0'.@$number.':00';
-                                              @endphp
-                                             <option value="{{ @$time1 }}" @if(date('H:i',strtotime(@$schoolDetails->day_learn_period_from)) == $time1) selected="" @endif>{{ @$time1 }}</option>
-                                              @else
-                                              @php
-                                              $time2 = @$number.':00';
-                                              @endphp
-                                             <option value="{{$time2}}"  @if(date('H:i',strtotime(@$schoolDetails->day_learn_period_from)) == $time2) selected="" @endif>{{@$time2}}</option>
-                                              @endif
-                                               @endforeach
+                                                <option value="">Select</option>  
+                                                @foreach (range(1,17) as $number) 
+                                                   @if($number < 10)
+                                                      @php
+                                                         $time1 = '0'.$number.':00';
+                                                      @endphp
+                                                      <option value="{{ $time1 }}" >{{ @$time1 }}</option>
+                                                   @else
+                                                      @php
+                                                         $time2 = $number.':00';
+                                                      @endphp
+                                                      <option value="{{$time2}}" >{{@$time2}}</option>
+                                                   @endif
+                                                @endforeach
                                              </select>
                                           </div>
                                        </div>
@@ -151,20 +139,20 @@
                                           <div class="dash_input">
                                              <label>Until</label>
                                              <select name="day_learn_period_until" id="day_learn_period_until">
-                                             <option value="">Select</option>
-                                             @foreach (range(1,17) as $number) 
-                                             @if($number < 10)
-                                              @php
-                                              $time1 = '0'.@$number.':00';
-                                              @endphp
-                                             <option value="{{ @$time1 }}" @if(date('H:i',strtotime(@$schoolDetails->day_learn_period_until)) == $time1) selected="" @endif>{{ @$time1 }}</option>
-                                              @else
-                                              @php
-                                              $time2 = @$number.':00';
-                                              @endphp
-                                             <option value="{{$time2}}"  @if(date('H:i',strtotime(@$schoolDetails->day_learn_period_until)) == $time2) selected="" @endif>{{@$time2}}</option>
-                                              @endif
-                                               @endforeach
+                                                <option value="">Select</option>
+                                                @foreach (range(1,17) as $number) 
+                                                   @if($number < 10)
+                                                      @php
+                                                         $time1 = '0'.$number.':00';
+                                                      @endphp
+                                                      <option value="{{ $time1 }}" >{{ $time1 }}</option>
+                                                   @else
+                                                      @php
+                                                         $time2 = $number.':00';
+                                                      @endphp
+                                                      <option value="{{$time2}}" >{{$time2}}</option>
+                                                   @endif
+                                                @endforeach
                                              </select>
                                           </div>
                                        </div>
@@ -178,19 +166,19 @@
                                              <label>From</label>
                                              <select name="evening_studies_from" id="evening_studies_from">
                                              <option value="">Select</option>
-                                             @foreach (range(17,24) as $number) 
-                                             @if($number < 10)
-                                              @php
-                                              $time1 = '0'.@$number.':00';
-                                              @endphp
-                                             <option value="{{ @$time1 }}" @if(date('H:i',strtotime(@$schoolDetails->evening_studies_from)) == $time1) selected="" @endif>{{ @$time1 }}</option>
-                                              @else
-                                              @php
-                                              $time2 = @$number.':00';
-                                              @endphp
-                                             <option value="{{$time2}}"   @if(date('H:i',strtotime(@$schoolDetails->evening_studies_from)) == $time2) selected="" @endif>{{@$time2}}</option>
-                                              @endif
-                                               @endforeach
+                                                @foreach (range(17,24) as $number) 
+                                                   @if($number < 10)
+                                                      @php
+                                                         $time1 = '0'.$number.':00';
+                                                      @endphp
+                                                      <option value="{{ $time1 }}" >{{ $time1 }}</option>
+                                                   @else
+                                                      @php
+                                                         $time2 = $number.':00';
+                                                      @endphp
+                                                      <option value="{{$time2}}" >{{$time2}}</option>
+                                                   @endif
+                                                @endforeach
                                              </select>
                                           </div>
                                        </div>
@@ -199,19 +187,19 @@
                                              <label>Until</label>
                                              <select name="evening_studies_until" id="evening_studies_until">
                                              <option value="">Select</option>
-                                             @foreach (range(17,24) as $number) 
-                                             @if($number < 10)
-                                              @php
-                                              $time1 = '0'.@$number.':00';
-                                              @endphp
-                                             <option value="{{ @$time1 }}"  @if(date('H:i',strtotime(@$schoolDetails->evening_studies_until)) == $time1) selected="" @endif>{{ @$time1 }}</option>
-                                              @else
-                                              @php
-                                              $time2 = @$number.':00';
-                                              @endphp
-                                             <option value="{{$time2}}" @if(date('H:i',strtotime(@$schoolDetails->evening_studies_until)) == $time2) selected="" @endif>{{@$time2}}</option>
-                                              @endif
-                                               @endforeach
+                                                @foreach (range(17,24) as $number) 
+                                                   @if($number < 10)
+                                                      @php
+                                                         $time1 = '0'.$number.':00';
+                                                      @endphp
+                                                      <option value="{{ $time1 }}" >{{ $time1 }}</option>
+                                                   @else
+                                                      @php
+                                                         $time2 = $number.':00';
+                                                      @endphp
+                                                      <option value="{{$time2}}" >{{$time2}}</option>
+                                                   @endif
+                                                @endforeach
                                              </select>
                                           </div>
                                        </div>
@@ -226,11 +214,10 @@
                         <div class="ad-schl-card adscl-crd7">
                            <h2>Teacher-Student ratio</h2>
                            <form action="{{ route('add.school.step4.ratio.save') }}" method="post" enctype="multipart/form-data" id="ratioForm">
-                            @csrf
-                            <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                            <input type="hidden" name="teacher_student_ratio" id="teacher_student_ratio" value="{{ @$schoolDetails->teacher_student_ratio?@$schoolDetails->teacher_student_ratio:'0' }}"> 
-                           <div class="row align-items-end">
-                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                              @csrf
+                              
+                              <div class="row align-items-end">
+                                 {{-- <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="dash_input">
                                        <label>Teacher-Student ratio</label>
                                        <div class="ratio-counter">
@@ -250,7 +237,6 @@
                                        <label for="" id="ratio_error" class="error" style="display:none;"></label>
                                     </div>
                                  </div>
-
                                  <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="add-grade agree mb-4">
                                        <div class="radiobx">
@@ -260,29 +246,33 @@
                                              </label>
                                           </div>
                                     </div>
-                                 </div>
-
-
+                                 </div> --}}
                                  <div class="col-12">
                                     <h3 class="ratio-hd">Students</h3>
                                     <div class="row">
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                           <div class="dash_input">
                                              <label>Total</label>
-                                             <input type="text" name="total_student" id="total_student" placeholder="Enter here" value="{{ @$schoolDetails->total_student }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                             <label id="total_student-error" class="error" for="total_student" style="display:none;">Plese enter valid number</label>
+                                             <input type="number" name="total_students" id="total_student" placeholder="Enter here" min="0" @if ($school_population)
+                                                value="{{ $school_population['total_students'] }}"
+                                             @endif>
+                                             <label id="total_student-error" class="error" for="total_student" style="display:none;">Please enter valid number</label>
                                           </div>
                                        </div>
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-6">
                                           <div class="dash_input">
                                              <label>Boys</label>
-                                             <input type="text" name="student_boys" id="student_boys" placeholder="Enter here" value="{{ @$schoolDetails->student_boys }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                             <input type="number" name="student_boys" id="student_boys" placeholder="Enter here" min="0" @if ($school_population)
+                                                value="{{ $school_population['student_boys'] }}"
+                                             @endif>
                                           </div>
                                        </div>
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-6">
                                           <div class="dash_input">
                                              <label>Girls</label>
-                                             <input type="text" name="student_girls" id="student_girls" placeholder="Enter here" value="{{ @$schoolDetails->student_girls }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                             <input type="number" name="student_girls" id="student_girls" placeholder="Enter here" min="0" @if ($school_population)
+                                                value="{{ $school_population['student_girls'] }}"
+                                             @endif>
                                           </div>
                                        </div>
                                     </div>
@@ -293,19 +283,25 @@
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                           <div class="dash_input">
                                              <label>Total</label>
-                                             <input type="text" name="total_teacher" id="total_teacher" placeholder="Enter here" value="{{ @$schoolDetails->total_teacher }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                             <input type="number" name="total_teachers" id="total_teacher" placeholder="Enter here" min="0" @if ($school_population)
+                                                value="{{ $school_population['total_students'] }}"
+                                             @endif>
                                           </div>
                                        </div>
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-6">
                                           <div class="dash_input">
                                              <label>Male</label>
-                                             <input type="text" name="teacher_male" id="teacher_male" placeholder="Enter here" value="{{ @$schoolDetails->teacher_male }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                             <input type="number" name="teacher_male" id="teacher_male" placeholder="Enter here" min="0" @if ($school_population)
+                                                value="{{ $school_population['teacher_male'] }}"
+                                             @endif>
                                           </div>
                                        </div>
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-6">
                                           <div class="dash_input">
                                              <label>Female</label>
-                                             <input type="text" name="teacher_female" id="teacher_female" placeholder="Enter here" value="{{ @$schoolDetails->teacher_female }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                             <input type="number" name="teacher_female" id="teacher_female" placeholder="Enter here" min="0" @if ($school_population)
+                                                value="{{ $school_population['teacher_female'] }}"
+                                             @endif>
                                           </div>
                                        </div>
                                        <div class="col-12">
@@ -313,26 +309,26 @@
                                        </div>
                                     </div>
                                  </div>
-                             </div>
+                              </div>
                            </form>                        
                         </div>
-                           <div class="ad-schl-card adscl-crd4">
-                           <div class="ad-schl-sub-go mt-0">
-                              <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
-                                 <button id="submitBtn" data-url="{{ route('add.school.step5',[md5(@$schoolDetails->id)]) }}">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                 </button>
-                                 <a href="{{ route('add.school.step3',[md5(@$schoolDetails->id)]) }}">
-                                    <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                       <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    Back   
-                                 </a>
-                              </div>
-                              <p>Step 4 Of 9</p>
+                     <div class="ad-schl-card adscl-crd4">
+                        <div class="ad-schl-sub-go mt-0">
+                           <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
+                              <button id="submitBtn" data-url="{{ route('add.school.step5',[md5(@$schoolDetails->id)]) }}">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                 </svg>
+                              </button>
+                              <a href="{{ route('add.school.step3',[md5(@$schoolDetails->id)]) }}">
+                                 <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                 </svg>
+                                 Back   
+                              </a>
                            </div>
+                           <p>Step 4 Of 9</p>
                         </div>
+                     </div>
             
                   </div>
                </div>

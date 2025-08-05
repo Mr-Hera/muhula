@@ -96,7 +96,7 @@
                            <div class="row">
                               <div class="col-12">
                                  <div class="dash_input">
-                                    <label for="">School Logo</label>
+                                    <label for="school_logo">School Logo</label>
                                     <div class="row align-items-center">
                                        <div class="col-lg-6 col-sm-6">
                                           <div class="uplodimgfil2">
@@ -124,6 +124,7 @@
                                  </div>
                               </div>
                               <div class="col-12">
+                                 <label for="" class="mb-2"><b>School Ownership</b></label>
                                  <div class="check_gender adscl-type">
                                     <ul>
                                        <li>
@@ -161,7 +162,7 @@
                               </div>
                               <div class="col-12">
                                  <div class="dash_input">
-                                    <label>Board</label>
+                                    <label>Curriculum</label>
                                     <ul class="category-ul agree d-flex justify-content-start align-items-center flex-wrap row-gap-2">
                                        @if($school_curricula)
                                           @foreach($school_curricula as $curriculum)
@@ -203,19 +204,19 @@
                                  <div class="check_gender adscl-type">
                                     <ul>
                                        <li>
-                                          <input type="radio" name="gender_is_male" id="gender_is_male" value="Male" />
+                                          <input type="radio" name="gender" id="gender_is_male" value="Male" />
                                           <label for="gender_is_male">
                                              <p>Male</p>
                                           </label>
                                        </li>
                                        <li>
-                                          <input type="radio" name="gender_is_female" id="gender_is_female" value="Female" />
+                                          <input type="radio" name="gender" id="gender_is_female" value="Female" />
                                           <label for="gender_is_female">
                                              <p>Female</p>
                                           </label>
                                        </li>
                                        <li>
-                                          <input type="radio" name="gender_is_mixed" id="gender_is_mixed" value="Mixed" />
+                                          <input type="radio" name="gender" id="gender_is_mixed" value="Mixed" />
                                           <label for="gender_02">
                                              <p>Both</p>
                                           </label>
@@ -321,11 +322,10 @@
                         <div class="ad-schl-card adscl-crd6">
                            <h2>Uniform</h2>
                            <form action="{{ route('add.school.step3.uniform.save') }}" method="post" enctype="multipart/form-data" id="uniformForm">
-                            @csrf
-                            {{-- <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                            <input type="hidden" name="school_uniform_id" id="">                          --}}
-                           <div class="row">
-                           
+                              @csrf
+                              {{-- <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
+                              <input type="hidden" name="school_uniform_id" id="">                          --}}
+                              <div class="row">
                                  <div class="col-12">
                                     <div class="uni-type">
                                        <label for="uniform_type_male" class="uni-label">
@@ -362,37 +362,37 @@
                                        <label id="uniformImage_error" for="" class="error" style="display:none;"></label>
                                     </div>                              
                                  </div>
-                                   <div class="col-12">
+                                 <div class="col-12">
                                           <button class="submit-ratio" type="submit">+ &nbsp;Save</button>
                                  </div>
                                  <div class="col-12">
                                     <div class="uploaded-uniform">
-                                        @if(@$school_uniform)
-                                        @foreach($school_uniform as $data)
-                                       <div class="upld-uniform-div">
-                                          <em>
-                                             @if(@$data->uniform_image != null)
-                                             <img src="{{ URL::to('storage/app/public/images/uniform_image') }}/{{ @$data->uniform_image }}" alt="">
-                                             @endif
-                                           </em>
-                                          <h6>
-                                             @if(@$data->uniform_type == 'M')
-                                             Male
-                                             @elseif(@$data->uniform_type == 'F')
-                                             Female
-                                             @elseif(@$data->uniform_type == 'U')
-                                             Unisex
-                                             @endif
-                                          </h6>
-                                          <p>{{ @$data->uniform_title }}</p>
-                                          <a href="{{ route('school.uniform.delete',@$data->id) }}" class="uni-delet">
-                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M9 3L3 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M3 3L9 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                             </svg>                                       
-                                          </a>
-                                       </div>
-                                       @endforeach
+                                       @if($school_uniform)
+                                          @foreach($school_uniform as $data)
+                                             <div class="upld-uniform-div">
+                                                <em>
+                                                   @if($data->image != null)
+                                                      <img src="{{ URL::to('storage/app/public/images/uniform_image') }}/{{ $data->image }}" alt="">
+                                                   @endif
+                                                </em>
+                                                <h6>
+                                                   @if($data->gender == 'Male')
+                                                   Male
+                                                   @elseif($data->gender == 'Female')
+                                                   Female
+                                                   @elseif($data->gender == 'Mixed')
+                                                   Unisex
+                                                   @endif
+                                                </h6>
+                                                <p>{{ $data->name }}</p>
+                                                <a href="{{ route('school.uniform.delete',$data->id) }}" class="uni-delet">
+                                                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <path d="M9 3L3 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                      <path d="M3 3L9 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                   </svg>                                       
+                                                </a>
+                                             </div>
+                                          @endforeach
                                        @endif
                                        {{--<div class="upld-uniform-div">
                                           <em><img src="{{ url('public/images/uniform-girl.png') }}" alt=""></em>
@@ -407,7 +407,7 @@
                                        </div>--}}
                                     </div>
                                  </div>
-                           </div> 
+                              </div> 
                            </form>                      
                         </div>
                         <div class="ad-schl-card adscl-crd4">
@@ -539,34 +539,34 @@
       })
    })
 </script>
-    <script>
-     $("#school_logo").change(function () {
-            $('.uploaded-img').html('');
-            let files = this.files;
-            if (files.length > 0) {
-                let exts = ['image/jpeg', 'image/png', 'image/gif','image/jpg'];
-                let valid = true;
-                $.each(files, function(i, f) {
-                    if (exts.indexOf(f.type) <= -1) {
-                        valid = false;
-                        return false;
-                    }
-                });
-                if (! valid) {
-                    alert('Please choose valid image files (jpeg, png, gif) only.');
-                    $("#school_logo").val('');
-                    return false;
-                }
-                $.each(files, function(i, f) {
-                    var reader = new FileReader();
-                    reader.onload = function(e){
-                        $('.uploaded-img').append('<img src="'+e.target.result+'" alt="">');
-                    };
-                    reader.readAsDataURL(f);
-                });
+<script>
+$("#school_logo").change(function () {
+      $('.uploaded-img').html('');
+      let files = this.files;
+      if (files.length > 0) {
+            let exts = ['image/jpeg', 'image/png', 'image/gif','image/jpg'];
+            let valid = true;
+            $.each(files, function(i, f) {
+               if (exts.indexOf(f.type) <= -1) {
+                  valid = false;
+                  return false;
+               }
+            });
+            if (! valid) {
+               alert('Please choose valid image files (jpeg, png, gif) only.');
+               $("#school_logo").val('');
+               return false;
             }
-            
-        });
+            $.each(files, function(i, f) {
+               var reader = new FileReader();
+               reader.onload = function(e){
+                  $('.uploaded-img').append('<img src="'+e.target.result+'" alt="">');
+               };
+               reader.readAsDataURL(f);
+            });
+      }
+      
+   });
 </script>
 <script>
    $(document).ready(function(){

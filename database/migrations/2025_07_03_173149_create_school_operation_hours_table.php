@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('school_operation_hours', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
             $table->string('period_of_day');
             $table->time('starts_at');
             $table->time('ends_at');

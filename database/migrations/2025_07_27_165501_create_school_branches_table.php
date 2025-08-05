@@ -14,11 +14,20 @@ return new class extends Migration
         Schema::create('school_branches', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('school_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('school_type_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('county_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('school_address_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('school_image_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('school_id')->nullable();
+            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
+
+            $table->unsignedBigInteger('school_type_id')->nullable();
+            $table->foreign('school_type_id')->references('id')->on('school_types')->onDelete('cascade');
+
+            $table->unsignedBigInteger('county_id')->nullable();
+            $table->foreign('county_id')->references('id')->on('counties')->onDelete('cascade');
+
+            $table->unsignedBigInteger('school_address_id')->nullable();
+            $table->foreign('school_address_id')->references('id')->on('school_addresses')->onDelete('cascade');
+
+            $table->unsignedBigInteger('school_image_id')->nullable();
+            $table->foreign('school_image_id')->references('id')->on('school_images')->onDelete('cascade');
             $table->string('email')->nullable();
             $table->string('phone_no')->nullable();
             $table->timestamps();

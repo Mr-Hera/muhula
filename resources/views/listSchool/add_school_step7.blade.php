@@ -89,12 +89,10 @@
                      </div>
                      <form action="{{ route('add.school.step7.save') }}" method="post" id="resultForm">
                         @csrf
-                        <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                        <input type="hidden" name="school_result_id" id="" value="{{ @$schoolResult->id }}">
-                        <input type="hidden" name="complete_step" id="complete_step" value="">
+                        
                         <div class="ad-schl-card adscl-crd12">
                            <div class="row">
-                              <div class="col-lg-6 col-md-6">
+                              {{-- <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Year</label>
                                     <select name="year" id="">
@@ -110,27 +108,27 @@
                                     <label>Curriculum</label>
                                     <select name="board_id" id="board_id">
                                        <option value="" selected disabled>Select</option>
-                                        {{-- @foreach($board as $data)
+                                        @foreach($board as $data)
                                         <option value="{{ @$data->id }}" @if(@$schoolResult->board_id == @$data->id) selected @endif>{{ @$data->board_name }}</option>
-                                        @endforeach --}}
+                                        @endforeach
                                     </select>
                                  </div>
-                              </div>
+                              </div> --}}
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Exam</label>
                                     <select name="exam" id="">
                                        <option value="0" selected disabled>Select</option>
-                                       <option value="HY" @if(@$schoolResult->exam == 'HY') selected @endif>Half Yearly</option>
-                                       <option value="AN" @if(@$schoolResult->exam == 'AN') selected @endif>Annual</option>
-                                       <option value="BE" @if(@$schoolResult->exam == 'BE') selected @endif>Board Exam</option>
+                                       <option value="Half Yearly">Half Yearly</option>
+                                       <option value="Annual">Annual</option>
+                                       <option value="Board Exam">Board Exam</option>
                                     </select>
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Ranking position</small></label>
-                                    <input type="text" name="ranking_position" placeholder="Enter here" value="{{ @$schoolResult->ranking_position }}">
+                                    <input type="number" name="ranking_position" placeholder="Enter here" min="0"/>
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
@@ -138,174 +136,73 @@
                                     <label>Region</label>
                                     <select name="region" id="">
                                        <option value="0" selected disabled>Select</option>
-                                       <option value="National" @if(@$schoolResult->region == 'National') selected @endif>National</option>
-                                       <option value="Country" @if(@$schoolResult->region == 'Country') selected @endif>Country</option>
-                                       <option value="N/A" @if(@$schoolResult->region == 'N/A') selected @endif>N/A</option>
+                                       <option value="International">International</option>
+                                       <option value="National">National</option>
+                                       <option value="Country">Country</option>
+                                       <option value="N/A">N/A</option>
                                     </select>
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Mean score points</label>
-                                    <input type="text" name="mean_score_point" placeholder="Enter here" value="{{ @$schoolResult->mean_score_point }}" oninput="this.value = this.value.replace(/[^0-9.]/g,'')"  maxlength="5">
+                                    <input type="text" name="mean_score_point" placeholder="Enter here" />
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input position-relative g-map">
                                     <label>Mean Grade</label>
-                                    <input type="text" name="mean_grade" placeholder="Enter Here" value="{{ @$schoolResult->mean_grade }}">
+                                    <input type="text" name="mean_grade" placeholder="Enter Here" />
                                  </div>
                               </div>
-                              <div class="col-12">
-                                    <h3 class="ratio-hd mt-3 mb-2"><b> Results</b></h3>
-                                    <div class="row">
-                                       <div class="col-lg-5 col-md-4 col-sm-4 col-12">
-                                          <div class="dash_input">
-                                             <label>Grade</label>
-                                             <select id="grade">
-                                                <option value="0" selected disabled>Select</option>
-                                                <option value="Grade A">Grade A</option>
-                                                <option value="Grade B">Grade B</option>
-                                                <option value="Grade C">Grade C</option>
-                                                <option value="Grade D">Grade D</option>
-                                                <option value="Grade E">Grade E</option>
-                                             </select>
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-5 col-md-4 col-sm-4 col-6">
-                                          <div class="dash_input">
-                                             <label>Number of candidates</label>
-                                             <input type="text" id="no_of_candidate" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')" maxlength="5">
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-2 col-md-4 col-sm-4 col-6">
-                                          <button class="submit-ratio mt-4 addResul">+ Add</button>
-                                       </div>
-
-                                       <div class="col-12">
-                                          <div class="row">
-                                             <div class="col-12">
-                                                <em class="fee-ad-ln"></em>
-                                             </div>
-                                             <div class="row" id="result_show">
-                                             {{-- @if(@$schoolResult->getResultDetail)
-                                             @foreach($schoolResult->getResultDetail as $redetail)
-                                             <div class="col-lg-5 col-sm-6">
-                                             <input type="hidden" name="grade[]"  value="{{ @$redetail->grade }}" placeholder="Enter here">
-                                              <input type="hidden" name="no_of_candidate[]" value="{{ @$redetail->no_of_candidates }}" placeholder="Enter here">
-                                                <div class="added-fees position-relative">
-                                                   <h5>{{ @$redetail->grade }}</h5>
-                                                   <p>Number of candidates: <b> {{ @$redetail->no_of_candidates }} </b> </p>
-                                                   <a href="javascript:;" class="position-absolute removeResult">
-                                                      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                         <path opacity="0.4" d="M13.914 6.72065C13.914 6.76881 13.5365 11.5435 13.3209 13.553C13.1859 14.7862 12.3909 15.5341 11.1984 15.5554C10.2822 15.5759 9.38525 15.583 8.50278 15.583C7.56589 15.583 6.64966 15.5759 5.7603 15.5554C4.60779 15.5278 3.81212 14.7649 3.68398 13.553C3.46216 11.5364 3.09154 6.76881 3.08465 6.72065C3.07776 6.57545 3.1246 6.43733 3.21967 6.32541C3.31336 6.222 3.44838 6.15967 3.59029 6.15967H13.4153C13.5565 6.15967 13.6846 6.222 13.7859 6.32541C13.8803 6.43733 13.9278 6.57545 13.914 6.72065Z" fill="black"></path>
-                                                         <path d="M14.875 4.23345C14.875 3.94233 14.6456 3.71426 14.37 3.71426H12.3047C11.8845 3.71426 11.5194 3.41535 11.4257 2.99391L11.31 2.47755C11.1481 1.85353 10.5894 1.4165 9.96252 1.4165H7.03817C6.40439 1.4165 5.85121 1.85353 5.68312 2.51155L5.57497 2.99462C5.48059 3.41535 5.11548 3.71426 4.69594 3.71426H2.63065C2.3544 3.71426 2.125 3.94233 2.125 4.23345V4.5026C2.125 4.78664 2.3544 5.02179 2.63065 5.02179H14.37C14.6456 5.02179 14.875 4.78664 14.875 4.5026V4.23345Z" fill="black"></path>
-                                                      </svg>
-                                                   </a>
-                                                </div>
-                                             </div>
-                                             @endforeach
-                                             @endif --}}
-                                             </div>
-                                            
-                                             {{--<div class="col-lg-5 col-sm-6">
-                                                <div class="added-fees position-relative">
-                                                   <h5>Grade B</h5>
-                                                   <p>Number of candidates: <b> 12 </b> </p>
-                                                   <a href="#" class="position-absolute">
-                                                      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                         <path opacity="0.4" d="M13.914 6.72065C13.914 6.76881 13.5365 11.5435 13.3209 13.553C13.1859 14.7862 12.3909 15.5341 11.1984 15.5554C10.2822 15.5759 9.38525 15.583 8.50278 15.583C7.56589 15.583 6.64966 15.5759 5.7603 15.5554C4.60779 15.5278 3.81212 14.7649 3.68398 13.553C3.46216 11.5364 3.09154 6.76881 3.08465 6.72065C3.07776 6.57545 3.1246 6.43733 3.21967 6.32541C3.31336 6.222 3.44838 6.15967 3.59029 6.15967H13.4153C13.5565 6.15967 13.6846 6.222 13.7859 6.32541C13.8803 6.43733 13.9278 6.57545 13.914 6.72065Z" fill="black"></path>
-                                                         <path d="M14.875 4.23345C14.875 3.94233 14.6456 3.71426 14.37 3.71426H12.3047C11.8845 3.71426 11.5194 3.41535 11.4257 2.99391L11.31 2.47755C11.1481 1.85353 10.5894 1.4165 9.96252 1.4165H7.03817C6.40439 1.4165 5.85121 1.85353 5.68312 2.51155L5.57497 2.99462C5.48059 3.41535 5.11548 3.71426 4.69594 3.71426H2.63065C2.3544 3.71426 2.125 3.94233 2.125 4.23345V4.5026C2.125 4.78664 2.3544 5.02179 2.63065 5.02179H14.37C14.6456 5.02179 14.875 4.78664 14.875 4.5026V4.23345Z" fill="black"></path>
-                                                      </svg>
-                                                   </a>
-                                                </div>
-                                             </div>--}}
-                                             <div class="col-12">
-                                                <em class="fee-ad-ln mt-3"></em>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
+                              <div class="col-lg-6 col-md-6">
+                                 <div class="dash_input position-relative g-map">
+                                    <label>Number of candidates</label>
+                                    <input type="text" name="no_of_candidate" placeholder="Enter Here" />
                                  </div>
+                              </div>
+                              
                               <div class="col-12">
                                  <button class="submit-ratio mt-1" type="submit">Save</button>
                               </div>
                            </div>
                         </div>
-                        {{-- @if(@$school_result->isNotEmpty())
-                        <div class="ad-schl-card adscl-crd13">
-                        
-                           <div class="row">
-                           
-                              <div class="col-12">
-                                 <div class="step-5-added-loc">
-                                    <h2>Added Results</h2>
-                                    @foreach($school_result as $data)
-                                    <div class="added-subs-box position-relative">
-                                       <a href="{{ route('add.school.step7',[md5(@$schoolDetails->id),@$data->id]) }}" class="edit-subs">
-                                          <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                             <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"></path>
-                                             <path d="M8.16131 5.4654L12.433 8.91713C12.5361 8.99968 12.5537 9.15117 12.4732 9.25669L7.409 15.8555C7.09066 16.2631 6.62151 16.4938 6.11886 16.5023L3.35426 16.5363C3.20682 16.538 3.0778 16.4359 3.04429 16.2895L2.41597 13.5577C2.30706 13.0556 2.41597 12.5365 2.73432 12.1365L7.82369 5.50625C7.90579 5.39987 8.05743 5.38115 8.16131 5.4654Z" fill="black"></path>
-                                             <path opacity="0.4" d="M14.3455 6.86014L13.522 7.88817C13.4391 7.99285 13.2899 8.00987 13.1869 7.92647C12.1858 7.1163 9.62224 5.03725 8.91099 4.46111C8.80711 4.37601 8.79286 4.22453 8.87664 4.119L9.67083 3.13267C10.3913 2.20506 11.6479 2.11996 12.6616 2.92843L13.8261 3.85604C14.3036 4.23049 14.622 4.72408 14.7309 5.2432C14.8566 5.81423 14.7225 6.37506 14.3455 6.86014Z" fill="black"></path>
-                                          </svg>                                             
-                                       </a>
-                                       <ul class="new_rsult_d">
-                                          <li>
-                                             <h6>Year</h6>
-                                             <p> :{{ @$data->year }}</p>
-                                          </li>
-                                          <li>
-                                             <h6>Curriculum</h6>
-                                             <p> : {{ @$data->getBoard->board_name }}</p>
-                                          </li>
-                                          <li>
-                                             <h6>Exam</h6>
-                                             <p> :
-                                                @if(@$data->exam == 'HY')
-                                                Half Yearly
-                                                @elseif(@$data->exam == 'AN')
-                                                Annual
-                                                @elseif(@$data->exam == 'BE')
-                                                Board Exam
-                                                @endif
-                                             </p>
-                                          </li>
-                                          <li>
-                                             <h6>Ranking Position</h6>
-                                             <p> :{{ @$data->ranking_position }}</p>
-                                          </li>
-                                          @if(@$data->region != null)
-                                          <li>
-                                             <h6>Region</h6>
-                                             <p> :{{ @$data->region }}</p>
-                                          </li>
-                                          @endif
-                                          <li>
-                                             <h6>Mean Score Points</h6>
-                                             <p> : {{ @$data->mean_score_point }}</p>
-                                          </li>
-                                          <li>
-                                             <h6>Mean Grade</h6>
-                                             <p> : {{ @$data->mean_grade }}</p>
-                                          </li>                                          
-                                       </ul>
-                                       <div class="grades-lis">
-                                          @if(@$data->getResultDetail)
-                                          @foreach($data->getResultDetail as $redetail)
-                                          <div class="no_s">
-                                             <h5>{{ @$redetail->grade }}</h5>
-                                             <p>Number of candidates: <b> {{ @$redetail->no_of_candidates }} </b> </p>
-                                          </div>
-                                          @endforeach
-                                          @endif
+                        @if(!empty($examPerformance))
+                           <div class="ad-schl-card adscl-crd13">
+
+                              <div class="row">
+
+                                 <div class="col-12">
+                                    <div class="step-5-added-loc">
+                                       <h2>Added Results</h2>
+
+                                       @foreach($examPerformanceRecords as $data)
+                                       <div class="added-subs-box position-relative">
+                                          <a href="{{ route('add.school.step7', [md5(@$schoolDetails->id), $data->id]) }}" class="edit-subs">
+                                             {{-- SVG ICON --}}
+                                             <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"/>
+                                                <path d="M8.16131 5.4654L12.433 8.91713C12.5361 8.99968 12.5537 9.15117 12.4732 9.25669L7.409 15.8555C7.09066 16.2631 6.62151 16.4938 6.11886 16.5023L3.35426 16.5363C3.20682 16.538 3.0778 16.4359 3.04429 16.2895L2.41597 13.5577C2.30706 13.0556 2.41597 12.5365 2.73432 12.1365L7.82369 5.50625C7.90579 5.39987 8.05743 5.38115 8.16131 5.4654Z" fill="black"/>
+                                                <path opacity="0.4" d="M14.3455 6.86014L13.522 7.88817C13.4391 7.99285 13.2899 8.00987 13.1869 7.92647C12.1858 7.1163 9.62224 5.03725 8.91099 4.46111C8.80711 4.37601 8.79286 4.22453 8.87664 4.119L9.67083 3.13267C10.3913 2.20506 11.6479 2.11996 12.6616 2.92843L13.8261 3.85604C14.3036 4.23049 14.622 4.72408 14.7309 5.2432C14.8566 5.81423 14.7225 6.37506 14.3455 6.86014Z" fill="black"/>
+                                             </svg>
+                                          </a>
+                                          <ul class="new_rsult_d">
+                                             <li><h6>Exam</h6><p>: {{ $data['exam'] }}</p></li>
+                                             <li><h6>Ranking Position</h6><p>: {{ $data['ranking_position'] }}</p></li>
+                                             
+                                             <li><h6>Mean Score Points</h6><p>: {{ $data['mean_score_points'] }}</p></li>
+                                             <li><h6>Mean Grade</h6><p>: {{ $data['mean_grade'] }}</p></li>
+                                             <li><h6>Number of Candidates</h6><p>: {{ $data['number_of_candidates'] }}</p></li>
+                                          </ul>
                                        </div>
+                                       @endforeach
+
                                     </div>
-                                     @endforeach
                                  </div>
                               </div>
+
                            </div>
-                        </div>
-                        @endif --}}
+                        @endif
                         <div class="ad-schl-card adscl-crd4">
                            <div class="ad-schl-sub-go mt-0">
                               <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('school_contacts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('contact_position_id')->constrained()->cascadeOnDelete();
-            $table->string('full_names');
+            $table->unsignedBigInteger('contact_position_id')->nullable();
+            $table->foreign('contact_position_id')->references('id')->on('contact_positions')->onDelete('cascade');
+            $table->string('full_names')->nullable();
             $table->string('email')->nullable();
             $table->string('phone_no')->nullable();
             $table->timestamps();

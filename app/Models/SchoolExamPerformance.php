@@ -5,19 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SchoolPopulation extends Model
+class SchoolExamPerformance extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'school_id',
-        'year',
-        'total_students',
-        'total_teachers',
-        'male_students',
-        'female_students',
-        'male_teachers',
-        'female_teachers',
+        'exam',
+        'ranking_position',
+        'region',
+        'mean_score_points',
+        'mean_grade',
+        'number_of_candidates',
     ];
 
     public function school()

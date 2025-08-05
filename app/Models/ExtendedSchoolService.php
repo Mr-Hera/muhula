@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class ExtendedSchoolService extends Model
 {
     use HasFactory;
+
+    public function schools()
+    {
+        return $this->belongsToMany(School::class, 'school_service');
+    }
 }

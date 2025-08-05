@@ -89,22 +89,20 @@
                      </div>
                      <form action="{{ route('add.school.step8.save') }}" method="post" enctype="multipart/form-data" id="branchForm">
                         @csrf
-                        <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                        <input type="hidden" name="school_branch_id" id="" value="{{ @$schoolBranchDetails->id }}">
-                        {{-- <input type="hidden" name="" id="exist_image" value="{{ @$schoolBranchImage->count() }}"> --}}
+                        
                         <div class="ad-schl-card adscl-crd12">
                            <div class="row">
                               <div class="col-12">
-                                 <ul class="add-grade agree schl-same">
+                                 {{-- <ul class="add-grade agree schl-same">
                                     <li>
                                        <div class="radiobx">
                                           <label for="">Same School Name
-                                             <input type="checkbox" name="school_master_name" id="school_master_name" value="{{ @$schoolDetails->school_name }}" class="checkme">
+                                             <input type="checkbox" name="school_master_name" id="school_master_name" value="{{ $school_branches->name ?? "Not Set" }}" class="checkme">
                                              <span class="checkbox"></span>
                                           </label>
                                        </div>
                                     </li>                              
-                                 </ul>
+                                 </ul> --}}
                                  <div class="dash_input">
                                     <label>School Name</label>
                                     <input type="text" name="school_name" id="school_name" placeholder="Enter here" value="{{ @$schoolBranchDetails->school_name }}">
@@ -114,9 +112,9 @@
                                  <div class="dash_input">
                                     <label>School Type</label>
                                     <select multiple name="school_type[]" id="school_type" class="filter-multi-select">
-                                     {{-- @foreach($school_type as $data)
-                                     <option value="{{ @$data->id }}"@if(in_array(@$data->id,@$school_to_type)) selected @endif >{{ @$data->school_type }}</option>
-                                     @endforeach --}}
+                                       @foreach($school_levels as $level)
+                                          <option value="{{ $level->id }}" >{{ $level->name }}</option>
+                                       @endforeach
                                    </select>
                                    <label id="school_type[]-error" class="error" for="school_type[]" style="display:none;">This field is required.</label>
                                  </div>
@@ -127,9 +125,9 @@
                                     <label>Country</label>
                                     <select name="country" id="country">
                                        <option value="">Select</option>
-                                       {{-- @foreach($country as $data)
-                                       <option value="{{ @$data->id }}" @if(@$schoolBranchDetails->country == @$data->id) selected @endif>{{ @$data->name }}</option>
-                                       @endforeach --}}
+                                       @foreach($countries as $country)
+                                       <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                       @endforeach
                                     </select>
                                  </div>
                               </div>
@@ -149,9 +147,9 @@
                                     </label>
                                     <select name="town" id="town">
                                        <option value="">Select</option>
-                                       {{-- @foreach($cities as $data)
-                                       <option value="{{ @$data->id }}" @if(@$schoolBranchDetails->town == @$data->id) selected @endif>{{ @$data->city }}</option>
-                                       @endforeach --}}
+                                          @foreach($counties as $county)
+                                             <option value="{{ $county->id }}" >{{ $county->name }}</option>
+                                          @endforeach
                                        <option value="0">Other</option>
                                     </select>
                                  </div>
@@ -165,13 +163,13 @@
                               <div class="col-12">
                                  <div class="dash_input">
                                     <label>Full Address</label>
-                                    {{-- <input type="text" name="full_address" id="full_address" placeholder="Enter here" value="{{ @$schoolBranchDetails->full_address }}"> --}}
+                                    <input type="text" name="full_address" id="full_address" placeholder="Enter here" value="">
                                  </div>
                               </div>
                               <div class="col-12">
                                  <div class="dash_input position-relative g-map">
                                     <label>Google map location</label>
-                                    {{-- <input type="text" name="google_location" id="google_location" placeholder="Enter / pest Here"  value="{{ @$schoolBranchDetails->google_location }}"> --}}
+                                    <input type="text" name="google_location" id="google_location" placeholder="Enter / paste link here"  value="">
                                     <img src="{{ asset('images/google-map.png') }}" alt="" class="position-absolute">
                                     <input type="hidden" name="google_lat" id="lat" value="{{old('google_lat',@$schoolBranchDetails->google_lat)}}">
                                     <input type="hidden" name="google_long" id="long" value="{{old('google_long',@$schoolBranchDetails->google_long)}}">
@@ -180,13 +178,13 @@
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Email <small>(Optional)</small></label>
-                                    <input type="text" name="email" id="email" placeholder="Enter here" value="{{ @$schoolBranchDetails->email }}">
+                                    <input type="text" name="email" id="email" placeholder="Enter here" value="">
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Phone <small>(Optional)</small></label>
-                                    <input type="text" name="phone" id="phone" placeholder="Enter here" value="{{ @$schoolBranchDetails->phone }}">
+                                    <input type="text" name="phone" id="phone" placeholder="Enter here" value="">
                                  </div>
                               </div>
                               <div class="col-12">
@@ -231,9 +229,9 @@
                                  <div class="step-5-added-loc">
                                     
                                     <h2>Added Branches</h2>
-                                    @foreach($school_branches as $data)
+                                    @foreach($school_branches as $branch)
                                     <div class="added-subs-box position-relative">
-                                       <a href="{{ route('add.school.step8',[md5(@$schoolDetails->id),@$data->id]) }}" class="edit-subs">
+                                       <a href="{{ route('add.school.step8',[md5(@$schoolDetails->id),$branch->id]) }}" class="edit-subs">
                                           <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                              <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"/>
                                              <path d="M8.16131 5.4654L12.433 8.91713C12.5361 8.99968 12.5537 9.15117 12.4732 9.25669L7.409 15.8555C7.09066 16.2631 6.62151 16.4938 6.11886 16.5023L3.35426 16.5363C3.20682 16.538 3.0778 16.4359 3.04429 16.2895L2.41597 13.5577C2.30706 13.0556 2.41597 12.5365 2.73432 12.1365L7.82369 5.50625C7.90579 5.39987 8.05743 5.38115 8.16131 5.4654Z" fill="black"/>
@@ -248,19 +246,19 @@
                                                 <path d="M7.79208 8.125C8.86811 8.125 9.7404 7.28553 9.7404 6.25C9.7404 5.21447 8.86811 4.375 7.79208 4.375C6.71605 4.375 5.84375 5.21447 5.84375 6.25C5.84375 7.28553 6.71605 8.125 7.79208 8.125Z" stroke="#32CD32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                                 </g>
                                              </svg>                                                
-                                             <h5>{{ @$data->full_address }}</h5>
+                                             <h5>{{ $branch->full_address }}</h5>
                                           </li>
                                           <li>
                                              <h6>School Name&nbsp;</h6>
-                                             <p>:&nbsp; {{ @$data->school_name }}</p>
+                                             <p>:&nbsp; {{ $branch->school_name }}</p>
                                           </li>
-                                          @if(@$data->school_types)
+                                          @if($branch->school_types)
                                           <li>
                                              <h6>School Type&nbsp;</h6>
                                              <p>:&nbsp; 
-                                                @if(@$data->school_types)
-                                                @foreach(@$data->school_types as $key=>$type)
-                                                {{ @$key > 0 ?',':'' }} {{ @$type->school_type }}
+                                                @if($branch->school_types)
+                                                @foreach(@$branch->school_types as $key=>$type)
+                                                {{ $key > 0 ?',':'' }} {{ $type->school_type }}
                                                 @endforeach
                                                 @endif
                                              </p>
@@ -268,28 +266,28 @@
                                           @endif
                                           <li>
                                              <h6>Country &nbsp;</h6>
-                                             <p>:&nbsp; {{ @$data->getCountry->name }}</p>
+                                             <p>:&nbsp; {{ $branch->getCountry->name }}</p>
                                           </li>
                                           {{--<li>
                                              <h6>Constituency&nbsp;</h6>
-                                             <p>:&nbsp; {{ @$data->constituency }}</p>
+                                             <p>:&nbsp; {{ @$branch->constituency }}</p>
                                           </li>--}}
-                                          @if(@$data->town != null)
+                                          @if($branch->town != null)
                                           <li>
                                              <h6>Town&nbsp;</h6>
-                                             <p>:&nbsp; {{ @$data->getTown->city }}</p>
+                                             <p>:&nbsp; {{ $branch->getTown->city }}</p>
                                           </li>
                                           @endif
-                                          @if(@$data->contact_email != null)
+                                          @if($branch->contact_email != null)
                                           <li>
                                              <h6>Email&nbsp;</h6>
-                                             <p>:&nbsp; {{ @$data->contact_email }}</p>
+                                             <p>:&nbsp; {{ $branch->contact_email }}</p>
                                           </li>
                                           @endif
-                                          @if(@$data->contact_phone != null)
+                                          @if($branch->contact_phone != null)
                                           <li>
                                              <h6>Phone&nbsp;</h6>
-                                             <p>:&nbsp; {{ @$data->contact_phone }}</p>
+                                             <p>:&nbsp; {{ $branch->contact_phone }}</p>
                                           </li>
                                           @endif
                                        </ul>
