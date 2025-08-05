@@ -9,15 +9,21 @@ class SchoolBranch extends Model
 {
     use HasFactory;
 
-    protected $table = 'school_branches';
-    protected $guarded = [];
-
-    public function getCountry(){
-
-          return $this->hasOne('App\Models\Country','id','country');
+    // Define the relationship to School
+    public function school()
+    {
+        return $this->belongsTo(School::class);
     }
-    public function getBranchImage(){
 
-        return $this->hasMany('App\Models\SchoolBranchImage','school_branch_id','id');
-  }
+    // Define the relationship to School
+    public function type()
+    {
+        return $this->belongsTo(SchoolType::class);
+    }
+
+    // Define the relationship to School
+    public function county()
+    {
+        return $this->belongsTo(County::class);
+    }
 }
