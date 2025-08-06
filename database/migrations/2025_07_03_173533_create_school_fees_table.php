@@ -17,7 +17,8 @@ class CreateSchoolFeesTable extends Migration
             $table->id();
             $table->foreignId('school_id')->constrained()->cascadeOnDelete();
             $table->foreignId('level_id')->constrained('school_levels')->cascadeOnDelete();
-            $table->decimal('amount', 10, 2);
+            $table->decimal('min_amount', 10, 2);
+            $table->decimal('max_amount', 10, 2);
             $table->string('currency');
             $table->timestamps();
         });

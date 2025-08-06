@@ -19,6 +19,7 @@ use Database\Seeders\SchoolUniformSeeder;
 use Database\Seeders\CountriesTableSeeder;
 use Database\Seeders\SchoolFacilitySeeder;
 use Database\Seeders\ContactPositionSeeder;
+use Database\Seeders\SchoolImagesTableSeeder;
 use Database\Seeders\SchoolOperationHourSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -53,6 +54,7 @@ class DatabaseSeeder extends Seeder
             CoursesSeeder::class,
             UsersTableSeeder::class,
             SchoolSeeder::class,
+            SchoolImagesTableSeeder::class,
         ]);
     }
 }

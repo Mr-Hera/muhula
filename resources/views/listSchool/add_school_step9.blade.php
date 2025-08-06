@@ -24,63 +24,63 @@
                         <h1>Add School</h1>
                         <p>Add your school for Free and start connecting with learners...</p>
                         <div class="adschl-steps-list">
-                        <ul>
-                           <li class="done"><em></em>
+                           <ul>
+                              {{-- <li class="done"><em></em>
                                  <div>
                                     <small>Step 1</small>
                                     <h6>School Register</h6>
                                  </div>                                 
-                              </li>
+                              </li> --}}
                               <li class="done"><em></em>
                                  <div>
-                                    <small>Step 2</small>
+                                    <small>Step 1</small>
                                  <h6>Basic Information</h6>
                                  </div>
                                  
                               </li>
                               <li class="done"><em></em>
                                  <div>
-                                    <small>Step 3</small>
+                                    <small>Step 2</small>
                                  <h6>School Details</h6>
                                  </div>
                                  
                               </li>
                               <li class="done"><em></em>
                                  <div>
-                                    <small>Step 4</small>
+                                    <small>Step 3</small>
                                  <h6>Extra Info</h6>
                                  </div>
                                  
                               </li>
                               <li class="done"><em></em>
                                  <div>
-                                    <small>Step 5</small>
+                                    <small>Step 4</small>
                                  <h6>School Gallery</h6>
                                  </div>
                                  
                               </li>
                               <li class="done"><em></em>
                                  <div>
-                                    <small>Step 6</small>
+                                    <small>Step 5</small>
                                  <h6>Subject/ Courses</h6>
                                  </div>
                                  
                               </li>
                               <li class="done"><em></em>
                                  <div>
-                                    <small>Step 7</small>
+                                    <small>Step 6</small>
                                     <h6>Result</h6>
                                  </div>                                 
                               </li>
                               <li class="done"><em></em>
                                  <div>
-                                    <small>Step 8</small>
+                                    <small>Step 7</small>
                                     <h6>Branches</h6>
                                  </div>                                 
                               </li>
                               <li class="ongoing"><em></em>
                                  <div>
-                                    <small>Step 9</small>
+                                    <small>Step 8</small>
                                     <h6>School Fees</h6>
                                  </div>                                 
                               </li>
@@ -91,24 +91,29 @@
                            <h2>Fees</h2>
                            <form action="{{ route('add.school.step9.fees.save') }}" method="post" enctype="multipart/form-data" id="feesForm">
                               @csrf
-                              <input type="hidden" name="school_master_id" id="" value="">
-                              <input type="hidden" name="school_fees_id" id="">
+                              {{-- <input type="hidden" name="school_master_id" id="" value="">
+                              <input type="hidden" name="school_fees_id" id=""> --}}
                               <div class="row align-items-stretch">
-                                 <div class="col-lg-6 col-md-6 col-sm-6">
+                                 <div class="col-lg-6 col-md-6">
                                     <div class="dash_input">
-                                       <label>Grades</label>
-                                       <input type="text" name="grade" id="grade" placeholder="Enter here">
+                                       <label>Grade Level</label>
+                                       <select name="grade_level" id="">
+                                          <option value="" selected disabled>Select</option>
+                                          @foreach ($school_levels as $level)
+                                             <option value="{{ $level->id }}">{{ $level->name }}</option>
+                                          @endforeach
+                                       </select>
                                     </div>
                                  </div>
                                  <div class="col-lg-6 col-md-6 col-sm-6">
                                     <div class="fees-tofrm d-flex justify-content-between align-items-end">
                                        <div class="dash_input">
-                                          <label>Fees From</label>
-                                          <input type="text" name="from_fees" id="from_fees" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')"  maxlength="10">
+                                          <label>Minimum</label>
+                                          <input type="text" name="min_amount" id="from_fees" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')"  maxlength="10">
                                        </div>
                                        <div class="dash_input">
-                                          <label>Fees To</label>
-                                          <input type="text" name="to_fees" id="to_fees" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')" maxlength="10">
+                                          <label>Maximum</label>
+                                          <input type="text" name="max_amount" id="to_fees" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')" maxlength="10">
                                        </div>
                                        
                                        <button class="fees-frm2-btn" type="submit">+ Add</button>
