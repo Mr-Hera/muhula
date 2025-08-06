@@ -440,10 +440,14 @@
                                  Private
                                  @endif
                                  </span>
-                                 @if($school->logo != null)
+                                 @if($school->logo = null)
                                     <a href="{{ route('school.details',$school->slug) }}">
                                        {{-- <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$school->getSchoolMainImage->image }}" alt=""> --}}
-                                       <img src="{{asset('public/default_images/default.jpg')}}" alt="">
+                                       <img src="{{asset('public/default_images/default.jpg')}}" alt="" />
+                                    </a>
+                                 @else
+                                    <a href="{{ route('school.details',$school->slug) }}">
+                                       <img src="{{asset('storage/default_images/default.jpg')}}" alt="" />
                                     </a>
                                  @endif
                            </div>
@@ -487,9 +491,9 @@
 
                                  <div class="search_price">
                                     @auth
-                                    <h3>Fees: <span>KES{{ @$school->starting_from_fees }}</span> </h3>
+                                       <h3>Fees: <span>KES{{ $school->starting_from_fees }}</span> </h3>
                                     @endauth
-                                    <p><img src="{{ asset('images/map-pin.png') }}" alt=""> {{ @$school->getCountry->name }} {{ @$school->town?','.@$school->getTown->city:'' }}</p>
+                                    <p><img src="{{ asset('images/map-pin.png') }}" alt="" /> {{ $school->country->name }}, {{ $school->county->name }}</p>
                                  </div>
 
 
@@ -532,11 +536,11 @@
                                     <div class="tpe_p">
                                        <span>Shifting: </span>
                                        <p>
-                                          Day
+                                          {{ $school->type->name ?? 'N/A' }}
                                        </p>
                                     </div>
                                  </div>
-                                 <a href="{{ route('school.details',@$school->slug) }}" class="view_btns">View School <img src="{{ url('public/images/chevron-rights.png') }}" alt=""> </a>
+                                 <a href="{{ route('school.details',$school->slug) }}" class="view_btns">View School <img src="{{ url('public/images/chevron-rights.png') }}" alt=""> </a>
                               </div>
                            </div>
                         </div>

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Ward;
 use App\Models\County;
 use App\Models\Course;
+use App\Models\Country;
 use App\Models\Curriculum;
 use App\Models\SchoolType;
 use App\Models\SchoolImage;
@@ -60,6 +61,11 @@ class School extends Model
     public function county() 
     { 
         return $this->belongsTo(County::class); 
+    }
+    
+    public function country() 
+    { 
+        return $this->belongsTo(Country::class); 
     }
     
     public function constituency() 

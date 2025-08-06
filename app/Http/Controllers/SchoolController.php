@@ -807,7 +807,7 @@ class SchoolController extends Controller
         $query->where('school_level_id', $school_type); // adjust this field name if necessary
     }
 
-    $schools = $query->with(['schoolLevel', 'type', 'curriculum'])->get();
+    $schools = $query->with(['schoolLevel', 'type', 'curriculum', 'country', 'county'])->get();
     // dd($schools);
 
     $countries = Country::all();
