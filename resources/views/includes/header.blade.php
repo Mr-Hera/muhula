@@ -26,12 +26,11 @@
                      @endif --}}
                      @foreach($school_levels as $level)
                         <li class="nav-item">
-                           <a class="nav-link school_type" href="javascript:;" data-school_type="{{ $level->id }}">
+                           <a class="nav-link" href="{{ route('school.search') }}?school_type={{ $level->id }}">
                                  {{ $level->name }}
                            </a>
                         </li>
                      @endforeach
-                     
                      {{--<li class="nav-item">
                         <a class="nav-link" href="#">primary</a>
                      </li>
@@ -46,7 +45,7 @@
                      </li>
                    
                      <li class="nav-item">
-                        <a class="nav-link" href="{{ route('add.school.step1') }}">List your School</a>
+                        <a class="nav-link" href="{{ route('add.school.step2') }}">List your School</a>
                      </li>                
                      
                   </ul>

@@ -110,7 +110,7 @@ Route::group(['namespace' => 'Modules'], function() {
     
 
      //for search school
-     Route::any('search-school/{school_type?}',[SchoolController::class, 'schoolSearch'])->name('school.search');
+     Route::get('search-school', [SchoolController::class, 'schoolSearch'])->name('school.search');
      Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
      Route::get('school-details/{slug?}','School\SearchSchoolController@schoolDetails')->name('school.details');
      Route::post('post-review','School\SearchSchoolController@postReview')->name('post.review');

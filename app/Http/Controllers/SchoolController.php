@@ -799,6 +799,17 @@ class SchoolController extends Controller
   }
 
   public function schoolSearch(Request $request){
+    $school_type = $request->school_type;
+    // dd($school_type);
+
+    $query = School::query();
+    if ($school_type) {
+        $query->where('school_level_id', $school_type); // adjust this field name if necessary
+    }
+
+    $schools = $query->with(['schoolLevel', 'type', 'curriculum'])->get();
+    // dd($schools);
+
     $countries = Country::all();
     $counties = County::all();
     $school_levels = SchoolLevel::all();
@@ -806,7 +817,8 @@ class SchoolController extends Controller
     $school_types_day = SchoolType::where('name', 'Day')->first();
     $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
     $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
-    $schools = School::where('is_active', true)->latest()->get();
+    $key = $request->all();
+    // $schools = School::where('is_active', true)->latest()->get();
     
     return view('search_school.school_list')->with([
       'countries' => $countries,
@@ -817,6 +829,7 @@ class SchoolController extends Controller
       'school_types_boarding' => $school_types_boarding,
       'school_types_day_n_boarding' => $school_types_day_n_boarding,
       'schools' => $schools,
+      'key' => $key,
     ]);
   }
 }
