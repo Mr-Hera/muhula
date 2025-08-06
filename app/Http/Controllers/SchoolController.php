@@ -8,6 +8,7 @@ use App\Models\School;
 use App\Models\Country;
 use App\Models\Facility;
 use App\Models\Religion;
+use App\Models\SchoolFee;
 use App\Models\Curriculum;
 use App\Models\SchoolType;
 use App\Models\SchoolLevel;
@@ -162,7 +163,7 @@ class SchoolController extends Controller
 
   public function addSchoolStep3Save(Request $request)
   {
-    dd($request);
+    // dd($request);
     try {
       $validated = Validator::make($request->all(), [
         'ownership_type'         => 'required|string|in:Private,Public',
@@ -608,7 +609,8 @@ class SchoolController extends Controller
     }
 
     public function addSchoolStep8(){
-      $school_branches = SchoolBranch::with('school')->get();
+      $schoolId = Session::get('school_creation.step2.school_id');
+      $school_branches = SchoolBranch::where('school_id', $schoolId)->get();
       $countries = Country::all();
       $counties = County::all();
       $school_levels = SchoolLevel::all();
@@ -622,331 +624,57 @@ class SchoolController extends Controller
     }
 
     public function addSchoolStep8Save(Request $request){
-      dd($request);
-    $this->validate($request, [
-        'school_name'  =>['required'],
-        'country'   =>['required'], 
-        //'constituency'   =>['required'],         
+      // dd($request);
+      // Step 1: Validate the request
+      $validated = $request->validate([
+          'school_name' => 'required|string|max:255',
+          'school_type' => 'required|array',
+          'school_type.*' => 'exists:school_types,id',
+          'country' => 'required|exists:countries,id',
+          'town' => 'required|exists:counties,id',
+          'full_address' => 'required|string|max:255',
+          'google_location' => 'nullable|string',
+          'google_lat' => 'nullable|numeric',
+          'google_long' => 'nullable|numeric',
+          'email' => 'required|email',
+          'phone' => 'required|string|max:20',
       ]);
 
-        $main_school = SchoolMaster::where('id',@$request->school_master_id)->where('parent_id','=',0)->first();
-        //$check_school_branch = SchoolBranch::where('school_master_id',@$request->school_master_id)->count();
-        $no_of_school_branch = SchoolMaster::where('parent_id',@$main_school->id)->count();
-        $available_school = @$main_school->no_of_school - ($no_of_school_branch+1);
-        //dd($available_school);
-        if(@$available_school <= 0 && @$request->school_branch_id == null){
+      $schoolId = Session::get('school_creation.step2.school_id');
+      // dd($schoolId);
 
-            return redirect()->back()->with('error','You not able to add affiliates any more');
-        }  
-        if($request->school_branch_id){
-          $schoolBranch = SchoolMaster::where('id',@$request->school_branch_id)->first();
-        $upd = [];
-        $upd['user_id'] = Auth::user()->id;
-        $upd['parent_id'] = $request->school_master_id;
-        $upd['school_name'] = $request->school_name;
-        $upd['about_school'] = @$main_school->about_school;
-        $upd['about_school_facility'] = @$main_school->about_school_facility;
-        $upd['contact_email'] = $request->email;
-        $upd['contact_phone'] = $request->phone;
-        $upd['country'] = $request->country;
-        //$upd['constituency'] = $request->constituency;
-        //$upd['town'] = $request->town;
-        $upd['full_address'] = $request->full_address;
-        $upd['google_location'] = $request->google_location;
-        $upd['google_lat'] = $request->google_lat;
-        $upd['google_long'] = $request->google_long;
-        $upd['year_of_establishment'] = @$main_school->year_of_establishment;
-        $upd['public_private'] =  @$main_school->public_private;
-        $slug = Str::slug($request->school_name,"-");
-        $upd['slug'] = @$slug."-".@$schoolBranch->id;
-        $upd['gender'] = @$main_school->gender;
-        $upd['board_id'] = @$main_school->board_id;
-        $upd['boarding_type'] =  @$main_school->boarding_type;
-        $upd['header_image'] = @$main_school->header_image;
-        $upd['youtube_link'] = @$main_school->youtube_link;
-        $upd['status'] = 'AA';
-        if($request->other_town != null){
+      // 2. Save school_address
+      $schoolAddress = new SchoolAddress();
+      $schoolAddress->address_text = $validated['full_address'] ?? null;
+      $schoolAddress->google_maps_link = $validated['google_location'] ?? null;
+      $schoolAddress->save();
 
-          $check_city = City::where('city',trim($request->other_town))->first();
-          if(!$check_city){
+      // Step 3: Create the branch
+      $branch = new SchoolBranch();
+      $branch->name = $validated['school_name'];
+      $branch->school_id = $schoolId;
+      $branch->school_type_id = $validated['school_type'][0]; // Assuming only one is selected
+      $branch->county_id = $validated['town']; // Assuming this refers to counties
+      $branch->school_address_id = $schoolAddress->id;
+      $branch->school_image_id = 1;
+      $branch->email = $validated['email'];
+      $branch->phone_no = $validated['phone'];
+      $branch->save();
+      // dd($branch);
 
-              $insCity = [];
-              $insCity['city'] = $request->other_town;
-              $insCity['country_id'] = $request->country;
-              $createCity = City::create($insCity);
+      // Step 3: Store major data points in Session
+      Session::put('school_creation.school_branch', [
+          'school_branch_id' => $branch->id,
+          'school_name' => $branch->name,
+          'school_type_id' => $branch->school_type_id,
+          'school_image_id' => $branch->school_image_id,
+          'county_id' => $branch->county_id,
+          'email' => $branch->email,
+          'phone_no' => $branch->phone_no,
+      ]);
 
-              $upd['town'] = @$createCity->id;
-          }else{
-
-            $upd['town'] = @$check_city->id;
-          }
-      }else{
-
-        $upd['town'] = $request->town;
-      }
-
-        if($request->school_master_name != null){
-
-          if(@$main_school->school_logo){
-            $upd['school_logo'] = @$main_school->school_logo;   
-          }
-          if(@$main_school->religion_id != null){
-            $upd['religion_id'] = @$main_school->religion_id;   
-          }
-        }
-
-        $update =  SchoolMaster::where('id',@$request->school_branch_id)->update($upd);
-
-        $schooDetails = SchoolMaster::where('id',@$request->school_branch_id)->first();
-
-      //  $school_type = SchoolToType::where('school_master_id',@$main_school->id)->pluck('school_type_id')->toArray();
-      //  if(@$school_type){
-      //      //dd(@$request->subject);
-
-      //       $multi_schooltypes = array_filter($school_type);
-      //      if(@$multi_schooltypes) {
-
-      //        $schooDetails->school_types()->sync(@$multi_schooltypes);
-
-      //      }
-
-      //   }
-
-      if(@$request->school_type){
-        //dd(@$request->subject);
-
-        $school_type = @$request->school_type;
-
-          $multi_schooltypes = array_filter($school_type);
-        if(@$multi_schooltypes) {
-
-            $schooDetails->school_types()->sync(@$multi_schooltypes);
-
-        }
-
-        }
-
-        $facilities = SchoolToFacilities::where('school_master_id',@$main_school->id)->pluck('facilities_id')->toArray();
-    
-        if(@$facilities)
-        {
-        $facilities = @$facilities;
-        // return $skill;
-        //dd(@$facilities);
-        foreach ($facilities as $item) {
-            $insFacilities = [];
-            $insFacilities['school_master_id'] = @$create->id;
-            $insFacilities['facilities_id'] = @$item;
-            if(@$item){
-                $checkAvailable =  SchoolToFacilities::where('school_master_id',@$create->id)->where('facilities_id', @$item)->first();
-                if ($checkAvailable == null) {
-                    SchoolToFacilities::create($insFacilities);
-                }
-            }
-
-        }
-        SchoolToFacilities::where('school_master_id',@$create->id)->whereNotIn('facilities_id',@$facilities)->delete();
-        }
-
-        $school_subject = SchoolSubject::where('school_master_id',@$main_school->id)->get();
-
-        if(@$school_subject){
-
-              foreach($school_subject as $subject){
-                  $school_to_sub = SchoolToSubject::where('school_subject_id',@$subject->id)->pluck('subject_id')->toArray();
-                  $insSub['school_master_id'] = @$create->id;
-                  $insSub['curriculum'] =  @$subject->curriculum;
-                  $insSub['class_level'] = @$subject->class_level;
-
-                  $create_sub = SchoolSubject::create($insSub);
-
-            
-                  $multi_subject = array_filter($school_to_sub);
-                  if(@$multi_subject) {
-    
-                    $create_sub->school_subjects()->sync(@$multi_subject);
-    
-                  }
-
-              }
-              
-        }
-
-        if(@$request->school_image != null){
-
-            foreach($request->school_image as $image){
-              $ins = [];
-              $filename = time() . '-' . rand(1000, 9999) . '.' . $image->getClientOriginalExtension();
-              Storage::putFileAs('public/images/school_image', $image, $filename);
-              $ins['image'] = $filename;
-              $ins['school_master_id'] = $request->school_branch_id;
-
-              SchoolGallery::create($ins);
-            }
-        }
-
-        if(@$update){ 
-            session()->flash('success','School branch updated successfully');
-            return redirect()->route('add.school.step8',[md5(@$request->school_master_id)]);
-          }else{
-
-            return redirect()->back()->with('error','Something went wrong');
-            }   
-        }
-        
-        $ins = [];
-        //$ins['school_master_id'] = $request->school_master_id;
-        $ins['user_id'] = Auth::user()->id;
-        $ins['parent_id'] = $request->school_master_id;
-        $ins['school_name'] = $request->school_name;
-        $ins['about_school'] = @$main_school->about_school;
-        $ins['about_school_facility'] = @$main_school->about_school_facility;
-        $ins['contact_email'] = $request->email;
-        $ins['contact_phone'] = $request->phone;
-        $ins['country'] = $request->country;
-        //$ins['constituency'] = $request->constituency;
-        //$ins['town'] = $request->town;
-        $ins['full_address'] = $request->full_address;
-        $ins['google_location'] = $request->google_location;
-        $ins['google_lat'] = $request->google_lat;
-        $ins['google_long'] = $request->google_long;
-        $ins['year_of_establishment'] = @$main_school->year_of_establishment;
-        $ins['public_private'] =  @$main_school->public_private;
-        //$upd['school_type_id'] = $request->school_type_id;
-        //$upd['language_instruction_id'] = $request->language_instruction_id;
-        $ins['gender'] = @$main_school->gender;
-        //$ins['board_id'] = @$main_school->board_id;
-        $ins['boarding_type'] =  @$main_school->boarding_type;
-        $ins['header_image'] = @$main_school->header_image;
-        $ins['youtube_link'] = @$main_school->youtube_link;
-        $ins['status'] = 'AA';
-        if($request->other_town != null){
-
-          $check_city = City::where('city',trim($request->other_town))->first();
-          if(!$check_city){
-
-              $insCity = [];
-              $insCity['city'] = $request->other_town;
-              $insCity['country_id'] = $request->country;
-              $createCity = City::create($insCity);
-
-              $ins['town'] = @$createCity->id;
-          }else{
-
-            $ins['town'] = @$check_city->id;
-          }
-          }else{
-
-              $ins['town'] = $request->town;
-          }
-
-        if($request->school_master_name != null){
-
-          if(@$main_school->school_logo){
-            $ins['school_logo'] = @$main_school->school_logo;   
-          }
-          if(@$main_school->religion_id != null){
-            $ins['religion_id'] = @$main_school->religion_id;   
-          }
-        }
-        
-        $create = SchoolMaster::create($ins);
-    
-      $school_board = SchoolToBoard::where('school_master_id',@$main_school->id)->pluck('board_id')->toArray();
-      if(@$school_board){
-          //dd(@$request->subject);
-
-            $multi_schoolboards = array_filter($school_board);
-          if(@$multi_schoolboards) {
-
-            $create->school_boards()->sync(@$multi_schoolboards);
-
-          }
-
-        }
-
-      if(@$request->school_type){
-        //dd(@$request->subject);
-
-        $school_type = @$request->school_type;
-
-          $multi_schooltypes = array_filter($school_type);
-        if(@$multi_schooltypes) {
-
-            $create->school_types()->sync(@$multi_schooltypes);
-
-        }
-
-      }
-
-        $facilities = SchoolToFacilities::where('school_master_id',@$main_school->id)->pluck('facilities_id')->toArray();
-    
-        if(@$facilities)
-        {
-        $facilities = @$facilities;
-        // return $skill;
-        //dd(@$facilities);
-        foreach ($facilities as $item) {
-            $insFacilities = [];
-            $insFacilities['school_master_id'] = @$create->id;
-            $insFacilities['facilities_id'] = @$item;
-            if(@$item){
-                $checkAvailable =  SchoolToFacilities::where('school_master_id',@$create->id)->where('facilities_id', @$item)->first();
-                if ($checkAvailable == null) {
-                    SchoolToFacilities::create($insFacilities);
-                }
-            }
-
-        }
-        SchoolToFacilities::where('school_master_id',@$create->id)->whereNotIn('facilities_id',@$facilities)->delete();
-        }
-
-        $school_subject = SchoolSubject::where('school_master_id',@$main_school->id)->get();
-
-        if(@$school_subject){
-
-              foreach($school_subject as $subject){
-                $school_to_sub = SchoolToSubject::where('school_subject_id',@$subject->id)->pluck('subject_id')->toArray();
-                $insSub['school_master_id'] = @$create->id;
-                $insSub['curriculum'] =  @$subject->curriculum;
-                  $insSub['class_level'] = @$subject->class_level;
-
-                $create_sub = SchoolSubject::create($insSub);
-
-            
-                $multi_subject = array_filter($school_to_sub);
-                if(@$multi_subject) {
-  
-                  $create_sub->school_subjects()->sync(@$multi_subject);
-  
-                }
-
-              }
-            
-        }
-
-        if(@$request->school_image != null){
-
-        foreach($request->school_image as $image){
-          $ins = [];
-          $filename = time() . '-' . rand(1000, 9999) . '.' . $image->getClientOriginalExtension();
-          Storage::putFileAs('public/images/school_image', $image, $filename);
-          $ins['image'] = $filename;
-          $ins['school_master_id'] = @$create->id;
-
-          SchoolGallery::create($ins);
-        }
-        }
-        if($create){
-          $updateSlug = [];
-              $slug = Str::slug($request->school_name,"-");
-              $updateSlug['slug'] = @$slug."-".@$create->id;
-              SchoolMaster::where('id',@$create->id)->update($updateSlug);
-              return redirect()->route('add.school.step8',[md5(@$request->school_master_id)]);
-        }else{
-
-            return redirect()->back()->with('error','Something went wrong');
-        }
+      // Step 4: Redirect or return response
+      return redirect()->route('add.school.step9')->with('success', 'School branch created successfully.');
     }
 
     public function schoolBranchImageDelete($id=null){
@@ -982,34 +710,50 @@ class SchoolController extends Controller
   }
 
   public function addSchoolStep9(){
-    return view('listSchool.add_school_step9');
+    $school_levels = SchoolLevel::all();
+
+    return view('listSchool.add_school_step9')->with([
+      'school_levels' => $school_levels,
+    ]);
   }
 
   public function addSchoolStep9FeesSave(Request $request){
+    // dd($request);
+    // Validate the input
+    $validated = $request->validate([
+      'grade_level' => 'required|exists:school_levels,id',
+      'min_amount' => 'required|numeric|min:0',
+      'max_amount' => 'required|numeric|gte:min_amount',
+    ]);
     
-      $check_school_fees = SchoolFees::where('grade',trim(@$request->grade))->where('school_master_id',$request->school_master_id)->first();
-      if(@$check_school_fees){
+    // Get the school_id from session
+    $schoolId = Session::get('school_creation.step2.school_id');
+    // dd($schoolId);
 
-          return redirect()->back()->with('error','This fees combination already added');
-      }
-    $ins = [];
-    $ins['school_master_id'] = $request->school_master_id;
-    $ins['grade'] = $request->grade;
-    $ins['from_fees'] = $request->from_fees;
-    $ins['to_fees'] = $request->to_fees;
+    // Create the school fee record
+    $school_fee_record = SchoolFee::create([
+        'school_id' => $schoolId,
+        'level_id' => $validated['grade_level'],
+        'min_amount' => $validated['min_amount'],
+        'max_amount' => $validated['max_amount'],
+        'currency' => 'KES', // You can dynamically pass this if needed
+    ]);
+    // dd($school_fee_record);
 
-    $create =  SchoolFees::create($ins);
+    // Store the moving parts in session for next steps
+    Session::put('school_creation.step8.fee_data', [
+        'grade_level' => $validated['grade_level'],
+        'min_amount' => $validated['min_amount'],
+        'max_amount' => $validated['max_amount'],
+        'currency'    => 'KES', // Again, replace with $request->currency if needed
+    ]);
 
-    if(@$create){
-      $school_fees = SchoolFees::where('school_master_id',@$request->school_master_id)->min('from_fees'); 
-      SchoolMaster::where('id',@$request->school_master_id)->update(['starting_from_fees'=>@$school_fees]);
-      //session()->flash('success','Teacher fees created successfully');
-      return redirect()->route('add.school.step9',[md5(@$request->school_master_id)]);
-    }
-    else{
+    return redirect()->route('add.school.success')->with('success', 'School listing added successfully.');
+  }
 
-      return redirect()->back()->with('error','Something went wrong');
-    }
+  public function addSchoolSuccessPage()
+  {
+    return view('listSchool.add_school_success_page');
   }
 
     
@@ -1055,6 +799,17 @@ class SchoolController extends Controller
   }
 
   public function schoolSearch(Request $request){
+    $school_type = $request->school_type;
+    // dd($school_type);
+
+    $query = School::query();
+    if ($school_type) {
+        $query->where('school_level_id', $school_type); // adjust this field name if necessary
+    }
+
+    $schools = $query->with(['schoolLevel', 'type', 'curriculum'])->get();
+    // dd($schools);
+
     $countries = Country::all();
     $counties = County::all();
     $school_levels = SchoolLevel::all();
@@ -1062,7 +817,8 @@ class SchoolController extends Controller
     $school_types_day = SchoolType::where('name', 'Day')->first();
     $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
     $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
-    $schools = School::where('is_active', true)->latest()->get();
+    $key = $request->all();
+    // $schools = School::where('is_active', true)->latest()->get();
     
     return view('search_school.school_list')->with([
       'countries' => $countries,
@@ -1073,6 +829,7 @@ class SchoolController extends Controller
       'school_types_boarding' => $school_types_boarding,
       'school_types_day_n_boarding' => $school_types_day_n_boarding,
       'schools' => $schools,
+      'key' => $key,
     ]);
   }
 }

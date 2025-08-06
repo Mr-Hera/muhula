@@ -11,6 +11,14 @@ class SchoolFee extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'school_id',
+        'level_id',
+        'min_amount',
+        'max_amount',
+        'currency',
+    ];
+
     public function school() 
     { 
         return $this->belongsTo(School::class); 

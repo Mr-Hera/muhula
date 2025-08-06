@@ -8,91 +8,91 @@
 @endsection
 @section('content')
 <section class="inner_banner">
-         <img src="{{ asset('images/inner-banner.png') }}" alt="" class="innr-bnnr-img ">
-         <div class="in-bn-txt">
-            <div class="container ">
-               <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                    @if(@$key['school_type'] && count(@$key['school_type']) == 1)
-                     @php
+   <img src="{{ asset('images/inner-banner.png') }}" alt="" class="innr-bnnr-img ">
+   <div class="in-bn-txt">
+      <div class="container ">
+         <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+               <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+               {{-- @if(@$key['school_type'] && count(@$key['school_type']) == 1)
+                  @php
                      $schoolType = App\Models\SchoolType::whereIn('id',@$key['school_type'])->first();
-                     @endphp
-                    <li class="breadcrumb-item active">{{ @$schoolType->school_type }}</li>
-                    @endif
-                    @if(@$key['board'])
-                     @php
+                  @endphp
+                  <li class="breadcrumb-item active">{{ @$schoolType->school_type }}</li>
+               @endif
+               @if(@$key['board'])
+                  @php
                      $schoolBoard = App\Models\Board::where('id',@$key['board'])->first();
-                     @endphp
-                    <li class="breadcrumb-item active">{{ @$schoolBoard->board_name }}</li>
-                    @endif
-                    @if(@$key['location'])
-                    <li class="breadcrumb-item active">{{ @$key['location'] }}</li>
-                    @endif
-                    @if(@$key['town'])
-                     @php
+                  @endphp
+                  <li class="breadcrumb-item active">{{ @$schoolBoard->board_name }}</li>
+               @endif
+               @if(@$key['location'])
+                  <li class="breadcrumb-item active">{{ @$key['location'] }}</li>
+               @endif
+               @if(@$key['town'])
+                  @php
                      $town_name = App\Models\City::where('id',@$key['town'])->first();
-                     @endphp
-                    <li class="breadcrumb-item active" aria-current="page">{{ @$town_name->city }}</li>
-                    @endif
-                    @if(@$key['keyword'])
-                    <li class="breadcrumb-item active" aria-current="page">{{ @$key['keyword'] }}</li>
-                    @endif
-                  </ol>
-                </nav>
-                @if(@$key['school_type'] && @$key['town'] && count(@$key['school_type']) == 1)
-                @php
-                $schoolType1 = App\Models\SchoolType::whereIn('id',@$key['school_type'])->first();
-                $town_name1 = App\Models\City::where('id',@$key['town'])->first();
-                @endphp
-                @if(@$schoolType1->school_type != 'College')
+                  @endphp
+                  <li class="breadcrumb-item active" aria-current="page">{{ @$town_name->city }}</li>
+               @endif
+               @if(@$key['keyword'])
+                  <li class="breadcrumb-item active" aria-current="page">{{ @$key['keyword'] }}</li>
+               @endif --}}
+            </ol>
+         </nav>
+         {{-- @if(@$key['school_type'] && @$key['town'] && count(@$key['school_type']) == 1)
+            @php
+               $schoolType1 = App\Models\SchoolType::whereIn('id',@$key['school_type'])->first();
+               $town_name1 = App\Models\City::where('id',@$key['town'])->first();
+            @endphp
+            @if(@$schoolType1->school_type != 'College')
                <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results for {{ @$schoolType1->school_type }} schools @if($town_name1) in {{ @$town_name1->city }} @endif</h1>
-                @else
+            @else
                <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results for {{ @$schoolType1->school_type }} @if($town_name1) in {{ @$town_name1->city }} @endif</h1>
-                @endif
-                @elseif(@$key['school_type'] && count(@$key['school_type']) == 1)
-                @php
-                $schoolType1 = App\Models\SchoolType::whereIn('id',@$key['school_type'])->first();
-                @endphp
-                @if(@$schoolType1->school_type != 'College')
+            @endif
+         @elseif(@$key['school_type'] && count(@$key['school_type']) == 1)
+            @php
+               $schoolType1 = App\Models\SchoolType::whereIn('id',@$key['school_type'])->first();
+            @endphp
+            @if(@$schoolType1->school_type != 'College')
                <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results for {{ @$schoolType1->school_type }} schools</h1>
-               @else
+            @else
                <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results for {{ @$schoolType1->school_type }}</h1>
-               @endif
-               @elseif((@$key['town'] && !@$key['board']))
-                @php
-                $town_name1 = App\Models\City::where('id',@$key['town'])->first();
-                @endphp
-               <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results in {{ @$town_name1->city }}</h1>
-               @endif
-                
-               @if(@$key['board'] && @$key['town'])
-                @php
-                $schoolBoard = App\Models\Board::where('id',@$key['board'])->first();
-                $town_name = App\Models\City::where('id',@$key['town'])->first();
-                @endphp
-               <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results for schools offering {{ @$schoolBoard->board_name }} @if($town_name) in {{ @$town_name->city }} @endif</h1>
-               @elseif(@$key['board'])
-               @php
-                $schoolBoard = App\Models\Board::where('id',@$key['board'])->first();
-                @endphp
-                <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results for schools offering {{ @$schoolBoard->board_name }}</h1>
-               @endif
+            @endif
+         @elseif((@$key['town'] && !@$key['board']))
+            @php
+               $town_name1 = App\Models\City::where('id',@$key['town'])->first();
+            @endphp
+            <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results in {{ @$town_name1->city }}</h1>
+         @endif
+            
+         @if(@$key['board'] && @$key['town'])
+            @php
+               $schoolBoard = App\Models\Board::where('id',@$key['board'])->first();
+               $town_name = App\Models\City::where('id',@$key['town'])->first();
+            @endphp
+            <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results for schools offering {{ @$schoolBoard->board_name }} @if($town_name) in {{ @$town_name->city }} @endif</h1>
+         @elseif(@$key['board'])
+            @php
+               $schoolBoard = App\Models\Board::where('id',@$key['board'])->first();
+            @endphp
+            <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Search results for schools offering {{ @$schoolBoard->board_name }}</h1>
+         @endif
 
-               @if(!@$key['school_type'] && !@$key['board'] && !@$key['town'])
-               <h1>{{ @$schoolData->count() }} Results Found</h1>
-               @elseif(@$key['school_type'] && count(@$key['school_type']) > 1)
-               <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Results Found</h1>
-               @endif
-            </div>         
-         </div>
-      </section>
+         @if(!@$key['school_type'] && !@$key['board'] && !@$key['town'])
+            <h1>{{ @$schoolData->count() }} Results Found</h1>
+         @elseif(@$key['school_type'] && count(@$key['school_type']) > 1)
+            <h1>{{ @$schoolData->count() }} of {{ @$total_school }} Results Found</h1>
+         @endif --}}
+      </div>         
+   </div>
+</section>
 
       <section class="search_countown sticky-srch">
          <div class="container">
             <div class="row">
                <div class="result_div">
-                  <h3>Result: {{ @$schoolData->count() }} Results Found {{--in <span> Kakamega </span>--}} </h3>
+                  <h3>Result: {{ $schools->count() }} Results Found {{--in <span> Kakamega </span>--}} </h3>
                   <a  class="filter-btn click_filter"> <img src="{{ url('public/images/Icon.png') }}" alt=""> Filter</a>
                   
                      <form action="{{ route('school.search') }}" class="sorts-srch d-flex" method="post">
@@ -173,7 +173,7 @@
                         </div>
 
                         <div class="check_short">
-                           <h3>School type</h3>
+                           <h3>School Level</h3>
 
                            <ul class="category-ul agree">
                               @if($school_levels)
@@ -206,55 +206,22 @@
                         </div>
 
                         <div class="check_short">
-                           <h3>Course offered</h3>
+                           <h3>Course Offered</h3>
 
-                           <div class="check_course">
-                              <ul class="">
-                                 @if(@$courses)
+                           <div class="check_gender">
+                              <ul>
+                                 @if($courses)
                                     @foreach($courses as $course)
-                                       {{-- <div class="{{$course>12 ? 'hide_labelCheckBoxJobRole' :''}}"> --}}
                                        <li>
-                                          <input  type="checkbox" name="school_subject[]" id="{{ $course->name }}"  value="{{ $course->id }}" />
-                                          <label for="{{ $course->name }}">
+                                          <input type="checkbox" name="school_subject[]" id="course_{{ $course->id }}" value="{{ $course->id }}" />
+                                          <label for="course_{{ $course->id }}">
                                              <p>{{ $course->name }}</p>
                                           </label>
                                        </li>
-                                    </div>
                                     @endforeach
                                  @endif
-                                 
-                                 {{--<li id="show-more"><a href="javascript:void(0)" class="more_job_role_check_c" id="more_job_role_check">Show More+</a></li>--}}
-                                 
-                                 {{--<div id="show-more-content">
-                                    <li>
-                                    <input type="checkbox" name="posts1" id="control_18" value="3">
-                                    <label for="control_18">
-                                       <p>Business</p>
-                                    </label>
-                                 </li>
-                                 <li>
-                                    <input  type="checkbox" name="posts1" id="control_19" value="2">
-                                    <label for="control_19">
-                                       <p>Arts </p>
-                                    </label>
-                                 </li>
-                                 <li>
-                                    <input type="checkbox" name="posts1" id="control_20" value="3" >
-                                    <label for="control_20">
-                                       <p>Computer Sciences</p>
-                                    </label>
-                                 </li>
-                                 <li>
-                                    <input  type="checkbox" name="posts1" id="control_21" value="2">
-                                    <label for="control_21">
-                                       <p>Life Sciences</p>
-                                    </label>
-                                 </li>
-                                 </div>--}}
-                                  {{--<li id="show-less"><a href="javascript:void(0)">View less</a></li>--}}
                               </ul>
                            </div>
-                           
                         </div>
 
                         <div class="check_short">
@@ -462,30 +429,33 @@
             </div>
             <div class="right_panel_serach">
                <div class="serach_box_listing">
-                  @if(@$schools->isNotEmpty())
+                  @if($schools->isNotEmpty())
                      @foreach($schools as $school)
                         <div class="search_school_box">
                            <div class="ser_img">
                               <span class="res-tab m-0">
-                                 @if(@$school->public_private == 'PB')
+                                 @if($school->ownership == 'Public')
                                  Public
-                                 @elseif(@$school->public_private == 'PR')
+                                 @elseif($school->ownership == 'Private')
                                  Private
                                  @endif
                                  </span>
-                                 @if(@$school->getSchoolMainImage->image != null)
-                              <a href="{{ route('school.details',@$school->slug) }}"><img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$school->getSchoolMainImage->image }}" alt=""></a>
+                                 @if($school->logo != null)
+                                    <a href="{{ route('school.details',$school->slug) }}">
+                                       {{-- <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$school->getSchoolMainImage->image }}" alt=""> --}}
+                                       <img src="{{asset('public/default_images/default.jpg')}}" alt="">
+                                    </a>
                                  @endif
                            </div>
                            {{-- School Cards --}}
                            <div class="serach_sc_details">
                               <div class="search_heading_box">
                                  <div class="search_heading">
-                                    <a href="{{ route('school.details',@$school->slug) }}"> <h3>
-                                          @if(strlen(@$school->school_name)>50)
-                                             {{ substr(@$school->school_name,0,50) }}
+                                    <a href="{{ route('school.details',$school->slug) }}"> <h3>
+                                          @if(strlen($school->name)>50)
+                                             {{ substr($school->name,0,50) }}
                                              @else
-                                             {{ @$school->school_name }}
+                                             {{ $school->name }}
                                              @endif
                                        </h3> </a>
                                        <ul>
@@ -526,10 +496,10 @@
                               </div>
 
                               <p class="sc_des">
-                              @if(strlen(@$school->about_school)>150)
-                              {{ substr(@$school->about_school,0,150) }}
-                              @else
-                              {{ @$school->about_school }}
+                                 @if(strlen($school->description)>150)
+                                    {{ substr($school->description,0,150) }}
+                                 @else
+                                    {{ $school->description }}
                                  @endif
                               </p>
 
@@ -538,45 +508,31 @@
                                     <div class="tpe_p">
                                        <span>Type: </span>
                                        <p>
-                                       @if(@$school->school_types)
-                                       @foreach(@$school->school_types as $key=>$schtype)
-                                       {{ @$key > 0?',':'' }} {{ @$schtype->school_type }}
-                                       @endforeach
-                                       @endif
+                                          {{ optional($school->schoolLevel)->name }}
                                        </p>
                                     </div>
                                     <div class="tpe_p">
-                                       <span>Board: </span>
+                                       <span>Curriculum: </span>
                                        <p>
-                                       @if(@$school->school_boards)
-                                       @foreach(@$school->school_boards as $key=>$schoolboard)
-                                       {{ @$key > 0?',':'' }} {{ @$schoolboard->board_name }}
-                                       @endforeach
-                                       @endif
+                                          {{ $school->curriculum?->name ?? 'Not specified' }}
                                        </p>
                                     </div>
                                     <div class="tpe_p">
                                        <span>Gender: </span>
                                        <p>
-                                       @if(@$school->gender == 'M')
+                                       @if($school->gender_admission == 'Male')
                                        Male
-                                       @elseif(@$school->gender == 'F')
+                                       @elseif($school->gender_admission == 'Female')
                                        Female
-                                       @elseif(@$school->gender == 'B')
-                                       Both
+                                       @elseif($school->gender_admission == 'Mixed')
+                                       Mixed
                                        @endif
                                        </p>
                                     </div>
                                     <div class="tpe_p">
                                        <span>Shifting: </span>
                                        <p>
-                                          @if(@$school->boarding_type == 'D')
                                           Day
-                                          @elseif(@$school->boarding_type == 'B')
-                                          Boading
-                                          @elseif(@$school->boarding_type == 'DB')
-                                          Day & Boading
-                                          @endif
                                        </p>
                                     </div>
                                  </div>
@@ -593,7 +549,7 @@
 
 
                   <div class="pagination_box">
-                  {{@$schools->appends(request()->except(['page', '_token']))->links('pagination')}}
+                  {{-- {{@$schools->appends(request()->except(['page', '_token']))->links('pagination')}} --}}
                   </div>
 
 

@@ -101,6 +101,8 @@ Route::group(['namespace' => 'Modules'], function() {
      Route::get('add-school-step9/{id?}/{status?}',[SchoolController::class, 'addSchoolStep9'])->name('add.school.step9');
      Route::post('add-school-step9-fees-save',[SchoolController::class, 'addSchoolStep9FeesSave'])->name('add.school.step9.fees.save');
      Route::get('school-fees-delete/{id?}',[SchoolController::class, 'schoolFeesDelete'])->name('school.fees.delete');
+
+     Route::get('add-school-success',[SchoolController::class, 'addSchoolSuccessPage'])->name('add.school.success');
      
      Route::post('get-class-level','School\SchoolController@getClassLevel')->name('get.class.level');
      Route::post('get-city','School\SchoolController@getCity')->name('get.city');
@@ -108,7 +110,7 @@ Route::group(['namespace' => 'Modules'], function() {
     
 
      //for search school
-     Route::any('search-school/{school_type?}',[SchoolController::class, 'schoolSearch'])->name('school.search');
+     Route::get('search-school', [SchoolController::class, 'schoolSearch'])->name('school.search');
      Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
      Route::get('school-details/{slug?}','School\SearchSchoolController@schoolDetails')->name('school.details');
      Route::post('post-review','School\SearchSchoolController@postReview')->name('post.review');
