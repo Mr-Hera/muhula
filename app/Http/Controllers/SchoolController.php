@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ExtendedSchoolService;
 use App\Models\SchoolExamPerformance;
+use App\Models\SchoolOperationHour;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -830,6 +831,52 @@ class SchoolController extends Controller
       'school_types_day_n_boarding' => $school_types_day_n_boarding,
       'schools' => $schools,
       'key' => $key,
+    ]);
+  }
+
+  public function schoolDetails($slug)
+  {
+    $school_record = School::with([
+      'country',
+      'county',
+      'address',
+      'contact.position',
+      'address',
+      'curriculum',       // Curriculum relation
+      'operationHours',    // Operation hours relation
+      'type',
+      'religion', // eager load religion
+      'population',
+      'extendedSchoolServices',
+      'facilities',
+      'courses',
+      'fees.level',
+      'branches.county', // load county for each branch
+      'branches.type',   // load type for each branch
+      'branches.school'  // just in case you need parent school info
+    ])->where('slug', $slug)->firstOrFail();
+    // dd($school_operation_hours);
+
+    // Structure branches for display
+    $school_branches = $school_record->branches->map(function ($branch) {
+      return (object) [
+        'school_name'   => $branch->name,
+        'full_address'  => optional($branch->county)->name ?? 'N/A',
+        'contact_phone' => $branch->phone_no ?? 'N/A',
+        'contact_email' => $branch->email ?? 'N/A'
+      ];
+    })->groupBy(function ($branch, $index) {
+      // Optional: group branches in pairs or any grouping logic
+      return floor($index / 2);
+    });
+
+    // Fetch all contact positions
+    $contactPositions = ContactPosition::all();
+
+    return view('search_school.school_details')->with([
+      'school_record' => $school_record,
+      'school_branches' => $school_branches,
+      'contactPositions'  => $contactPositions
     ]);
   }
 }

@@ -463,7 +463,7 @@
                                              @endif
                                        </h3> </a>
                                        <ul>
-                                             @if(@$school->avg_review)
+                                             @if($school->avg_review)
                                              @php $school->avg_review = $school->avg_review+0; @endphp
                                              @for($sst = 1; $sst <= $school->avg_review; $sst++)
                                              <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>

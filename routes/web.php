@@ -55,9 +55,7 @@ Route::post('social_login', 'Auth\LoginController@socialRegistation')->name('log
 Route::group(['namespace' => 'Modules'], function() {
 
     //for static page
-    Route::get('about-us','Content\ContentController@aboutUs')->name('about.us');
     Route::get('about-us', [ContentController::class, 'aboutUs'])->name('about.us');
-    Route::get('contact-us','Content\ContentController@contactUs')->name('contact.us');
     Route::get('contact-us',[ContentController::class, 'contactUs'])->name('contact.us');
     Route::post('contact-us-save','Content\ContentController@contactUsSave')->name('contact.us.save');
     Route::get('faq',[ContentController::class, 'faq'])->name('faq');
@@ -112,7 +110,7 @@ Route::group(['namespace' => 'Modules'], function() {
      //for search school
      Route::get('search-school', [SchoolController::class, 'schoolSearch'])->name('school.search');
      Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
-     Route::get('school-details/{slug?}','School\SearchSchoolController@schoolDetails')->name('school.details');
+     Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
      Route::post('post-review','School\SearchSchoolController@postReview')->name('post.review');
      Route::post('school-claim-save','School\SearchSchoolController@shoolClaimSave')->name('school.claim.save');
      Route::post('upload-photo-save','School\SearchSchoolController@uploadPhotoSave')->name('school.photo.save');

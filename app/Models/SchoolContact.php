@@ -15,4 +15,9 @@ class SchoolContact extends Model
         'email',
         'phone_no',
     ];
+
+    public function position()
+    {
+        return $this->belongsTo(ContactPosition::class, 'contact_position_id');
+    }
 }
