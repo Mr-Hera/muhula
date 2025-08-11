@@ -239,13 +239,14 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
                            <div class="school_de_dms">
                               @auth
-                                 @if(Auth::user()->id != $schoolDetails->user_id && $schoolDetails->Claim_status == 'Y')
+                                 {{-- @if(Auth::user()->id != $schoolDetails->user_id && $schoolDetails->Claim_status == 'Y')
                                     <a href="javascript:void(0)"  data-bs-toggle="modal" data-bs-target="#myMessageModal">Send Message</a>
                                  @elseif(Auth::user()->id != $schoolDetails->user_id && ($schoolDetails->Claim_status == 'N' || $schoolDetails->Claim_status == 'AW'))
                                     <a href="javascript:void(0)" class="schoolNotClaim">Send Message</a>
                                  @else
                                     <a href="javascript:void(0)" class="userNotSendMessage">Send Message</a>
-                                 @endif
+                                 @endif --}}
+                                 <a href="javascript:void(0)" class="userNotSendMessage">Send Message</a>
                               @endauth
                               @guest
                                  <a href="javascript:void(0)" class="noMessage">Send Message</a>

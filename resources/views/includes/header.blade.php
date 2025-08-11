@@ -71,7 +71,7 @@
                            <img src="{{ asset('images/avatar.png') }}" alt="" class="img-fit">
                         @endif
                       </em>
-                     <h4>Hi, {{ @Auth::user()->first_name }}</h4>
+                     <h4>Hi, {{ Auth::user()->first_name }}</h4>
                   </div>
                   <div class="loggd-nv-list" style="display: none;">
                      <ul>
@@ -83,8 +83,8 @@
                         <li><a href="{{ route('user.my.review.by.me') }}">My Reviews</a></li>
                         <li><a href="{{ route('user.message.list') }}">Messages</a></li>
                         <li><a href="{{ route('school.search') }}">Claim School</a></li>
-                        <li><a href="{{ route('user.subscription') }}">Subscription</a></li>
-                        <li><a href="{{ route('user.subscription.history') }}">Subscription History</a></li>
+                        {{-- <li><a href="{{ route('user.subscription') }}">Subscription</a></li>
+                        <li><a href="{{ route('user.subscription.history') }}">Subscription History</a></li> --}}
                         <span class="list-dvdr"></span>
                         <li><a href="{{ route('logout') }}">Logout</a></li>
                      </ul>

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\SocialAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,8 +25,11 @@ use App\Http\Controllers\ContentController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login
-Route::get('login', 'Auth\LoginController@showUserLoginForm')->name('login');
-Route::get('logout', 'Auth\LoginController@logout')->name('logout');
+Route::get('login', [SocialAuthController::class, 'showUserLoginForm'])->name('login')->middleware('guest');
+// Handle login submission
+Route::post('/login', [SocialAuthController::class, 'login'])->name('login.post')->middleware('guest');
+
+Route::get('logout', [SocialAuthController::class, 'logout'])->name('logout');
 
 // Register customer
 Route::get('sign-up', 'Auth\RegisterController@register')->name('user.register');
