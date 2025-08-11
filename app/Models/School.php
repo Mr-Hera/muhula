@@ -5,12 +5,17 @@ namespace App\Models;
 use App\Models\Ward;
 use App\Models\County;
 use App\Models\Course;
+use App\Models\Country;
+use App\Models\Religion;
 use App\Models\Curriculum;
 use App\Models\SchoolType;
 use App\Models\SchoolImage;
 use App\Models\SchoolLevel;
 use App\Models\Constituency;
+use App\Models\SchoolAddress;
+use App\Models\SchoolContact;
 use App\Models\SchoolPopulation;
+use App\Models\SchoolExamPerformance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -60,6 +65,11 @@ class School extends Model
     public function county() 
     { 
         return $this->belongsTo(County::class); 
+    }
+    
+    public function country() 
+    { 
+        return $this->belongsTo(Country::class); 
     }
     
     public function constituency() 
@@ -115,5 +125,25 @@ class School extends Model
     public function examPerformances()
     {
         return $this->hasMany(SchoolExamPerformance::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(SchoolAddress::class, 'school_address_id');
+    }
+
+    public function contact()
+    {
+        return $this->belongsTo(SchoolContact::class, 'school_contact_id');
+    }
+
+    public function religion()
+    {
+        return $this->belongsTo(Religion::class, 'religion_id');
+    }
+
+    public function fees()
+    {
+        return $this->hasMany(SchoolFee::class);
     }
 }

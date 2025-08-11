@@ -25,8 +25,8 @@
    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="blurred-image">
    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="img-clear">
    @else
-   <img src="{{ url('public/images/default_image.png') }}" alt="" class="blurred-image">
-   <img src="{{ url('public/images/default_image.png') }}" alt="" class="img-clear">
+   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="blurred-image">
+   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="img-clear">
    @endif
    <a href="javascript:;" id="play-video" class="video-play-button">
    <span></span>
@@ -47,8 +47,8 @@
    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="blurred-image">
    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="img-clear">
    @else
-   <img src="{{ url('public/images/default_image.png') }}" alt="" class="blurred-image">
-   <img src="{{ url('public/images/default_image.png') }}" alt="" class="img-clear">
+   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="blurred-image">
+   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="img-clear">
    @endif
 </a>
 @php
@@ -74,7 +74,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            <label>Search by Keywords</label>
                            <input type="text" name="keyword" placeholder="Enter here">
                         </div>
-                        <button type="submit" class="loc-key-srch"><img src="{{ url('public/images/search.png') }}" alt=""> </button>
+                        <button type="submit" class="loc-key-srch"><img src="{{ asset('images/search.png') }}" alt=""> </button>
                      </form>
                </div>
             </div>
@@ -86,11 +86,11 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                <nav aria-label="breadcrumb">
                   <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:;">{{ @$schoolDetails->getCountry->name }}</a></li>
-                    @if(@$schoolDetails->town != null)
-                    <li class="breadcrumb-item"><a href="javascript:;">{{ @$schoolDetails->getTown->city }}</a></li>
+                    <li class="breadcrumb-item"><a href="javascript:;">{{ $school_record->country->name }}</a></li>
+                    @if($school_record->county->name != null)
+                     <li class="breadcrumb-item"><a href="javascript:;">{{ $school_record->county->name }}</a></li>
                     @endif                    
-                    <li class="breadcrumb-item active" aria-current="page">{{ @$schoolDetails->school_name }}</li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ $school_record->name }}</li>
                   </ol>
                 </nav>
             </div>         
@@ -106,162 +106,182 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                      <div class="school_img_name">
                         <div class="school_de_img">
                            <span class="res-tab m-0">
-                             @if(@$schoolDetails->public_private == 'PB')
-                              Public
-                              @elseif(@$schoolDetails->public_private == 'PR')
-                              Private
+                              @if($school_record->ownership == 'Public')
+                                 Public
+                              @elseif($school_record->ownership == 'Private')
+                                 Private
                               @endif
                           </span>
-                           @if(@$schoolDetails->school_logo != null)
-                           <img src="{{ URL::to('storage/app/public/images/school_logo') }}/{{ @$schoolDetails->school_logo }}" alt="">
-                           @elseif(@$schoolDetails->getSchoolMainImage->image != null)
-                           <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->getSchoolMainImage->image }}" alt="">
-                           @endif
+                           {{-- @if($school_record->logo != null)
+                              <img src="{{ URL::to('storage/app/public/images/school_logo') }}/{{ $school_record->logo }}" alt="">
+                           @elseif($school_record->getSchoolMainImage->image != null)
+                              <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ $school_record->getSchoolMainImage->image }}" alt="">
+                              <img src="{{asset('public/default_images/default.jpg')}}" alt="" />
+                           @endif --}}
+                           <img src="{{asset('storage/default_images/default.jpg')}}" alt="" />
                         </div>
                         <div class="school_names">
-                           <h3>{{ @$schoolDetails->school_name }}
-                           @Auth
-                            @php
-                            $check = App\Models\Favourite::where('user_id',@Auth::user()->id)->where('school_id',@$schoolDetails->id)->first();
-                            @endphp
+                           <h3>{{ $school_record->name }}
+                           {{-- @Auth
+                              @php
+                                 $check = App\Models\Favourite::where('user_id',@Auth::user()->id)->where('school_id',@$schoolDetails->id)->first();
+                              @endphp
                               <a href="javascript:;" class="add-fav @if(@$check) active @endif" data-id="{{@$schoolDetails->id}}">
                                  <span class="fav-tooltip">@if(@$check) Added To Favourite @else Add To Favourite @endif</span>
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M20.8401 4.61012C20.3294 4.09912 19.7229 3.69376 19.0555 3.4172C18.388 3.14064 17.6726 2.99829 16.9501 2.99829C16.2276 2.99829 15.5122 3.14064 14.8448 3.4172C14.1773 3.69376 13.5709 4.09912 13.0601 4.61012L12.0001 5.67012L10.9401 4.61012C9.90843 3.57842 8.50915 2.99883 7.05012 2.99883C5.59109 2.99883 4.19181 3.57842 3.16012 4.61012C2.12843 5.64181 1.54883 7.04108 1.54883 8.50012C1.54883 9.95915 2.12843 11.3584 3.16012 12.3901L4.22012 13.4501L12.0001 21.2301L19.7801 13.4501L20.8401 12.3901C21.3511 11.8794 21.7565 11.2729 22.033 10.6055C22.3096 9.93801 22.4519 9.2226 22.4519 8.50012C22.4519 7.77763 22.3096 7.06222 22.033 6.39476C21.7565 5.7273 21.3511 5.12087 20.8401 4.61012Z" stroke="#B9B9B9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                              </svg>
+                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20.8401 4.61012C20.3294 4.09912 19.7229 3.69376 19.0555 3.4172C18.388 3.14064 17.6726 2.99829 16.9501 2.99829C16.2276 2.99829 15.5122 3.14064 14.8448 3.4172C14.1773 3.69376 13.5709 4.09912 13.0601 4.61012L12.0001 5.67012L10.9401 4.61012C9.90843 3.57842 8.50915 2.99883 7.05012 2.99883C5.59109 2.99883 4.19181 3.57842 3.16012 4.61012C2.12843 5.64181 1.54883 7.04108 1.54883 8.50012C1.54883 9.95915 2.12843 11.3584 3.16012 12.3901L4.22012 13.4501L12.0001 21.2301L19.7801 13.4501L20.8401 12.3901C21.3511 11.8794 21.7565 11.2729 22.033 10.6055C22.3096 9.93801 22.4519 9.2226 22.4519 8.50012C22.4519 7.77763 22.3096 7.06222 22.033 6.39476C21.7565 5.7273 21.3511 5.12087 20.8401 4.61012Z" stroke="#B9B9B9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                 </svg>
                               </a>
-                              @endauth
+                           @endauth --}}
                            </h3>
                            <div class="nature_s">
-                              @if(@$schoolDetails->school_types)
-                              @foreach($schoolDetails->school_types as $type)
-                              <h6>{{ @$type->school_type }}</h6>
-                              @endforeach
+                              @if($school_record->type)
+                                 @foreach($school_record->type as $type)
+                                    <h6>{{ $type->name }}</h6>
+                                 @endforeach
                               @endif
                            </div>
-                           <ul class="stars_sc">
-                                 @if(@$schoolDetails->avg_review)
-                                 @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
-                                 @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
-                                 <li><img src="{{ url('public/images/fstar.png') }}" alt=""></li>
-                                 @endfor
-                                 @if(strpos($schoolDetails->avg_review,'.'))
-                                 <li><img src="{{asset('public/images/star-half.png')}}"></li>
-                                 @php $sst++; @endphp
-                                 @endif
-                                 @while ($sst<=5)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
-                                 @php $sst++; @endphp
-                                 @endwhile
+                           {{-- <ul class="stars_sc">
+                                 @if($schoolDetails->avg_review)
+                                    @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
+                                    @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
+                                       <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
+                                    @endfor
+                                    @if(strpos($schoolDetails->avg_review,'.'))
+                                       <li><img src="{{asset('images/star-half.png')}}"></li>
+                                       @php $sst++; @endphp
+                                    @endif
+                                    @while ($sst<=5)
+                                       <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
+                                       @php $sst++; @endphp
+                                    @endwhile
                                  @else
-                                 @for($sst = 1; $sst <= 5; $sst++)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>                              
-                                 @endfor
+                                    @for($sst = 1; $sst <= 5; $sst++)
+                                       <li><img src="{{ asset('public/images/lstar.png') }}" alt=""></li>                              
+                                    @endfor
                                  @endif
-                              <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
-                           </ul>
+                              <li> <p>({{ $schoolDetails->tot_review }} reviews)</p> </li>
+                           </ul> --}}
                            <div class="sc_thub_ab">
-                              <p>{{ @$schoolDetails->full_address }}</p>
+                              <p>{{ optional($school_record->address)->address_text ?? 'Address not available' }}</p>
                            </div>
-                           @if(@$contact_info->isNotEmpty())
-                           @foreach($contact_info as $contact)
-                           <div class="sc_thub_ab">
-                              <p class="border-none text-capital">{{ @$contact->contact_title }}&nbsp;-</p>
-                              @if(@$contact->contact_email)
-                              <p>{{ @$contact->contact_email }}</p>
-                              <span>,</span>
-                              @endif
-                              @if(@$contact->contact_phone)
-                              <!-- <span></span> -->
-                              <p>{{ @$contact->contact_phone }}</p>
-                              @endif
-                           </div>
-                           @endforeach
+                           {{-- @if($contact_info->isNotEmpty())
+                              @foreach($contact_info as $contact)
+                              <div class="sc_thub_ab">
+                                 <p class="border-none text-capital">
+                                    {{ optional(optional($school_record->contact)->position)->name }}&nbsp;-
+                                 </p>
+                                 @if(optional($school_record->contact)->contact_email)
+                                    <p>{{ $school_record->contact->contact_email }}</p>
+                                    <span>,</span>
+                                 @endif
+                                 @if(optional($school_record->contact)->contact_phone)
+                                    <p>{{ $school_record->contact->contact_phone }}</p>
+                                 @endif
+                              </div>
+                              @endforeach
                            @else
+                              <div class="sc_thub_ab">
+                                 @if(optional($school_record->contact)->contact_email)
+                                    <p>{{ $school_record->contact->contact_email }}</p>
+                                 @endif
+                                 @if(optional($school_record->contact)->contact_phone)
+                                    <span class="no-marmin">|</span>
+                                    <p>{{ $school_record->contact->contact_phone }}</p>
+                                 @endif
+                              </div>
+                           @endif --}}
                            <div class="sc_thub_ab">
-                              @if(@$schoolDetails->contact_email != null)
-                              <p>{{ @$schoolDetails->contact_email }}</p>
+                              @if(optional($school_record->contact)->contact_email)
+                                 <p>{{ $school_record->contact->contact_email }}</p>
                               @endif
-                              @if(@$schoolDetails->contact_phone != null)
-                              <span class="no-marmin">|</span>
-                              <p>{{ @$schoolDetails->contact_phone }}</p>
+                              @if(optional($school_record->contact)->contact_phone)
+                                 <span class="no-marmin">|</span>
+                                 <p>{{ $school_record->contact->contact_phone }}</p>
                               @endif
                            </div>
-                           @endif
 
                            <div class="sc_thub_ab">
-                               @if(@$schoolDetails->year_of_establishment != null)
-                              <p class="text-capital">Year of establishment @if(@$schoolDetails->year_of_establishment != null) ({{ @$schoolDetails->year_of_establishment }}) @endif</p>
-                              <span class="no-marmin">|</span>
+                              @if($school_record->year_of_establishment != null)
+                                 <p class="text-capital">Year of establishment </p>
+                                 <span class="no-marmin">|</span>
                               @endif
-                              <p>Education System: 
-                              @if(@$schoolDetails->school_boards)
-                              @foreach(@$schoolDetails->school_boards as $key=>$schoolboard)
-                              {{ @$key > 0?',':'' }} {{ @$schoolboard->board_name }}
-                              @endforeach
-                              @endif
+                              <p>
+                                 Education System: 
+                                 {{-- @if($school_record->school_boards)
+                                    @foreach($school_record->school_boards as $key=>$schoolboard)
+                                    {{ @$key > 0?',':'' }} {{ $schoolboard->board_name }}
+                                    @endforeach
+                                 @endif --}}
+                                 {{ optional($school_record->curriculum)->name ?? 'Not Defined' }}
                               </p>
                               <span class="no-marmin">|</span>
                               <p>
-                               @if(@$schoolDetails->boarding_type == 'D')
-                                Day
-                                @elseif(@$schoolDetails->boarding_type == 'B')
-                                Boading
-                                @elseif(@$schoolDetails->boarding_type == 'DB')
-                                Day & Boading
-                                @endif
+                                 @php
+                                    $typeName = $school_record->type->name ?? '';
+                                 @endphp
+
+                                 @if($typeName === 'Day')
+                                    Day
+                                 @elseif($typeName === 'Boarding')
+                                    Boarding
+                                 @elseif($typeName === 'Day & Boarding')
+                                    Day & Boarding
+                                 @else
+                                    {{ $typeName }} {{-- Fallback if it's a full name like "Day School" --}}
+                                 @endif
                               </p>
-                              @if(@$schoolDetails->religion_id != null)
-                              <span class="no-marmin">|</span>
-                              <p>Religion: {{ @$schoolDetails->getReligion->religion_name }}</p>
+                              @if($school_record->religion)
+                                 <span class="no-marmin">|</span>
+                                 <p>Religion: {{ $school_record->religion->name }}</p>
                               @endif
                            </div>
 
                            <div class="school_de_dms">
-                                @auth
-                                @if(@Auth::user()->id != @$schoolDetails->user_id && @$schoolDetails->Claim_status == 'Y')
-                               <a href="javascript:void(0)"  data-bs-toggle="modal" data-bs-target="#myMessageModal">Send Message</a>
-                               @elseif(@Auth::user()->id != @$schoolDetails->user_id && (@$schoolDetails->Claim_status == 'N' || @$schoolDetails->Claim_status == 'AW'))
-                               <a href="javascript:void(0)" class="schoolNotClaim">Send Message</a>
-                               @else
-                               <a href="javascript:void(0)" class="userNotSendMessage">Send Message</a>
-                               @endif
-                               @endauth
-                               @guest
-                               <a href="javascript:void(0)" class="noMessage">Send Message</a>
-                               @endguest
+                              @auth
+                                 {{-- @if(Auth::user()->id != $schoolDetails->user_id && $schoolDetails->Claim_status == 'Y')
+                                    <a href="javascript:void(0)"  data-bs-toggle="modal" data-bs-target="#myMessageModal">Send Message</a>
+                                 @elseif(Auth::user()->id != $schoolDetails->user_id && ($schoolDetails->Claim_status == 'N' || $schoolDetails->Claim_status == 'AW'))
+                                    <a href="javascript:void(0)" class="schoolNotClaim">Send Message</a>
+                                 @else
+                                    <a href="javascript:void(0)" class="userNotSendMessage">Send Message</a>
+                                 @endif --}}
+                                 <a href="javascript:void(0)" class="userNotSendMessage">Send Message</a>
+                              @endauth
+                              @guest
+                                 <a href="javascript:void(0)" class="noMessage">Send Message</a>
+                              @endguest
+
                               <button  class=" post_tab">Post a Review</button>
                               @auth
-                              <a href="javascript:void(0)"  data-bs-toggle="modal" data-bs-target="#myUploadPhotoModal">Upload Photo</a>
+                                 <a href="javascript:void(0)"  data-bs-toggle="modal" data-bs-target="#myUploadPhotoModal">Upload Photo</a>
                               @endauth
                            </div>
-
-                         
                         </div>
                      </div>
                      <div class="claim_sc_body">                        
                         <div class="clam_sc">
-                           @if(@$schoolDetails->Claim_status == 'N')
-                           @auth
-                           <a href="javascript:void(0)"  data-bs-toggle="modal" data-bs-target="#myModal"> <img src="{{ url('public/images/clam.png') }}" alt=""> Claim the school </a>
-                           @endauth
-                           @guest
-                           <a href="javascript:void(0)"  class="notLogin"> <img src="{{ url('public/images/clam.png') }}" alt=""> Claim the school </a>
-                           @endguest
-                           @endif
+                           {{-- @if($schoolDetails->Claim_status == 'N')
+                              @auth
+                                 <a href="javascript:void(0)"  data-bs-toggle="modal" data-bs-target="#myModal"> <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school </a>
+                              @endauth
+                              @guest
+                                 <a href="javascript:void(0)"  class="notLogin"> <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school </a>
+                              @endguest
+                           @endif --}}
+                           <a href="javascript:void(0)"  class="notLogin"> <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school </a>
                         </div>
                         <div class="share_a">
-                              <p> <img src="{{ url('public/images/share2.png') }}" alt=""> Share</p>
+                              <p> <img src="{{ asset('images/share2.png') }}" alt=""> Share</p>
                               <div class="sharethis-inline-share-buttons"></div>
-                              {{--<ul>
-                                 <li> <a href="#"> <img src="{{ url('public/images/share1.png') }}" alt=""> </a> </li>
-                                 <li> <a href="#"> <img src="{{ url('public/images/share3.png') }}" alt=""> </a> </li>
-                                 <li> <a href="#"> <img src="{{ url('public/images/share4.png') }}" alt=""> </a> </li>
-                                 <li> <a href="#"> <img src="{{ url('public/images/share5.png') }}" alt=""> </a> </li>
-                              </ul>--}}
+                              <ul>
+                                 <li> <a href="#"> <img src="{{ asset('images/share1.png') }}" alt=""> </a> </li>
+                                 <li> <a href="#"> <img src="{{ asset('images/share3.png') }}" alt=""> </a> </li>
+                                 <li> <a href="#"> <img src="{{ asset('images/share4.png') }}" alt=""> </a> </li>
+                                 <li> <a href="#"> <img src="{{ asset('images/share5.png') }}" alt=""> </a> </li>
+                              </ul>
                            </div>
                      </div>
-
                   </div>
                </div>
             </div>
@@ -273,41 +293,37 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                   <div class="what_list_iner js-menu headermenu rm_stickyy">
                      <ul>
                         <li class="menu__element "><a href="javascript:;" class="menu__link what1">
-                        <img src="{{ url('public/images/me1.png') }}" alt=""> About School</a>
+                           <img src="{{ asset('images/me1.png') }}" alt=""> About School</a>
                         </li>
                         <li class="menu__element"><a href="javascript:;" class="menu__link why1">
-                        <img src="{{ url('public/images/me2.png') }}" alt=""> Facilities/Amenities</a>
+                           <img src="{{ asset('images/me2.png') }}" alt=""> Facilities/Amenities</a>
                         </li>
                         <li class="menu__element"><a href="javascript:;" class="menu__link how1">
-                        <img src="{{ url('public/images/me3.png') }}" alt=""> Gallery</a>
+                           <img src="{{ asset('images/me3.png') }}" alt=""> Gallery</a>
                         </li>
                         <li class="menu__element "><a href="javascript:;" class="menu__link what2">
-                        <img src="{{ url('public/images/me4.png') }}" alt=""> Courses</a>
+                           <img src="{{ asset('images/me4.png') }}" alt=""> Courses</a>
                         </li>
                         @auth
-                        <li class="menu__element"><a href="javascript:;" class="menu__link why2">
-                        <img src="{{ url('public/images/me4.png') }}" alt=""> Fees</a>
-                        </li>
+                           <li class="menu__element"><a href="javascript:;" class="menu__link why2">
+                              <img src="{{ asset('images/me4.png') }}" alt=""> Fees</a>
+                           </li>
                         @endauth
                         <li class="menu__element"><a href="javascript:;" class="menu__link how2">
-                        <img src="{{ url('public/images/me5.png') }}" alt=""> Branch/Affiliates</a>
+                           <img src="{{ asset('images/me5.png') }}" alt=""> Branch/Affiliates</a>
                         </li>
                         <li class="menu__element "><a href="javascript:;" class="menu__link what3">
-                        <img src="{{ url('public/images/me6.png') }}" alt=""> location</a>
+                           <img src="{{ asset('images/me6.png') }}" alt=""> location</a>
                         </li>
                         <li class="menu__element"><a href="javascript:;" class="menu__link why3">
-                        <img src="{{ url('public/images/me7.png') }}" alt=""> Reviews</a>
+                           <img src="{{ asset('images/me7.png') }}" alt=""> Reviews</a>
                         </li>
                         <li class="menu__element"><a href="javascript:;" class="menu__link how3">
-                        <img src="{{ url('public/images/me8.png') }}" alt=""> News</a>
+                           <img src="{{ asset('images/me8.png') }}" alt=""> News</a>
                         </li>
                      </ul>
                   </div>
                </div>
-
-
-
-
             </div>
          </div>
 
@@ -322,143 +338,143 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
                         <div class="about_sc_information">
                            <div class="acc_faqs ">
-                            <div id="accordion">
-                                @if(@$schoolDetails->about_school != null)
-                              <div class="card new_sc_faq">
-                                 <div class="card-header">
-                                   <a class=" btn" data-bs-toggle="" >
-                                      School Describtion 
-                                   </a>
-                                 </div>
-                                 <div id="collapseThree" class=" show " data-bs-parent="#accordion" style="display: block;">
-                                   <div class="card-body">
-                                     <p class="sch_des">{{ @$schoolDetails->about_school }}</p>
-                                   </div>
-                                 </div>
-                               </div>
-                                @endif
-                                @if(@$school_uniform->isNotEmpty())  
-                               <div class="card new_sc_faq">
-                                 <div class="card-header">
-                                   <a class=" btn" data-bs-toggle="">
-                                      School Uniform 
-                                   </a>
-                                 </div>
-                                 <div id="collapseFour" class=" show" data-bs-parent="#accordion"  style="display: block;">
-                                   <div class="card-body unif-card d-flex flex-row flex-wrap justify-content-start align-items-stretch">
-                                     @foreach($school_uniform as $data)
-                                     <div class="school_in_box schoolUniform" data-image_url="{{ URL::to('storage/app/public/images/uniform_image') }}/{{ @$data->uniform_image }}">
-                                        <span>
-                                            @if(@$data->uniform_image != null)
-                                           <img src="{{ URL::to('storage/app/public/images/uniform_image') }}/{{ @$data->uniform_image }}" alt="">
-                                           @endif
-                                        </span>
-                                        <div class="unifrom_des">
-                                            @if(@$data->uniform_title != null)
-                                           <h3>{{ @$data->uniform_title }}</h3>
-                                           @endif
-                                           <p>For 
-                                              @if(@$data->uniform_type == 'M')
-                                              Male
-                                              @elseif(@$data->uniform_type == 'F')
-                                              Female
-                                              @elseif(@$data->uniform_type == 'U')
-                                              Unisex
-                                              @endif
-                                           </p>
-                                        </div>
-                                     </div>
-                                     @endforeach
-                                   </div>
-                                  </div>
-                               </div>
-                               @endif
-
-                               @if(@$schoolDetails->show_ratio == 'Y')
-                               <div class="card new_sc_faq">
-                                 <div class="card-header">
-                                   <a class="collapsed btn">
-                                     Teacher & Student info
-                                   </a>
-                                 </div>
-                                 <div id="collapseOne" class=" s " data-bs-parent="#accordion">
-                                   <div class="card-body">
-                                     {{--<div class="new_al mb-3">
-                                        <h3> Number of Teachers: <span> {{ @$schoolDetails->total_teacher?@$schoolDetails->total_teacher:'' }} </span> </h3>
-                                        <div class="mls-3">
-                                           <h4>Female Teacher : <span> {{ @$schoolDetails->teacher_female?@$schoolDetails->teacher_female:'' }} </span> </h4>
-                                           <h4>Male Teachers : <span> {{ @$schoolDetails->teacher_male?@$schoolDetails->teacher_male:'' }} </span> </h4>
-                                        </div>
-                                     </div>--}}
-
-                                     <div class="new_al mt-4 mb-4">
-                                        <h3> Teacher Student Ratio: <span> {{ @$schoolDetails->teacher_student_ratio?@$schoolDetails->teacher_student_ratio:'' }} </span> </h3>
-                                     </div>
-
-                                     {{--<div class="new_al mt-3">
-                                        <h3> Number of student: <span> {{ @$schoolDetails->total_student?@$schoolDetails->total_student:'' }}  </span> </h3>
-                                        <div class="mls-3">
-                                           <h4> Student Male : <span> {{ @$schoolDetails->student_boys?@$schoolDetails->student_boys:'' }} </span> </h4>
-                                           <h4> Student Female : <span> {{ @$schoolDetails->student_girls?@$schoolDetails->student_girls:'' }} </span> </h4>
-                                        </div>
-                                     </div>--}}
-
-                                   </div>
-                                 </div>
-                               </div>
-                               @endif
-
-                               @if(@$schoolDetails->day_learn_period_from != null || @$schoolDetails->day_learn_period_until != null)
-                               <div class="card new_sc_faq">
-                                 <div class="card-header">
-                                   <a class="collapsed btn">
-                                     School Rules
-                                   </a>
-                                 </div>
-                                 <div id="collapseOne" class=" s " data-bs-parent="#accordion">
-                                   <div class="card-body">
-                                     <div class="rule-list d-flex flex-row flex-wrap justify-content-start align-items-stretch">
-                                       <div class="rule-box">
-                                          <h4>Meals offered</h4>
-                                           @if(@$schoolDetails->meal_offer == 'Y')
-                                          <p>Yes</p>
-                                           @else
-                                           <p class="no">No</p>
-                                           @endif
+                              <div id="accordion">
+                                 @if($school_record->description != null)
+                                    <div class="card new_sc_faq">
+                                       <div class="card-header">
+                                       <a class=" btn" data-bs-toggle="" >
+                                          School Description 
+                                       </a>
                                        </div>
-                                       <div class="rule-box">
-                                          <h4>Special needs catered</h4>
-                                          @if(@$schoolDetails->special_need_catered == 'Y')
-                                          <p>Yes</p>
-                                           @else
-                                           <p class="no">No</p>
-                                           @endif
+                                       <div id="collapseThree" class=" show " data-bs-parent="#accordion" style="display: block;">
+                                       <div class="card-body">
+                                          <p class="sch_des">{{ $school_record->description }}</p>
                                        </div>
-                                       <div class="rule-box">
-                                          <h4>School transport available</h4>
-                                          @if(@$schoolDetails->school_transport_available == 'Y')
-                                          <p>Yes</p>
-                                           @else
-                                           <p class="no">No</p>
-                                           @endif
                                        </div>
-                                     </div>
-                                     <div class="rule-time d-flex flex-row flex-wrap justify-content-start align-items-stretch">
-                                       <h3 class="w-100">School Timing :</h3>
-                                       <div class="rule-time-card">
-                                          <h4>Day</h4>
-                                          <p>From <b>{{ @$schoolDetails->day_learn_period_from?date('H:i',strtotime(@$schoolDetails->day_learn_period_from)):'' }}</b> to <b>{{ @$schoolDetails->day_learn_period_until?date('H:i',strtotime(@$schoolDetails->day_learn_period_until)):'' }}</b></p>
+                                    </div>
+                                 @endif
+                                 {{-- @if(@$school_uniform->isNotEmpty())  
+                                    <div class="card new_sc_faq">
+                                       <div class="card-header">
+                                       <a class=" btn" data-bs-toggle="">
+                                          School Uniform 
+                                       </a>
                                        </div>
-                                       <div class="rule-time-card">
-                                          <h4>Evening</h4>
-                                          <p>From <b>{{ @$schoolDetails->evening_studies_from?date('H:i',strtotime(@$schoolDetails->evening_studies_from)):'' }}</b> to <b>{{ @$schoolDetails->evening_studies_until?date('H:i',strtotime(@$schoolDetails->evening_studies_until)):'' }}</b></p>
+                                       <div id="collapseFour" class=" show" data-bs-parent="#accordion"  style="display: block;">
+                                          <div class="card-body unif-card d-flex flex-row flex-wrap justify-content-start align-items-stretch">
+                                             @foreach($school_uniform as $data)
+                                                <div class="school_in_box schoolUniform" data-image_url="{{ URL::to('storage/app/public/images/uniform_image') }}/{{ @$data->uniform_image }}">
+                                                   <span>
+                                                      @if(@$data->uniform_image != null)
+                                                         <img src="{{ URL::to('storage/app/public/images/uniform_image') }}/{{ @$data->uniform_image }}" alt="">
+                                                      @endif
+                                                   </span>
+                                                   <div class="unifrom_des">
+                                                      @if(@$data->uniform_title != null)
+                                                         <h3>{{ @$data->uniform_title }}</h3>
+                                                      @endif
+                                                      <p>For 
+                                                         @if(@$data->uniform_type == 'M')
+                                                         Male
+                                                         @elseif(@$data->uniform_type == 'F')
+                                                         Female
+                                                         @elseif(@$data->uniform_type == 'U')
+                                                         Unisex
+                                                         @endif
+                                                      </p>
+                                                   </div>
+                                                </div>
+                                             @endforeach
+                                          </div>
                                        </div>
-                                     </div>
-                                   </div>
+                                    </div>
+                                 @endif --}}
+
+                                 <div class="card new_sc_faq">
+                                    <div class="card-header">
+                                    <a class="collapsed btn">
+                                       Teacher & Student info
+                                    </a>
+                                    </div>
+                                    <div id="collapseOne" class=" s " data-bs-parent="#accordion">
+                                    <div class="card-body">
+                                       <div class="new_al mb-3">
+                                          <h3> Number of Teachers: <span> {{ optional($school_record->population)->total_teachers }} </span> </h3>
+                                          <div class="mls-3">
+                                             <h4>Male Teachers : <span> {{ optional($school_record->population)->male_teachers }} </span> </h4>
+                                             <h4>Female Teacher : <span> {{ optional($school_record->population)->female_teachers }} </span> </h4>
+                                          </div>
+                                       </div>
+
+                                       {{-- <div class="new_al mt-4 mb-4">
+                                          <h3> Teacher Student Ratio: <span> {{ @$schoolDetails->teacher_student_ratio?@$schoolDetails->teacher_student_ratio:'' }} </span> </h3>
+                                       </div> --}}
+
+                                       <div class="new_al mt-3">
+                                          <h3> Number of student: <span> {{ optional($school_record->population)->total_students }}  </span> </h3>
+                                          <div class="mls-3">
+                                             <h4> Student Male : <span> {{ optional($school_record->population)->male_students }} </span> </h4>
+                                             <h4> Student Female : <span> {{ optional($school_record->population)->female_students }} </span> </h4>
+                                          </div>
+                                       </div>
+
+                                    </div>
+                                    </div>
                                  </div>
-                               </div>
-                               @endif
-                            </div>
+
+                                 <div class="card new_sc_faq">
+                                    <div class="card-header">
+                                       <a class="collapsed btn">
+                                          School Services
+                                       </a>
+                                    </div>
+                                    <div id="collapseOne" class=" s " data-bs-parent="#accordion">
+                                       <div class="card-body">
+                                          <div class="rule-list d-flex flex-row flex-wrap justify-content-start align-items-stretch">
+                                             @php
+                                                $services = $school_record->extendedSchoolServices->pluck('name')->map(fn($name) => strtolower($name));
+                                             @endphp
+                                             <div class="rule-box">
+                                                <h4>Meals offered</h4>
+                                                @if($services->contains('Meals Offered'))
+                                                   <p>Yes</p>
+                                                @else
+                                                   <p class="no">No</p>
+                                                @endif
+                                             </div>
+                                             <div class="rule-box">
+                                                <h4>Special needs catered</h4>
+                                                @if($services->contains('Special Needs Catered'))
+                                                   <p>Yes</p>
+                                                @else
+                                                   <p class="no">No</p>
+                                                @endif
+                                             </div>
+                                             <div class="rule-box">
+                                                <h4>School transport available</h4>
+                                                @if($services->contains('School Transport Available'))
+                                                   <p>Yes</p>
+                                                @else
+                                                   <p class="no">No</p>
+                                                @endif
+                                             </div>
+                                          </div>
+                                          <div class="rule-time d-flex flex-row flex-wrap justify-content-start align-items-stretch">
+                                             <h3 class="w-100">School Timing :</h3>
+                                             @foreach($school_record->operationHours as $operation)
+                                                <div class="rule-time-card">
+                                                      <h4>{{ ucfirst($operation->period_of_day) }}</h4>
+                                                      <p>
+                                                         From <b>{{ date('H:i', strtotime($operation->starts_at)) }}</b>
+                                                         to <b>{{ date('H:i', strtotime($operation->ends_at)) }}</b>
+                                                      </p>
+                                                </div>
+                                             @endforeach
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
                           </div>
 
                         </div>
@@ -468,18 +484,20 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                         <div class="abot_all_headings">
                            <h3>Facilities / Amenities</h3>
                         </div>
-                        @if(@$school_facilities->isNotEmpty())
-                        <div class="faci_ul">
-                           <ul>
-                              @foreach($school_facilities as $data)
-                              <li>{{ @$data->getFacilities->facilities_name }}</li>
-                              @endforeach
-                           </ul>
-                        </div>
+                        @if($school_record->facilities->isNotEmpty())
+                           <div class="faci_ul">
+                                 <ul>
+                                    @foreach($school_record->facilities as $facility)
+                                       <li>{{ $facility->name }}</li> {{-- ✅ Uses correct column --}}
+                                    @endforeach
+                                 </ul>
+                           </div>
+                        @else
+                           <p>No facilities listed for this school.</p>
                         @endif
                      </div>
                      
-                     <div id="how_sec" class="about_sc_bo">
+                     {{-- <div id="how_sec" class="about_sc_bo">
                         <div class="abot_all_headings">
                            <h3>Gallery</h3>
                         </div>
@@ -496,60 +514,57 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            </div>
                         </div>
                         @endif
-                     </div>
+                     </div> --}}
 
                       
                      <div id="what_why_panel12" class="about_sc_bo">
                         <div class="abot_all_headings">
                            <h3>Courses Offered</h3>
                         </div>
-                        @if(@$school_subjects->isNotEmpty())
-                        <div class="couse_detas">
-                           @foreach($school_subjects as $data)
-                           <div class="course_in">
-                              <h3>{{ @$data->getBoard->board_name }} | {{ @$data->getClassLevel->class_level }}</h3>
-                              <p>
-                              @if(@$data->school_subjects)
-                               @foreach(@$data->school_subjects as $key=>$schsubj)
-                               {{ @$key > 0?',':'' }} {{ @$schsubj->subject }}
-                               @endforeach
-                               @endif
-                              </p>
+                        @if($school_record->courses->isNotEmpty())
+                           <div class="couse_detas">
+                                 @foreach($school_record->courses as $course)
+                                    <div class="course_in">
+                                       <h3>{{ $course->name }}</h3>
+                                       @if($course->description)
+                                             <p>{{ $course->description }}</p>
+                                       @endif
+                                    </div>
+                                 @endforeach
                            </div>
-                           @endforeach
-                        </div>
+                        @else
+                           <p>No courses listed for this school.</p>
                         @endif
                      </div>
-                      @auth
-                     <div id="what_why_panel22" class="about_sc_bo">
-                        <div class="abot_all_headings">
-                           <h3>Fees</h3>
-                        </div>
-
-                        <div class="row">
-                           @if(@$school_fees)
-                           @foreach($school_fees as $fees)
-                           <div class="col-md-6">
-                              <div class="fees_table">
-                                 <div class="fees_head">
-                                    <h3>groups/grades</h3>
-                                    <h3>Amount</h3>
-                                 </div>
-                                 <div class="fess_bosy">
-                                    @foreach(@$fees as $fee)
-                                 <div class="fees_ins">
-                                    <p>{{ @$fee->grade }}</p>
-                                    <p>KES {{ @$fee->from_fees }} - {{ @$fee->to_fees }}</p>
-                                 </div>
-                                 @endforeach
-                                 </div>
-                              </div>
+                     @auth
+                        <div id="what_why_panel22" class="about_sc_bo">
+                           <div class="abot_all_headings">
+                              <h3>Fees</h3>
                            </div>
-                           @endforeach
-                            @endif
-                          
+
+                           <div class="row">
+                              @if($school_record->fees->isNotEmpty())
+                                 <div class="col-md-6">
+                                       <div class="fees_table">
+                                          <div class="fees_head">
+                                             <h3>Groups/Grades</h3>
+                                             <h3>Amount</h3>
+                                          </div>
+                                          <div class="fess_bosy">
+                                             @foreach($school_record->fees as $fee)
+                                                   <div class="fees_ins">
+                                                      <p>{{ $fee->level->name ?? 'N/A' }}</p>
+                                                      <p>{{ strtoupper($fee->currency) }} {{ number_format($fee->min_amount, 2) }} - {{ number_format($fee->max_amount, 2) }}</p>
+                                                   </div>
+                                             @endforeach
+                                          </div>
+                                       </div>
+                                 </div>
+                              @else
+                                 <p>No fee information available for this school.</p>
+                              @endif
+                           </div>
                         </div>
-                     </div>
                      @endauth
 
                      <div id="how_sec2" class="about_sc_bo">
@@ -558,63 +573,77 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                         </div>
 
                         <div class="row">
-                           @if(@$school_branches)
-                           @foreach($school_branches as $keyy=>$data)
-                           @if(@$key == 1)
-                           @php
-                           $keyy = $keyy+1;
-                           @endphp
-                           @endif
-                           <div class="col-md-6">
-                              @foreach(@$data as $key=>$branch)
-                               @php
-                               $keyy = $keyy+1;
-                               @endphp
-                              <div class="branshes_box">
-                                 <h3>Branch{{ @$keyy }}</h3>
-                                 <h5>{{ @$branch->full_address }}</h5>
-                                 <p> <span> School Name : </span>{{ @$branch->school_name }}</p>
-                                 <p> <span> Call : </span>{{ @$branch->contact_phone }}</p>
-                                 <p> <span> Email : </span>{{ @$branch->contact_email }}</p>
-                              </div>
+                           @if($school_branches && $school_branches->count())
+                              @foreach($school_branches as $keyy => $data)
+                                    <div class="col-md-6">
+                                       @foreach($data as $key => $branch)
+                                          <div class="branshes_box">
+                                                <h3>Branch {{ $loop->iteration + ($keyy * 2) }}</h3>
+                                                <h5>{{ $branch->full_address }}</h5>
+                                                <p><span>School Name:</span> {{ $branch->school_name }}</p>
+                                                <p><span>Call:</span> {{ $branch->contact_phone }}</p>
+                                                <p><span>Email:</span> {{ $branch->contact_email }}</p>
+                                          </div>
+                                       @endforeach
+                                    </div>
                               @endforeach
-                           </div>
-                           @endforeach
                            @endif
-                        
                         </div>
-                     </div>
-                      @if(@$schoolDetails->google_location != null)
-                     <div id="what_why_panel13" class="about_sc_bo">
-                        <div class="abot_all_headings">
-                           <h3>Location</h3>
+                     @if(optional($school_record->address)->latitude && optional($school_record->address)->longitude)
+                        <div id="what_why_panel13" class="about_sc_bo">
+                           <div class="abot_all_headings">
+                                 <h3>Location</h3>
+                           </div>
+
+                           {{-- Hidden fields for JS usage --}}
+                           <input type="hidden" id="google_latitude" value="{{ optional($school_record->address)->latitude }}">
+                           <input type="hidden" id="google_longitude" value="{{ optional($school_record->address)->longitude }}">
+                           <input type="hidden" id="google_maps_link" value="{{ optional($school_record->address)->google_maps_link }}">
+
+                           <div class="school_maps" id="map">
+                                 @if(optional($school_record->address)->google_maps_link)
+                                    <iframe 
+                                       src="{{ optional($school_record->address)->google_maps_link }}"
+                                       style="border:0;" 
+                                       allowfullscreen="" 
+                                       loading="lazy" 
+                                       referrerpolicy="no-referrer-when-downgrade">
+                                    </iframe>
+                                 @else
+                                    {{-- Generate a dynamic Google Maps embed using lat/lng --}}
+                                    <iframe 
+                                       width="600" 
+                                       height="450" 
+                                       style="border:0" 
+                                       loading="lazy" 
+                                       allowfullscreen 
+                                       referrerpolicy="no-referrer-when-downgrade"
+                                       src="https://www.google.com/maps/embed/v1/view?key=YOUR_API_KEY&center={{ optional($school_record->address)->latitude }},{{ optional($school_record->address)->longitude }}&zoom=15">
+                                    </iframe>
+                                 @endif
+                           </div>
                         </div>
-                        <input type="hidden" name="" id="goolge_location" value="{{ @$schoolDetails->google_location }}">
-                        <div class="school_maps" id="map">
-                           {{--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63820.666114627435!2d36.72189069455174!3d-1.2998393026841333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f19e4ef940cc7%3A0xd5e97a8e302f8c3d!2sNairobi%20International%20School%20(Senior%20School)!5e0!3m2!1sen!2sin!4v1708782242993!5m2!1sen!2sin"  style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>--}}
-                        </div>
-                     </div>
-                      @endif
-                     <div id="what_why_panel23" class="about_sc_bo">
+                     @endif
+                     {{-- <div id="what_why_panel23" class="about_sc_bo">
                         <div class="abot_all_headings">
                            <h3>Reviews</h3>
                            <ul class="stars_sc">
                                @if(@$schoolDetails->avg_review)
                                  @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
                                  @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
-                                 <li><img src="{{ url('public/images/fstar.png') }}" alt=""></li>
+                                 <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
                                  @endfor
                                  @if(strpos($schoolDetails->avg_review,'.'))
-                                 <li><img src="{{asset('public/images/star-half.png')}}"></li>
+                                 <li><img src="{{asset('images/star-half.png')}}"></li>
                                  @php $sst++; @endphp
                                  @endif
                                  @while ($sst<=5)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
+                                 <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
                                  @php $sst++; @endphp
                                  @endwhile
                                  @else
                                  @for($sst = 1; $sst <= 5; $sst++)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>                              
+                                 <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>                              
                                  @endfor
                                  @endif
                               <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
@@ -632,7 +661,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                             @if(@$data->getUser->profile_pic != null)
                                              <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ @$data->getUser->profile_pic }}" alt="">
                                               @else
-                                             <img src="{{ url('public/images/avatar.png') }}" alt="">
+                                             <img src="{{ asset('images/avatar.png') }}" alt="">
                                              @endif 
                                           </span>
                                           <div class="sch_us_de">
@@ -650,10 +679,10 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                        </div>
                                        <ul class="stars_sc">
                                        @for($i=1;$i<=@$data->review_point;$i++)
-                                       <li><img src="{{ url('public/images/fstar.png') }}" alt=""></li>
+                                       <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
                                         @endfor
                                         @for($j=@$data->review_point+1;$j<=5;$j++)
-                                        <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
+                                        <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
                                          @endfor
                                        </ul>
                                     </div>
@@ -747,8 +776,8 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            </form>
                         </div>
 
-                     </div>
-                      @if(@$allNews->isNotEmpty())
+                     </div> --}}
+                     {{-- @if(@$allNews->isNotEmpty())
                      <div id="how_sec23" >
                         <div class="section_header">
                            <h2> News</h2>
@@ -771,7 +800,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                     <div class="news_text">
                                        <div class="news_info">
                                           <div class="adm_namee">
-                                             <img src="{{ url('public/images/user.png') }}" alt="">
+                                             <img src="{{ asset('images/user.png') }}" alt="">
                                              <p>Posted by, <span> {{ @$data->getUser->first_name.' '.@$data->getUser->last_name }}</span></p>
                                           </div>
                                           <h2> <a href="{{ route('news.details',@$data->slug) }}">
@@ -795,18 +824,18 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  <div class="news_box">
                                     <div class="news_imgs">
                                        <div class="spans"><p> 05 <span> FEB</span></p> </div> 
-                                       <a href="#"> <img src="{{ url('public/images/news2.png') }}" alt=""> </a>
+                                       <a href="#"> <img src="{{ asset('images/news2.png') }}" alt=""> </a>
                                     </div>
                                     <div class="news_text">
                                        <div class="news_info">
                                           <div class="adm_namee">
-                                             <img src="{{ url('public/images/user.png') }}" alt="">
+                                             <img src="{{ asset('images/user.png') }}" alt="">
                                              <p>Posted by, <span> Dianaisaly Marionaul</span></p>
                                           </div>
                                           <h2> <a href="#">DMS-Department of in Management The quality a role of the elementary teacher in education</a> </h2>
 
                                           <div class="read_more_b">
-                                             <a href="#">Read More <img src="{{ url('public/images/chevrone.png') }}" alt=""> </a>
+                                             <a href="#">Read More <img src="{{ asset('images/chevrone.png') }}" alt=""> </a>
                                           </div>
                                        </div>
                                     </div>
@@ -816,18 +845,18 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  <div class="news_box">
                                     <div class="news_imgs">
                                        <div class="spans"><p> 17 <span> JAN</span></p> </div> 
-                                       <a href="#"> <img src="{{ url('public/images/news3.png') }}" alt=""> </a>
+                                       <a href="#"> <img src="{{ asset('images/news3.png') }}" alt=""> </a>
                                     </div>
                                     <div class="news_text">
                                        <div class="news_info">
                                           <div class="adm_namee">
-                                             <img src="{{ url('public/images/user.png') }}" alt="">
+                                             <img src="{{ asset('images/user.png') }}" alt="">
                                              <p>Posted by, <span> Lyndah Kemunto</span></p>
                                           </div>
                                           <h2> <a href="#">DMS-Department of in Management The quality a role of the elementary teacher in education</a> </h2>
 
                                           <div class="read_more_b">
-                                             <a href="#">Read More <img src="{{ url('public/images/chevrone.png') }}" alt=""> </a>
+                                             <a href="#">Read More <img src="{{ asset('images/chevrone.png') }}" alt=""> </a>
                                           </div>
                                        </div>
                                     </div>
@@ -837,18 +866,18 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  <div class="news_box">
                                     <div class="news_imgs">
                                        <div class="spans"><p> 20 <span> SEP</span></p> </div> 
-                                       <a href="#"> <img src="{{ url('public/images/news4.png') }}" alt=""> </a>
+                                       <a href="#"> <img src="{{ asset('images/news4.png') }}" alt=""> </a>
                                     </div>
                                     <div class="news_text">
                                        <div class="news_info">
                                           <div class="adm_namee">
-                                             <img src="{{ url('public/images/user.png') }}" alt="">
+                                             <img src="{{ asset('images/user.png') }}" alt="">
                                              <p>Posted by, <span> Elizabeth Gitau</span></p>
                                           </div>
                                           <h2> <a href="#">DMS-Department of in Management The quality a role of the elementary teacher in education</a> </h2>
 
                                           <div class="read_more_b">
-                                             <a href="#">Read More <img src="{{ url('public/images/chevrone.png') }}" alt=""> </a>
+                                             <a href="#">Read More <img src="{{ asset('images/chevrone.png') }}" alt=""> </a>
                                           </div>
                                        </div>
                                     </div>
@@ -858,18 +887,18 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  <div class="news_box">
                                     <div class="news_imgs">
                                        <div class="spans"><p> 20 <span> SEP</span></p> </div> 
-                                       <a href="#"> <img src="{{ url('public/images/news5.png') }}" alt=""> </a>
+                                       <a href="#"> <img src="{{ asset('images/news5.png') }}" alt=""> </a>
                                     </div>
                                     <div class="news_text">
                                        <div class="news_info">
                                           <div class="adm_namee">
-                                             <img src="{{ url('public/images/user.png') }}" alt="">
+                                             <img src="{{ asset('images/user.png') }}" alt="">
                                              <p>Posted by, <span> Elizabeth Gitau</span></p>
                                           </div>
                                           <h2> <a href="#">DMS-Department of in Management The quality a role of the elementary teacher in education</a> </h2>
 
                                           <div class="read_more_b">
-                                             <a href="#">Read More <img src="{{ url('public/images/chevrone.png') }}" alt=""> </a>
+                                             <a href="#">Read More <img src="{{ asset('images/chevrone.png') }}" alt=""> </a>
                                           </div>
                                        </div>
                                     </div>
@@ -878,30 +907,25 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            </div>
                         </div>
                      </div>
-                     @endif
+                     @endif --}}
                     
                     
-                     @if(@$advertise->isNotEmpty())
-                     <section class="adv2">
-                        <div class="container">
-                           <div class="row">
-                              @foreach($advertise as $data)
-                              <div class="col-sm-6">
-                                 <div class="adv_n">
-                                    <a href="{{ @$data->advertise_url }}" target="_blank"> <img src="{{ URL::to('storage/app/public/images/advertise_image') }}/{{ @$data->image }}" alt=""> </a>
+                     {{-- @if(@$advertise->isNotEmpty())
+                        <section class="adv2">
+                           <div class="container">
+                              <div class="row">
+                                 @foreach($advertise as $data)
+                                 <div class="col-sm-6">
+                                    <div class="adv_n">
+                                       <a href="{{ @$data->advertise_url }}" target="_blank"> <img src="{{ URL::to('storage/app/public/images/advertise_image') }}/{{ @$data->image }}" alt=""> </a>
+                                    </div>
                                  </div>
+                                 @endforeach
                               </div>
-                              @endforeach
                            </div>
-                        </div>
-                     </section>
-                      @endif
-
-
-
+                        </section>
+                     @endif --}}
                   </div>
-
-
                </div>
             </div>
          </div>
@@ -911,17 +935,19 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
       @if(@$nearby_school != null)
        <section class="featured-school new_as_dea">
          <div class="shpa_gr">
-            <img src="{{ url('public/images/banner-fest.png') }}" alt="">
+            <img src="{{ asset('images/banner-fest.png') }}" alt="">
          </div>
          <div class="container">
             <div class="row">
                <div class="section_header">
-                  <h2>Find other @if(@$schoolDetails->school_types)
-                              @foreach($schoolDetails->school_types as $key11=>$type)
-                              {{ @$key11 > 0?',':''  }} {{ @$type->school_type }}
-                              @endforeach
-                              @endif Schools in {{ @$schoolDetails->getTown->city }}</h2>
-                  {{--<p>Lorem ipsum dolor sit amet, lorem ipsum dolor sit amet, consecteturconsectetur</p>--}}
+                  <h2>
+                     Find other 
+                     @if(@$schoolDetails->school_types)
+                        @foreach($schoolDetails->school_types as $key11=>$type)
+                        {{ @$key11 > 0?',':''  }} {{ @$type->school_type }}
+                        @endforeach
+                     @endif Schools in {{ @$schoolDetails->getTown->city }}
+                  </h2>
                </div>
 
                <div class="featured-school-inr">
@@ -955,19 +981,19 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                      @if(@$data->avg_review)
                                           @php $data->avg_review = $data->avg_review+0; @endphp
                                           @for($sst = 1; $sst <= $data->avg_review; $sst++)
-                                          <li><img src="{{ url('public/images/fstar.png') }}" alt=""></li>
+                                          <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
                                           @endfor
                                           @if(strpos($data->avg_review,'.'))
-                                          <li><img src="{{asset('public/images/star-half.png')}}"></li>
+                                          <li><img src="{{asset('images/star-half.png')}}"></li>
                                           @php $sst++; @endphp
                                            @endif
                                            @while ($sst<=5)
-                                           <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
+                                           <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
                                           @php $sst++; @endphp
                                           @endwhile
                                           @else
                                           @for($sst = 1; $sst <= 5; $sst++)
-                                          <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>                              
+                                          <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>                              
                                           @endfor
                                           @endif
                                     {{--<li><img src="{{ url('public/images/star.png') }}" alt=""></li>
@@ -976,7 +1002,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                     <li><img src="{{ url('public/images/star.png') }}" alt=""></li>
                                     <li><img src="{{ url('public/images/star.png') }}" alt=""></li>--}}
                                  </ul>
-                                 <p><img src="{{ url('public/images/map-pin.png') }}" alt="">{{ @$data->getCountry->name }}</p>
+                                 <p><img src="{{ asset('images/map-pin.png') }}" alt="">{{ @$data->getCountry->name }}</p>
                               </div>
                               <div class="sch_info">
                                  <div>
@@ -1049,40 +1075,43 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
             <!-- Modal body -->
             <div class="modal-body">
-              <div class="some_sc_de">
-                 <h3>{{  @$schoolDetails->school_name }}</h3>
+               <div class="some_sc_de">
+                 <h3>{{  $school_record->name }}</h3>
                  <div class="some_sc_add">
-                    <p><img src="{{ url('public/images/me6.png') }}" alt="">{{ @$schoolDetails->full_address }}</p>
-                    <ul class="stars_sc">
-                                @if(@$schoolDetails->avg_review)
-                                 @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
-                                 @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
-                                 <li><img src="{{ url('public/images/fstar.png') }}" alt=""></li>
-                                 @endfor
-                                 @if(strpos($schoolDetails->avg_review,'.'))
-                                 <li><img src="{{asset('public/images/star-half.png')}}"></li>
-                                 @php $sst++; @endphp
-                                 @endif
-                                 @while ($sst<=5)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
-                                 @php $sst++; @endphp
-                                 @endwhile
-                                 @else
-                                 @for($sst = 1; $sst <= 5; $sst++)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>                              
-                                 @endfor
-                                 @endif
-                              <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
-                           </ul>
-                 </div>
+                     <p><img src="{{ asset('images/me6.png') }}" alt="">{{ optional($school_record->address)->address_text ?? 'Address not available' }}</p>
+                     <ul class="stars_sc">
+                        {{-- @if(@$schoolDetails->avg_review)
+                           @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
+                           @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
+                              <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
+                           @endfor
+                           @if(strpos($schoolDetails->avg_review,'.'))
+                              <li><img src="{{asset('public/images/star-half.png')}}"></li>
+                              @php $sst++; @endphp
+                           @endif
+                           @while ($sst<=5)
+                              <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
+                              @php $sst++; @endphp
+                           @endwhile
+                        @else
+                           @for($sst = 1; $sst <= 5; $sst++)
+                              <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>                              
+                           @endfor
+                        @endif --}}
+                        @for($sst = 1; $sst <= 5; $sst++)
+                           <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>                              
+                        @endfor
+                     {{-- <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li> --}}
+                  </ul>
+               </div>
                  
               </div>
               <div class="cliam_from">
                   <h3>Claim:</h3>
                   <form action="{{ route('school.claim.save') }}" method="post" id="claimForm" enctype="multipart/form-data">
                      @csrf
-                     <input type="hidden" name="school_id" value="{{ @$schoolDetails->id }}">
-                     <input type="hidden" name="school_owner_id" value="{{ @$schoolDetails->user_id }}">
+                     <input type="hidden" name="school_id" value="{{ $school_record->id }}">
+                     {{-- <input type="hidden" name="school_owner_id" value="{{ $school_record->user_id }}"> --}}
                      <div class="row">
                         <div class="col-sm-6">
                            <div class="search_in">
@@ -1094,19 +1123,16 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                         <div class="col-sm-6">
                            <div class="search_in">
                               <label>Association with the School</label>
-                              <select name="school_association">
-                                 <option value="">Select</option>
-                                 <option value="Ownner">Ownner</option>
-                                 <option value="Manager">Manager</option>
-                                 <option value="Head Teacher">Head Teacher</option>
-                                 <option value="Principal">Principal</option>
-                                 <option value="Founder">Founder</option>
-                                 <option value="Teacher Former student">Teacher Former student</option>
-                                 <option value="Parent">Parent</option>
-                                 <option value="Others">Others</option>
+                              <select name="school_association" required>
+                                    <option value="">Select</option>
+                                    @foreach($contactPositions as $position)
+                                       <option value="{{ $position->id }}">{{ $position->name }}</option>
+                                    @endforeach
                               </select>
                            </div>
-                           <label id="school_association-error" class="error" for="school_association"  style="display:none;">This field is required.</label>
+                           <label id="school_association-error" class="error" for="school_association" style="display:none;">
+                              This field is required.
+                           </label>
                         </div>
                         <div class="col-sm-12">
                            <div class="search_in">
@@ -1122,16 +1148,16 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                     <div class="uplodimgfil W-100">
                                        <input type="file" name="claim_file[]" id="claim_file" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple="">
                                        <label for="claim_file">
-                                          <img src="{{ url('public/images/upload.png') }}" alt="">
+                                          <img src="{{ asset('images/upload.png') }}" alt="">
                                           <h3 class="m-0">Upload proof of association</h3>
-                                          <p>png, Jpg, PDF</p>
+                                          <p>png, jpg, pdf</p>
                                        </label>
                                     </div>
                                  </div>
 
                                  <a class="css-tooltip-bottom a_tool color-red" href="javascript:;">
                                  <span>Documents to submit include, School registration certificate(s), your Id & relevant docs for verification</span> 
-                                 <img src="{{ url('public/images/question.png') }}" alt="">
+                                 <img src="{{ asset('images/question.png') }}" alt="">
                                  </a>
                               </div>
                               <label id="claimfile_error" for="" class="error" style="display:none;"></label>
@@ -1146,7 +1172,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
             <!-- Modal footer -->
             <div class="modal-footer">
-              <button class="clain_btns submitBtn">Submit <img src="{{ url('public/images/arrow-righr.png') }}" alt="">  </button>
+              <button class="clain_btns submitBtn">Submit <img src="{{ asset('images/arrow-righr.png') }}" alt="">  </button>
             </div>
 
           </div>
@@ -1165,47 +1191,45 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
             <!-- Modal body -->
             <div class="modal-body">
-              <div class="some_sc_de">
-                 <h3>{{  @$schoolDetails->school_name }}</h3>
+               {{-- <div class="some_sc_de">
+                 <h3>{{  $school_record->school_name }}</h3>
                  <div class="some_sc_add">
-                    <p><img src="{{ url('public/images/me6.png') }}" alt="">{{ @$schoolDetails->full_address }}</p>
+                    <p><img src="{{ asset('images/me6.png') }}" alt="">{{ optional($school_record->address)->address_text ?? 'Address not available' }}</p>
                     <ul class="stars_sc">
-                                @if(@$schoolDetails->avg_review)
-                                 @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
-                                 @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
-                                 <li><img src="{{ url('public/images/fstar.png') }}" alt=""></li>
-                                 @endfor
-                                 @if(strpos($schoolDetails->avg_review,'.'))
-                                 <li><img src="{{asset('public/images/star-half.png')}}"></li>
-                                 @php $sst++; @endphp
-                                 @endif
-                                 @while ($sst<=5)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
-                                 @php $sst++; @endphp
-                                 @endwhile
-                                 @else
-                                 @for($sst = 1; $sst <= 5; $sst++)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>                              
-                                 @endfor
-                                 @endif
-                              <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
-                           </ul>
-                 </div>
-                 
-              </div>
-              <div class="cliam_from">
+                        @if(@$schoolDetails->avg_review)
+                           @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
+                           @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
+                              <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
+                           @endfor
+                           @if(strpos($schoolDetails->avg_review,'.'))
+                              <li><img src="{{asset('images/star-half.png')}}"></li>
+                              @php $sst++; @endphp
+                           @endif
+                           @while ($sst<=5)
+                              <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
+                              @php $sst++; @endphp
+                           @endwhile
+                           @else
+                           @for($sst = 1; $sst <= 5; $sst++)
+                              <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>                              
+                           @endfor
+                        @endif
+                        <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
+                     </ul>
+                  </div>
+               </div> --}}
+               <div class="cliam_from">
                   <form action="{{ route('user.add.header.image.video') }}" method="post" id="headerImageForm" enctype="multipart/form-data">
                      @csrf
-                     <input type="hidden" name="school_master_id" value="{{ @$schoolDetails->id }}">
+                     <input type="hidden" name="school_master_id" value="{{ $school_record->id }}">
                      <div class="row">
-                        
                         <div class="col-lg-12">
                               <div class="uplodimg edit-prof-big">
                                  <div class=" img-upld">
                                     <div class="uplodimgfil W-100">
                                        <input type="file" name="header_image" id="header_image" class="inputfile inputfile-1" data-multiple-caption="{count} files selected">
                                        <label for="header_image">
-                                          <img src="{{ url('public/images/upload.png') }}" alt="">
+                                          <img src="{{ asset('images/upload.png') }}" alt="">
                                           <h3 class="m-0">Upload Header Image</h3>
                                           <p>png, Jpg, gif</p>
                                        </label>
@@ -1237,18 +1261,11 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
             <!-- Modal footer -->
             <div class="modal-footer">
-              <button class="clain_btns submitBtn1">Submit <img src="{{ url('public/images/arrow-righr.png') }}" alt="">  </button>
+              <button class="clain_btns submitBtn1">Submit <img src="{{ asset('images/arrow-righr.png') }}" alt="">  </button>
             </div>
-
           </div>
         </div>
       </div>
-
-
-
-
-
-
 
       <div class="modal modal_lciam" id="myUploadPhotoModal">
         <div class="modal-dialog modal-dialog-centered">
@@ -1263,38 +1280,37 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
             <!-- Modal body -->
             <div class="modal-body">
             <div class="some_sc_de">
-                 <h3>{{  @$schoolDetails->school_name }}</h3>
-                 <div class="some_sc_add">
-                    <p><img src="{{ url('public/images/me6.png') }}" alt="">{{ @$schoolDetails->full_address }}</p>
-                    <ul class="stars_sc">
-                                @if(@$schoolDetails->avg_review)
-                                 @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
-                                 @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
-                                 <li><img src="{{ url('public/images/fstar.png') }}" alt=""></li>
-                                 @endfor
-                                 @if(strpos($schoolDetails->avg_review,'.'))
-                                 <li><img src="{{asset('public/images/star-half.png')}}"></li>
-                                 @php $sst++; @endphp
-                                 @endif
-                                 @while ($sst<=5)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
-                                 @php $sst++; @endphp
-                                 @endwhile
-                                 @else
-                                 @for($sst = 1; $sst <= 5; $sst++)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>                              
-                                 @endfor
-                                 @endif
-                              <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
-                           </ul>
-                 </div>
-                 
+                 <h3>{{  $school_record->school_name }}</h3>
+                  {{-- <div class="some_sc_add">
+                     <p><img src="{{ asset('images/me6.png') }}" alt="">{{ optional($school_record->address)->address_text ?? 'Address not available' }}</p>
+                     <ul class="stars_sc">
+                        @if(@$schoolDetails->avg_review)
+                           @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
+                           @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
+                              <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
+                           @endfor
+                           @if(strpos($schoolDetails->avg_review,'.'))
+                              <li><img src="{{asset('public/images/star-half.png')}}"></li>
+                              @php $sst++; @endphp
+                           @endif
+                           @while ($sst<=5)
+                              <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
+                              @php $sst++; @endphp
+                           @endwhile
+                           @else
+                           @for($sst = 1; $sst <= 5; $sst++)
+                              <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>                              
+                           @endfor
+                        @endif
+                        <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
+                     </ul>
+                 </div> --}}
               </div>
               <div class="cliam_from">
                   
                   <form action="{{ route('school.photo.save') }}" method="post" id="uploadPhotoForm" enctype="multipart/form-data">
                      @csrf
-                     <input type="hidden" name="school_master_id" value="{{ @$schoolDetails->id }}">
+                     <input type="hidden" name="school_master_id" value="{{ $school_record->id }}">
                      <div class="row">
                      
                         <div class="col-lg-12">
@@ -1303,7 +1319,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                     <div class="uplodimgfil W-100">
                                        <input type="file" name="school_image[]" id="school_image" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple="">
                                        <label for="school_image">
-                                          <img src="{{ url('public/images/upload.png') }}" alt="">
+                                          <img src="{{ asset('images/upload.png') }}" alt="">
                                           <h3 class="m-0">Upload Images</h3>
                                           <p>png, Jpg</p>
                                        </label>
@@ -1325,7 +1341,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
             <!-- Modal footer -->
             <div class="modal-footer">
-              <button class="clain_btns submitPhoto mt-3">Submit <img src="{{ url('public/images/arrow-righr.png') }}" alt="">  </button>
+              <button class="clain_btns submitPhoto mt-3">Submit <img src="{{ asset('images/arrow-righr.png') }}" alt="">  </button>
             </div>
 
           </div>
@@ -1345,50 +1361,46 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
             <!-- Modal body -->
             <div class="modal-body">
-            <div class="some_sc_de">
-                 <h3>{{  @$schoolDetails->school_name }}</h3>
-                 <div class="some_sc_add">
-                    <p><img src="{{ url('public/images/me6.png') }}" alt="">{{ @$schoolDetails->full_address }}</p>
-                    <ul class="stars_sc">
-                                @if(@$schoolDetails->avg_review)
-                                 @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
-                                 @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
-                                 <li><img src="{{ url('public/images/fstar.png') }}" alt=""></li>
-                                 @endfor
-                                 @if(strpos($schoolDetails->avg_review,'.'))
-                                 <li><img src="{{asset('public/images/star-half.png')}}"></li>
-                                 @php $sst++; @endphp
-                                 @endif
-                                 @while ($sst<=5)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
-                                 @php $sst++; @endphp
-                                 @endwhile
-                                 @else
-                                 @for($sst = 1; $sst <= 5; $sst++)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>                              
-                                 @endfor
-                                 @endif
-                              <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
-                           </ul>
-                 </div>
-                 
-              </div>
+               <div class="some_sc_de">
+                 <h3>{{  $school_record->school_name }}</h3>
+                  {{-- <div class="some_sc_add">
+                     <p><img src="{{ asset('images/me6.png') }}" alt="">{{ optional($school_record->address)->address_text ?? 'Address not available' }}</p>
+                     <ul class="stars_sc">
+                           @if(@$schoolDetails->avg_review)
+                           @php $schoolDetails->avg_review = $schoolDetails->avg_review+0; @endphp
+                           @for($sst = 1; $sst <= $schoolDetails->avg_review; $sst++)
+                           <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
+                           @endfor
+                           @if(strpos($schoolDetails->avg_review,'.'))
+                           <li><img src="{{asset('public/images/star-half.png')}}"></li>
+                           @php $sst++; @endphp
+                           @endif
+                           @while ($sst<=5)
+                           <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
+                           @php $sst++; @endphp
+                           @endwhile
+                           @else
+                           @for($sst = 1; $sst <= 5; $sst++)
+                           <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>                              
+                           @endfor
+                           @endif
+                        <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
+                     </ul>
+                 </div> --}}
+               </div>
               <div class="cliam_from">
                   
                   <form action="{{ route('user.send.message') }}" method="post" id="messageForm" enctype="multipart/form-data">
                      @csrf
-                     <input type="hidden" name="to_user_id" id="" value="{{ @$schoolDetails->user_id }}">
-                     <input type="hidden" name="school_id" value="{{ @$schoolDetails->id }}">
+                     {{-- <input type="hidden" name="to_user_id" id="" value="{{ @$schoolDetails->user_id }}"> --}}
+                     <input type="hidden" name="school_id" value="{{ $school_record->id }}">
                      <div class="row">
-                     
-                     <div class="col-md-12">
-                        <div class="post_ins">
-                        <label>Message</label>
-                        <textarea placeholder="Enter your review" name="message"></textarea>
-                                       
-                         </div>
-                         </div>
-
+                        <div class="col-md-12">
+                           <div class="post_ins">
+                              <label>Message</label>
+                              <textarea placeholder="Enter your review" name="message"></textarea>
+                           </div>
+                        </div>
                      </div>
                   </form>
                </div>
@@ -1396,7 +1408,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
             <!-- Modal footer -->
             <div class="modal-footer">
-              <button class="clain_btns submitMessage mt-3">Send<img src="{{ url('public/images/arrow-righr.png') }}" alt="">  </button>
+              <button class="clain_btns submitMessage mt-3">Send<img src="{{ asset('images/arrow-righr.png') }}" alt="">  </button>
             </div>
 
           </div>
@@ -1441,9 +1453,6 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
             <div class="modal-body image-modal">
               <img src="" alt="" id="schoolUniformshow">
             </div>
-
-         
-
           </div>
         </div>
       </div>
@@ -1454,22 +1463,19 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
         <div class="modal-dialog modal-dialog-centered image-modal-dialog">
           <div class="modal-content">
             <!-- Modal body -->
-            <div class="modal-body image-modal position-relative" id="yt-player">
+            {{-- <div class="modal-body image-modal position-relative" id="yt-player">
                <button type="button" class="btn-close position-absolute" data-bs-dismiss="modal"></button>
-                @if(@$schoolDetails->youtube_link == null)
-                @if(@$schoolDetails->header_image != null)
-               <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="img-clear">
-                @else
-               <img src="{{ url('public/images/default_image.png') }}" alt="" class="img-clear">
-                @endif
-                @endif
-                @if(@$schoolDetails->youtube_link != null)
-               <iframe src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                @endif
-            </div>
-
-         
-
+               @if(@$schoolDetails->youtube_link == null)
+                  @if(@$schoolDetails->header_image != null)
+                     <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="img-clear">
+                  @else
+                     <img src="{{ asset('images/default_image.png') }}" alt="" class="img-clear">
+                  @endif
+               @endif
+               @if(@$schoolDetails->youtube_link != null)
+                  <iframe src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+               @endif
+            </div> --}}
           </div>
         </div>
       </div>
