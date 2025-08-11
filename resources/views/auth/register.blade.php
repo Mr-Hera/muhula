@@ -15,7 +15,7 @@
             <div class="row">
                <div class="col-12">
                   <div class="logo_login">
-                     <a href="{{ route('home') }}"> <img src="{{ url('public/images/login-logo.png') }}" alt=""> </a>
+                     <a href="{{ route('home') }}"> <img src="{{ asset('images/login-logo.png') }}" alt=""> </a>
                   </div>
                </div>
             </div>
@@ -32,9 +32,9 @@
                         </div>
 
                         <div class="login_froms">
-                           <form action="{{ route('user.register.save') }}" method="post" id="register-form">
+                           <form action="{{ route('user.register.save') }}" method="POST" id="register-form">
                               @csrf
-                              <input type="hidden" name="school_reg" id="" value="{{ session()->get('school_reg') }}">
+                              {{-- <input type="hidden" name="school_reg" id="" value="{{ session()->get('school_reg') }}"> --}}
                               <div class="row">
                                  <div class="col-sm-6">
                                     <div class="login_input">
@@ -83,30 +83,30 @@
                                                   <input type="checkbox" name="check_me" id="agree2">
                                                   <span class="checkbox"></span>
                                           </label>
-                                          <label id="check_me-error" class="error" for="check_me" style="display:none;">This field is required.</label>
+                                          <label id="check_me-error" class="error" for="check_me" style="display:none;">Your consent is required.</label>
                                        </div>
                                       
                                   </div>
 
 
-                                       <div class="capca_box">
+                                    {{-- <div class="capca_box">
                                       <div class="g-recaptcha" data-sitekey="{{ env('CAPTCHA_KEY') }}"></div>
-                                     @if($errors->has('g-recaptcha-response'))
-                                     <span >
-                                      <strong style="color: red !important">{{$errors->first('g-recaptcha-response')}}</strong>
-                                     </span>
-                                      @endif
-                                       </div>
+                                       @if($errors->has('g-recaptcha-response'))
+                                       <span >
+                                       <strong style="color: red !important">{{$errors->first('g-recaptcha-response')}}</strong>
+                                       </span>
+                                       @endif
+                                    </div>
                                        
-                                     <label class="captcha_error error mb-2"></label>
+                                    <label class="captcha_error error mb-2"></label> --}}
                                   <div class="login_btns">
-                                     <button type="submit">Signup <img src="{{ url('public/images/arrow-righr.png') }}" alt=""> </button>
+                                     <button type="submit">Signup <img src="{{ asset('images/arrow-righr.png') }}" alt=""> </button>
                                   </div>
 
                                   <div class="login_gma">
                                      <div class="gmail_log">
                                        <a href="{{ route('login.social') }}">
-                                          <div class="google_logo"> <img src="{{ url('public/images/google.png') }}" alt=""> </div>
+                                          <div class="google_logo"> <img src="{{ asset('images/google.png') }}" alt=""> </div>
                                           <h3>Signup with Google account</h3>
                                        </a> 
                                      </div>
@@ -128,7 +128,7 @@
                   <div class="login_statis">
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log1.png') }}" alt="">
+                           <img src="{{ asset('images/log1.png') }}" alt="">
                         </div>
                         <div class="st_info">
                         <h5>Register on Muhula.com</h5>
@@ -138,7 +138,7 @@
 
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log2.png') }}" alt="">
+                           <img src="{{ asset('images/log2.png') }}" alt="">
                         </div>
                         <div class="st_info">
                          <h5>Search & Choose School</h5>
@@ -148,7 +148,7 @@
 
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log3.png') }}" alt="">
+                           <img src="{{ asset('images/log3.png') }}" alt="">
                         </div>
                         <div class="st_info">
                         <h5>Claim School & reply to reviews</h5>
