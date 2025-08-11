@@ -25,8 +25,8 @@
    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="blurred-image">
    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="img-clear">
    @else
-   <img src="{{ asset('images/default_image.png') }}" alt="" class="blurred-image">
-   <img src="{{ asset('images/default_image.png') }}" alt="" class="img-clear">
+   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="blurred-image">
+   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="img-clear">
    @endif
    <a href="javascript:;" id="play-video" class="video-play-button">
    <span></span>
@@ -47,8 +47,8 @@
    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="blurred-image">
    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="img-clear">
    @else
-   <img src="{{ url('public/images/default_image.png') }}" alt="" class="blurred-image">
-   <img src="{{ url('public/images/default_image.png') }}" alt="" class="img-clear">
+   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="blurred-image">
+   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="img-clear">
    @endif
 </a>
 @php
