@@ -42,38 +42,17 @@
             <div class="container">
                <div class="banner-form">
                     <form action="{{ route('school.search') }}" class="bnr-frm" method="post">
-                      @csrf
+                        @csrf
                         <div class="bnr-inpt1 bnr-frm-ins">
                             <label for="Keywords" class="form-label">Search by Keywords</label>
                             <input type="text" class="form-control" id="Keywords" placeholder="Enter here" name="keyword">
                         </div>
-                        {{--<div class="bnr-slct">
-                            <div class="bnr-frm-ins">
-                                <label class="form-label">Schools by Type</label>
-                                <select class="form-select" name="school_type[]">
-                                   <option value="">Select</option>
-                                   @foreach($schoolType as $data)
-                                   <option value="{{ @$data->id }}">{{ @$data->school_type }}</option>
-                                   @endforeach
-                                  </select>
-                                  
-                            </div>
-                            <div class="bnr-frm-ins">
-                                <label class="form-label">Education System</label>
-                                  <select class="form-select" name="board">
-                                  <option value="">Select</option>
-                                    @foreach($boards as $data)
-                                    <option value="{{ @$data->id }}">{{ @$data->board_name }}</option>
-                                    @endforeach
-                                  </select>
-                            </div> 
-                        </div>--}}
                         <div class="bnr-inpt2 bnr-frm-ins" id="location2">
                             <label for="location" class="form-label">Schools by Location</label>
                             <input type="text" class="form-control" placeholder="Enter here" name="location">                            
                         </div>
                         <button type="submit" class="bnr-btn">Search</button>                        
-                    </form>                   
+                    </form>
                 </div>
             </div>
       </section>
