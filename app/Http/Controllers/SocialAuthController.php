@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class SocialAuthController extends Controller
 {
@@ -51,54 +54,47 @@ class SocialAuthController extends Controller
 
     public function register(Request $request)
     { 
-        if(@$request->redirect_uri){
-            Session::put('redirect_uri', @$request->redirect_uri);
-        }
-        if(url()->previous() != url('login')) {
-            session()->put('previous_url', url()->previous());
-        }
-        if(url()->previous() != url('sign-up')){
+        // if(@$request->redirect_uri){
+        //     Session::put('redirect_uri', @$request->redirect_uri);
+        // }
+        // if(url()->previous() != url('login')) {
+        //     session()->put('previous_url', url()->previous());
+        // }
+        // if(url()->previous() != url('sign-up')){
 
-            session()->put('previous_url', url()->previous());
-        }
+        //     session()->put('previous_url', url()->previous());
+        // }
         return view('auth.register');
     }
 
     public function registerSave(Request $request)
-    { 
-        //dd(session()->get('school_id'));
-        $this->validate($request, [
-          'g-recaptcha-response' => new Captcha(),  
-          'first_name'  =>['required','max:30'],
-          'last_name'   =>['required','max:30'], 
-          'email'    => ['required', 'email',
-                Rule::unique('users')->ignore('D', 'status')
-            ],
-            'password' => ['required'],          
+    {
+        dd($request);
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'first_name'      => ['required', 'string', 'max:255'],
+            'last_name'       => ['required', 'string', 'max:255'],
+            'email'           => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'password2' => ['required', 'same:password'],
         ]);
 
-        $creates['first_name']        = $request->first_name;
-        $creates['last_name']        = $request->last_name;
-        $creates['email']       = $request->email;
-        $creates['password'] = Hash::make($request->password);
-        $creates['email_code'] = rand(10000,99999); 
-        $creates['status']  = 'U';
-        $creates['school_reg']  = $request->school_reg?$request->school_reg:'N';
-        if(session()->has('school_id')){
-
-            $creates['school_id'] = session()->get('school_id');
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
-        
-        $user = User::create($creates);
 
-        if(!$user){
-            return redirect()->back()->with('error','Something went wrong!');
-        }
-        $creates['name'] = @$user->first_name. ' '.@$user->last_name;
-        $creates['link'] = route('verify.user.email', [@$user->email_code,md5(@$user->id)]);
-        Mail::send(new UserVerifyMail($creates));
-        return redirect()->route('user.success.msg')->with('success','Thanks for signing up! Please verify your email to activate your account. A verification link has been sent to your email. If not found, check your spam folder too.');
+        // Create user
+        $user = User::create([
+            'first_name'      => $request->first_name,
+            'last_name'       => $request->last_name,
+            'email'           => $request->email,
+            'password'        => Hash::make($request->password),
+        ]);
 
+        // Auto login after registration
+        Auth::login($user);
+
+        return redirect()->route('home')->with('success', 'Account created successfully!');
     }
 
     // Handle logout

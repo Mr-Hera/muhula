@@ -32,8 +32,8 @@ Route::post('/login', [SocialAuthController::class, 'login'])->name('login.post'
 Route::get('logout', [SocialAuthController::class, 'logout'])->name('logout');
 
 // Register customer
-Route::get('sign-up', 'Auth\RegisterController@register')->name('user.register');
-Route::post('sign-up-save', 'Auth\RegisterController@registerSave')->name('user.register.save');
+Route::get('sign-up', [SocialAuthController::class, 'register'])->name('user.register');
+Route::post('sign-up-save', [SocialAuthController::class, 'registerSave'])->name('user.register.save');
 
 Route::post('user-email-check', 'Auth\RegisterController@userEmailCheck')->name('user.email.check');
 Route::post('user-mobile-check', 'Auth\RegisterController@userMobileCheck')->name('user.mobile.check');
