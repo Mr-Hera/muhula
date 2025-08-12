@@ -34,7 +34,7 @@
                         <div class="login_froms">
                            <form action="{{ route('user.register.save') }}" method="POST" id="register-form">
                               @csrf
-                              {{-- <input type="hidden" name="school_reg" id="" value="{{ session()->get('school_reg') }}"> --}}
+                              
                               <div class="row">
                                  <div class="col-sm-6">
                                     <div class="login_input">
@@ -80,7 +80,7 @@
                                  <div class="remember d-flex justify-content-between align-items-center">
                                       <div class="check_re">
                                           <label for="">I agree to the <a href="#">Terms of service</a> 
-                                                  <input type="checkbox" name="check_me" id="agree2">
+                                                  <input type="checkbox" name="terms_of_service" id="agree2">
                                                   <span class="checkbox"></span>
                                           </label>
                                           <label id="check_me-error" class="error" for="check_me" style="display:none;">Your consent is required.</label>
@@ -89,16 +89,16 @@
                                   </div>
 
 
-                                    {{-- <div class="capca_box">
+                                    <div class="capca_box">
                                       <div class="g-recaptcha" data-sitekey="{{ env('CAPTCHA_KEY') }}"></div>
                                        @if($errors->has('g-recaptcha-response'))
                                        <span >
-                                       <strong style="color: red !important">{{$errors->first('g-recaptcha-response')}}</strong>
+                                          <strong style="color: red !important">{{$errors->first('g-recaptcha-response')}}</strong>
                                        </span>
                                        @endif
                                     </div>
                                        
-                                    <label class="captcha_error error mb-2"></label> --}}
+                                    <label class="captcha_error error mb-2"></label>
                                   <div class="login_btns">
                                      <button type="submit">Signup <img src="{{ asset('images/arrow-righr.png') }}" alt=""> </button>
                                   </div>
@@ -164,7 +164,7 @@
 @endsection
 @section('script')
 @include('includes.scripts')
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{{-- <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
 $(document).ready(function() {
   $.validator.addMethod("validate_email", function(value, element) {
@@ -240,30 +240,28 @@ $(document).ready(function() {
             }
         },
 
-        submitHandler: function(form) {
-           
-         var res = grecaptcha.getResponse();
-            
-            if(res.length == 0) {
-                $('.captcha_error').text("Please confirm captcha to proceed");
-                $('.captcha_error').show();
-                return false;
-            } else {
-                $('.captcha_error').text("");
-                form.submit();
-            }
-            
-        },
+      submitHandler: function(form) {
+         // if (typeof grecaptcha !== 'undefined') {
+         //    var res = grecaptcha.getResponse();
+         //    if (res.length == 0) {
+         //          $('.captcha_error').text("Please confirm captcha to proceed");
+         //          $('.captcha_error').show();
+         //          return false;
+         //    }
+         // }
+         // $('.captcha_error').text("");
+         form.submit();
+      }
 
     });
 
     $('#email').keyup(function(){
- let val = $(this).val().toLowerCase()
- $(this).val(val)
+      let val = $(this).val().toLowerCase()
+      $(this).val(val)
 })
 
 
 
 });
-</script>
+</script> --}}
 @endsection

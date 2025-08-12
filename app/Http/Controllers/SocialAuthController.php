@@ -69,7 +69,7 @@ class SocialAuthController extends Controller
 
     public function registerSave(Request $request)
     {
-        dd($request);
+        // dd($request);
         // Validate request
         $validator = Validator::make($request->all(), [
             'first_name'      => ['required', 'string', 'max:255'],
@@ -85,10 +85,10 @@ class SocialAuthController extends Controller
 
         // Create user
         $user = User::create([
-            'first_name'      => $request->first_name,
-            'last_name'       => $request->last_name,
-            'email'           => $request->email,
-            'password'        => Hash::make($request->password),
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
 
         // Auto login after registration
