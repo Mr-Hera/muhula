@@ -493,7 +493,7 @@
                                     @auth
                                        <h3>Fees: <span>KES{{ $school->starting_from_fees }}</span> </h3>
                                     @endauth
-                                    <p><img src="{{ asset('images/map-pin.png') }}" alt="" /> {{ $school->country->name }}, {{ $school->county->name }}</p>
+                                    <p><img src="{{ asset('images/map-pin.png') }}" alt="" /> {{ optional($school->country)->name ?? 'N/A' }}, {{ optional($school->county)->name ?? 'N/A' }}</p>
                                  </div>
 
 
