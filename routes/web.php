@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SocialAuthController;
 
 /*
@@ -125,7 +126,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
     Route::group(['namespace' => 'User','middleware' => 'auth'], function(){
 
-        Route::get('dashboard', 'Dashboard\DashboardController@dashboard')->name('user.dashboard');
+        Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('user.dashboard');
         Route::get('edit-profile', 'Profile\ProfileController@profile')->name('user.profile');
         Route::get('profile-image-delete', 'Profile\ProfileController@profileImageDelete')->name('user.profile.image.delete');
         Route::post('update-profile', 'Profile\ProfileController@update')->name('user.update.profile');

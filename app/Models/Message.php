@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\ReadMessage;
 use App\Models\Conversation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,5 +31,10 @@ class Message extends Model
     public function replyTo() 
     { 
         return $this->belongsTo(Message::class, 'reply_to_id'); 
+    }
+
+    public function reads()
+    {
+        return $this->hasMany(ReadMessage::class);
     }
 }
