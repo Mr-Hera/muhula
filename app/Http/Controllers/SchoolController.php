@@ -801,69 +801,81 @@ class SchoolController extends Controller
 
   public function schoolSearch(Request $request)
   {
-      // Fetch filters from request
-      $school_type = $request->school_type;
-      $keyword     = $request->keyword;
-      $location    = $request->location;
+    // Fetch filters from request
+    $school_type = $request->school_type;
+    $keyword     = $request->keyword;
+    $location    = $request->location;
+    $curriculum_id = $request->curriculum_id;
+    $county_id = $request->county_id;
 
-      // Start building query
-      $query = School::query()->with(['schoolLevel', 'type', 'curriculum', 'country', 'county', 'address', 'courses']);
+    // Start building query
+    $query = School::query()->with(['schoolLevel', 'type', 'curriculum', 'country', 'county', 'address', 'courses']);
 
-      // Filter: school type
-      if ($school_type) {
-          $query->where('school_level_id', $school_type);
-      }
+    // Filter: school type
+    if ($school_type) {
+      $query->where('school_level_id', $school_type);
+    }
 
-      // Filter: keyword (search in name, description, and course name)
-      if ($keyword) {
-          $query->where(function ($q) use ($keyword) {
-              $q->where('name', 'LIKE', "%{$keyword}%")
-                ->orWhere('description', 'LIKE', "%{$keyword}%")
-                ->orWhereHas('courses', function ($q2) use ($keyword) {
-                    $q2->where('name', 'LIKE', "%{$keyword}%");
-                });
+    // Filter: curriculum
+    if ($curriculum_id) {
+      $query->where('curriculum_id', $curriculum_id);
+    }
+
+    // Filter: curriculum
+    if ($curriculum_id) {
+      $query->where('county_id', $curriculum_id);
+    }
+
+    // Filter: keyword (search in name, description, and course name)
+    if ($keyword) {
+      $query->where(function ($q) use ($keyword) {
+        $q->where('name', 'LIKE', "%{$keyword}%")
+          ->orWhere('description', 'LIKE', "%{$keyword}%")
+          ->orWhereHas('courses', function ($q2) use ($keyword) {
+            $q2->where('name', 'LIKE', "%{$keyword}%");
           });
-      }
+      });
+    }
 
-      // Filter: location (search in county name, country name, or address text)
-      if ($location) {
-          $query->where(function ($q) use ($location) {
-              $q->whereHas('county', function ($q1) use ($location) {
-                  $q1->where('name', 'LIKE', "%{$location}%");
-              })
-              ->orWhereHas('country', function ($q2) use ($location) {
-                  $q2->where('name', 'LIKE', "%{$location}%");
-              })
-              ->orWhereHas('address', function ($q3) use ($location) {
-                  $q3->where('address_text', 'LIKE', "%{$location}%");
-              });
-          });
-      }
+    // Filter: location (search in county name, country name, or address text)
+    if ($location) {
+      $query->where(function ($q) use ($location) {
+        $q->whereHas('county', function ($q1) use ($location) {
+          $q1->where('name', 'LIKE', "%{$location}%");
+        })
+        ->orWhereHas('country', function ($q2) use ($location) {
+          $q2->where('name', 'LIKE', "%{$location}%");
+        })
+        ->orWhereHas('address', function ($q3) use ($location) {
+          $q3->where('address_text', 'LIKE', "%{$location}%");
+        });
+      });
+    }
 
-      // Final results
-      $schools = $query->get();
+    // Final results
+    $schools = $query->get();
 
-      // Static lists (unchanged from your original code)
-      $countries = Country::all();
-      $counties = County::all();
-      $school_levels = SchoolLevel::all();
-      $courses = Course::all();
-      $school_types_day = SchoolType::where('name', 'Day')->first();
-      $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
-      $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
-      $key = $request->all();
+    // Static lists (unchanged from your original code)
+    $countries = Country::all();
+    $counties = County::all();
+    $school_levels = SchoolLevel::all();
+    $courses = Course::all();
+    $school_types_day = SchoolType::where('name', 'Day')->first();
+    $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
+    $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
+    $key = $request->all();
 
-      return view('search_school.school_list')->with([
-          'countries' => $countries,
-          'counties' => $counties,
-          'school_levels' => $school_levels,
-          'courses' => $courses,
-          'school_types_day' => $school_types_day,
-          'school_types_boarding' => $school_types_boarding,
-          'school_types_day_n_boarding' => $school_types_day_n_boarding,
-          'schools' => $schools,
-          'key' => $key,
-      ]);
+    return view('search_school.school_list')->with([
+        'countries' => $countries,
+        'counties' => $counties,
+        'school_levels' => $school_levels,
+        'courses' => $courses,
+        'school_types_day' => $school_types_day,
+        'school_types_boarding' => $school_types_boarding,
+        'school_types_day_n_boarding' => $school_types_day_n_boarding,
+        'schools' => $schools,
+        'key' => $key,
+    ]);
   }
 
   public function schoolDetails($slug)

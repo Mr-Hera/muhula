@@ -390,11 +390,11 @@
                   <h2>Schools by Curriculum</h2>
                   <p>Choose a Curriculum and discover interesting schools for you</p>
                </div>
-                <form action="{{ route('school.search') }}" method="post" id="searchSchoolBoard">
+               <form action="{{ route('school.search') }}" method="post" id="searchSchoolBoard">
                   @csrf
-                 <input type="hidden" name="board" id="schoolBoard">
-                 <input type="hidden" name="town" id="schoolTown">
-                </form>
+                 <input type="hidden" name="curriculum_id" id="schoolBoard">
+                 <input type="hidden" name="county" id="schoolTown">
+               </form>
                <div class="curriculam_info">
                   @if($curricula && $curricula->count())
                      @foreach($curricula as $curriculum)
@@ -429,20 +429,6 @@
 
                <div class="featured-location-inr">
                   <div class="owl-carousel owl_produs owl-theme owl_produs owl-loaction position-relative">
-                     {{-- @if(@$cities)
-                     @foreach($cities as $data)
-                     <div class="item">
-                        @foreach($data as $city)
-                        <div class="loc_box">
-                           <a href="javascript:;" class="town" data-town="{{ @$city->id }}">
-                              <h2>{{ @$city->city }}<span>({{ @$city->getTotalSchool->count() }})</span> </h2>
-                              <img src="{{ asset('images/chevrone.png') }}" alt="">
-                           </a>
-                        </div>
-                        @endforeach
-                     </div>
-                     @endforeach
-                     @endif --}}
                      @if($county && $county->count())
                         @foreach($county->chunk(2) as $group)
                            <div class="item">
