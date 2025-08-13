@@ -39,8 +39,8 @@
                               </div>--}}
                            </div>
                            <div class="nature_s">
-                                 @if($favourite->favouritable->type)
-                                    <h6>{{ $favourite->favouritable->type->name }}</h6>
+                                 @if($favourite->favouritable->schoolLevel)
+                                    <h6>{{ $favourite->favouritable->schoolLevel->name }}</h6>
                                  @endif
                               </div>
                            <div class="sc_thub_ab">
@@ -58,13 +58,15 @@
                                  </p>
                                  <span class="no-marmin">|</span>
                                  <p>
-                                 @if($favourite->favouritable->boarding_type == 'D')
-                                 Day
-                                 @elseif($favourite->favouritable->boarding_type == 'B')
-                                 Boading
-                                 @elseif($favourite->favouritable->boarding_type == 'DB')
-                                 Day & Boading
-                                 @endif
+                                    @if(optional($favourite->favouritable->type)->name === "Day")
+                                       Day
+                                    @elseif(optional($favourite->favouritable->type)->name === "Boarding")
+                                       Boarding
+                                    @elseif(optional($favourite->favouritable->type)->name === "Day & Boarding")
+                                       Day & Boarding
+                                    @else
+                                       <em>No type specified</em>
+                                    @endif
                                  </p>
                               </div>
                               <div class="message_body">

@@ -253,7 +253,7 @@ class DashboardController extends Controller
         // Fetch only favourite schools for the logged-in user
         $favourites = Favourite::where('user_id', $user->id)
             ->where('favouritable_type', School::class)
-            ->with('favouritable') // eager load the related School
+            ->with('favouritable.type') // eager load the related School
             ->orderBy('id', 'desc')
             ->paginate(10);                                             
 
