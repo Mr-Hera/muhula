@@ -54,7 +54,7 @@ class School extends Model
     
     public function type() 
     { 
-        return $this->belongsTo(SchoolType::class); 
+        return $this->belongsTo(SchoolType::class, 'school_type_id'); 
     }
     
     public function curriculum() 

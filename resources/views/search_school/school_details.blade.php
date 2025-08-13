@@ -135,11 +135,16 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            @endauth --}}
                            </h3>
                            <div class="nature_s">
-                              @if($school_record->type)
+                              {{-- @if($school_record->type)
                                  @foreach($school_record->type as $type)
                                     <h6>{{ $type->name }}</h6>
                                  @endforeach
-                              @endif
+                              @endif --}}
+                              @if($school_record->type)
+                                    <h6>{{ $school_record->type->name }}</h6>
+                                 @else
+                                    <h6>Not Defined</h6>
+                                 @endif
                            </div>
                            {{-- <ul class="stars_sc">
                                  @if($schoolDetails->avg_review)

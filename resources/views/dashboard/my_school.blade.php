@@ -27,21 +27,20 @@
                                     @if($school->school_logo != null)
                                        <img src="{{ URL::to('storage/app/public/images/school_logo') }}/{{ $school->school_logo }}" alt="">
                                     @else
-                                       <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ $school->getSchoolMainImage->image }}" alt="">
+                                       {{-- <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ $school->getSchoolMainImage->image }}" alt=""> --}}
+                                       <img src="{{ asset('storage/default_images/default.jpg') }}" alt="">
                                     @endif
-                                 <h3>{{ $school->school_name }}</h3>
+                                    <h3>{{ $school->name }}</h3>
                                     </a>
                                  </div>
                                  <div class="message_date d-blocks">
                                     <a href="{{ route('user.edit.school',$school->id) }}">Edit</a>
-                                 <p><img src="{{ asset('images/clock.png') }}" alt="">{{ date('jS M, Y H:i',strtotime($school->created_at)) }}</p>
+                                    <p><img src="{{ asset('images/clock.png') }}" alt="">{{ date('jS M, Y H:i',strtotime($school->created_at)) }}</p>
                                  </div>
                               </div>
                               <div class="nature_s">
-                                 @if($school->school_types && $school->school_types->count())
-                                    @foreach($school->school_types as $type)
-                                       <h6>{{ $type->school_type }}</h6>
-                                    @endforeach
+                                 @if($school->type)
+                                    <h6>{{ $school->type->name }}</h6>
                                  @else
                                     <h6>Not Defined</h6>
                                  @endif
@@ -58,7 +57,7 @@
                                              {{ @$key > 0?',':'' }} {{ $schoolboard->board_name }}
                                           @endforeach
                                        @endif --}}
-                                       {{ optional($school_record->curriculum)->name ?? 'Not Defined' }}
+                                       {{ optional($school->curriculum)->name ?? 'Not Defined' }}
                                     </p>
                                     <span class="no-marmin">|</span>
                                     <p>
