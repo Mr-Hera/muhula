@@ -7,6 +7,7 @@ use App\Models\County;
 use App\Models\Course;
 use App\Models\Country;
 use App\Models\Religion;
+use App\Models\Favourite;
 use App\Models\Curriculum;
 use App\Models\SchoolType;
 use App\Models\SchoolImage;
@@ -152,5 +153,10 @@ class School extends Model
         return $this->belongsToMany(User::class, 'school_user')
             ->withPivot('claim_status', 'claimed_at')
             ->withTimestamps();
+    }
+
+    public function favourites()
+    {
+        return $this->morphMany(Favourite::class, 'favouritable');
     }
 }

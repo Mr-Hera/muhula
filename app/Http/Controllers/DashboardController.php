@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SchoolReview;
 use App\Models\School;
 use App\Models\Message;
+use App\Models\Favourite;
+use App\Models\SchoolReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -243,6 +244,21 @@ class DashboardController extends Controller
 
         return view('dashboard.my_school')->with([
         'claimedSchools' => $claimedSchools,
+        ]);
+    }
+
+    // DASHBOARD: MY FAVOURITE
+    public function myFavourite(){
+        $user = Auth::user();
+        // Fetch only favourite schools for the logged-in user
+        $favourites = Favourite::where('user_id', $user->id)
+            ->where('favouritable_type', School::class)
+            ->with('favouritable') // eager load the related School
+            ->orderBy('id', 'desc')
+            ->paginate(10);                                             
+
+        return view('dashboard.my_favourite')->with([
+            'favourites' => $favourites,
         ]);
     }
 }

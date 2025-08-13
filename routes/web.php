@@ -153,7 +153,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('edit-school-result/{id?}/{result_id?}', 'School\SchoolController@editSchoolResult')->name('user.edit.school.result');
         Route::post('update-school-result', 'School\SchoolController@updateSchoolResult')->name('user.update.school.result');
 
-        Route::get('my-favourite', 'School\SchoolController@myFavourite')->name('user.my.favourite');
+        Route::get('my-favourite', [DashboardController::class, 'myFavourite'])->name('user.my.favourite');
         Route::get('delete-favourite/{id?}', 'School\SchoolController@deleteFavourite')->name('user.favourite.delete');
 
         Route::get('create-news/{school_id?}/{news_id?}', 'School\SchoolController@createNews')->name('user.create.news');
