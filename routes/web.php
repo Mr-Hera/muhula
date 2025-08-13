@@ -117,7 +117,7 @@ Route::group(['namespace' => 'Modules'], function() {
      Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
      Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
      Route::post('post-review','School\SearchSchoolController@postReview')->name('post.review');
-     Route::post('school-claim-save','School\SearchSchoolController@shoolClaimSave')->name('school.claim.save');
+     Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
      Route::post('upload-photo-save','School\SearchSchoolController@uploadPhotoSave')->name('school.photo.save');
      Route::post('send-message-save','School\SearchSchoolController@sendMessage')->name('user.send.message');
      Route::post('add-favourite','School\SearchSchoolController@addFavourite')->name('user.add.favourite');
@@ -127,7 +127,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::group(['namespace' => 'User','middleware' => 'auth'], function(){
 
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('user.dashboard');
-        Route::get('edit-profile', 'Profile\ProfileController@profile')->name('user.profile');
+        Route::get('edit-profile', [DashboardController::class, 'profile'])->name('user.profile');
         Route::get('profile-image-delete', 'Profile\ProfileController@profileImageDelete')->name('user.profile.image.delete');
         Route::post('update-profile', 'Profile\ProfileController@update')->name('user.update.profile');
         Route::post('email-check', 'Profile\ProfileController@userEmailCheck')->name('email.check');
@@ -137,7 +137,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('user-email-update/{vcode?}/{id?}', 'Profile\ProfileController@verifyEmail')->name('user.email.update');
 
         //for my school
-        Route::get('my-school', 'School\SchoolController@mySchool')->name('user.my.school');
+        Route::get('my-school', [DashboardController::class, 'mySchool'])->name('user.my.school');
         Route::get('edit-school-info/{id?}/{sub_id?}', 'School\SchoolController@editSchool')->name('user.edit.school');
         Route::post('update-school-info', 'School\SchoolController@schoolInfoUpdate')->name('user.school.info.update');
         Route::post('update-school-image', 'School\SchoolController@updateImage')->name('user.update.school.image');

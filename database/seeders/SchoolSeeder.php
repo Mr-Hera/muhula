@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use App\Models\School;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class SchoolSeeder extends Seeder
@@ -18,9 +20,9 @@ class SchoolSeeder extends Seeder
                 'description' => 'A private primary school in the heart of Westlands.',
                 'year_of_establishment' => 2005,
                 'religion_id' => 1,
-                'school_level_id' => 2, // Primary
-                'school_type_id' => 1, // Day
-                'curriculum_id' => 1, // CBC
+                'school_level_id' => 2,
+                'school_type_id' => 1,
+                'curriculum_id' => 1,
                 'ownership' => 'Private',
                 'gender_admission' => 'Mixed',
                 'county_id' => 1,
@@ -30,8 +32,6 @@ class SchoolSeeder extends Seeder
                 'school_uniform_id' => 1,
                 'school_contact_id' => 1,
                 'school_address_id' => 1,
-                // 'school_operation_hour_id' => 1,
-                // 'extended_school_service_id' => 3,
                 'logo' => null,
                 'website_url' => 'https://westlandsacademy.ke',
                 'is_active' => true,
@@ -54,8 +54,6 @@ class SchoolSeeder extends Seeder
                 'school_uniform_id' => 2,
                 'school_contact_id' => 2,
                 'school_address_id' => 2,
-                // 'school_operation_hour_id' => 2,
-                // 'extended_school_service_id' => 1,
                 'logo' => null,
                 'website_url' => null,
                 'is_active' => true,
@@ -78,8 +76,6 @@ class SchoolSeeder extends Seeder
                 'school_uniform_id' => 3,
                 'school_contact_id' => 3,
                 'school_address_id' => 3,
-                // 'school_operation_hour_id' => 3,
-                // 'extended_school_service_id' => 2,
                 'logo' => null,
                 'website_url' => null,
                 'is_active' => true,
@@ -102,8 +98,6 @@ class SchoolSeeder extends Seeder
                 'school_uniform_id' => 4,
                 'school_contact_id' => 4,
                 'school_address_id' => 4,
-                // 'school_operation_hour_id' => 4,
-                // 'extended_school_service_id' => 1,
                 'logo' => null,
                 'website_url' => 'https://freretowncollege.ac.ke',
                 'is_active' => true,
@@ -126,8 +120,6 @@ class SchoolSeeder extends Seeder
                 'school_uniform_id' => 5,
                 'school_contact_id' => 5,
                 'school_address_id' => 5,
-                // 'school_operation_hour_id' => 5,
-                // 'extended_school_service_id' => 3,
                 'logo' => null,
                 'website_url' => null,
                 'is_active' => true,
@@ -150,16 +142,29 @@ class SchoolSeeder extends Seeder
                 'school_uniform_id' => 5,
                 'school_contact_id' => 5,
                 'school_address_id' => 5,
-                // 'school_operation_hour_id' => 5,
-                // 'extended_school_service_id' => 3,
                 'logo' => null,
                 'website_url' => null,
                 'is_active' => true,
             ],
         ];
 
-        foreach ($schools as $school) {
-            School::create($school);
+        // Get or create default user
+        $defaultUser = User::first() ?? User::factory()->create();
+
+        foreach ($schools as $index => $schoolData) {
+            $school = School::create($schoolData);
+
+            // Simulate different positions & proof files for each school
+            DB::table('school_user')->insert([
+                'user_id' => $defaultUser->id,
+                'school_id' => $school->id,
+                'contact_position_id' => rand(1, 5), // assuming you have positions with IDs 1–5
+                'proof_of_association' => 'proofs/sample_' . ($index + 1) . '.pdf', // fake file path
+                'claim_status' => 'pending',
+                'claimed_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }

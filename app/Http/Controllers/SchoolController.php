@@ -897,7 +897,8 @@ class SchoolController extends Controller
       'fees.level',
       'branches.county', // load county for each branch
       'branches.type',   // load type for each branch
-      'branches.school'  // just in case you need parent school info
+      'branches.school',  // just in case you need parent school info
+      'claimingUsers' // check claims
     ])->where('slug', $slug)->firstOrFail();
     // dd($school_operation_hours);
 
@@ -917,10 +918,64 @@ class SchoolController extends Controller
     // Fetch all contact positions
     $contactPositions = ContactPosition::all();
 
+    $currentUserClaim = null;
+    if (Auth::check()) {
+      $currentUserClaim = $school_record->claimingUsers
+        ->where('id', Auth::id())
+        ->first();
+    }
+
     return view('search_school.school_details')->with([
       'school_record' => $school_record,
       'school_branches' => $school_branches,
-      'contactPositions'  => $contactPositions
+      'contactPositions'  => $contactPositions,
+      'currentUserClaim' => $currentUserClaim
     ]);
+  }
+
+  public function shoolClaimSave(Request $request){
+    // dd($request);
+    // Validate the request
+    $validated = $request->validate([
+      'school_id'            => 'required|exists:schools,id',
+      'user_name'            => 'required|string|max:255',
+      'contact_position_id'  => 'required|exists:contact_positions,id',
+      'email_address'        => 'required|email|max:255',
+      'claim_file'           => 'required|array',
+      'claim_file.*'         => 'file|mimes:jpg,jpeg,png,pdf|max:5120', // 5MB limit per file
+    ]);
+
+    // Handle file uploads
+    // $storedFiles = [];
+    // if ($request->hasFile('claim_file')) {
+    //   foreach ($request->file('claim_file') as $file) {
+    //     // Store in /storage/app/public/claims
+    //     $path = $file->store('claims', 'public');
+    //     $storedFiles[] = $path;
+    //   }
+    // }
+
+    // Insert into pivot table
+    DB::table('school_user')->insert([
+      'user_id'              => Auth::id(),
+      'school_id'            => $validated['school_id'],
+      'contact_position_id'  => $validated['contact_position_id'],
+      'proof_of_association' => !empty($storedFiles) ? json_encode($storedFiles) : null,
+      'claim_status'         => 'pending',
+      'claimed_at'           => now(),
+      'created_at'           => now(),
+      'updated_at'           => now(),
+    ]);
+
+    // Optionally, send email notifications later
+    /*
+    // To the user
+    Mail::to($validated['email_address'])->send(new ClaimSubmittedMail($validated));
+
+    // To admin
+    Mail::to(config('mail.admin_address'))->send(new NewClaimNotificationMail($validated));
+    */
+
+    return redirect()->back()->with('success', 'Your school claim has been submitted and is pending approval.');
   }
 }

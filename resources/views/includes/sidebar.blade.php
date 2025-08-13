@@ -9,7 +9,7 @@
             <a href="{{ route('user.profile') }}" class="{{ Route::is('user.profile')?'active' : '' }}"> <span><img src="{{asset('images/dash2.png')}}" alt="" ></span>  Edit Profile</a>
          </li>
          <li>                          
-            <a href="{{ route('user.my.school') }}" class="{{ Route::is('user.my.school','user.edit.school')?'active' : '' }}"> <span><img src="{{ url('images/dash3.png') }}" alt=""></span>  My School </a>
+            <a href="{{ route('user.my.school') }}" class="{{ Route::is('user.my.school','user.edit.school')?'active' : '' }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>  My School </a>
          </li>
          <li>                          
             <a href="{{ route('user.my.favourite') }}" class="{{ Route::is('user.my.favourite')?'active' : '' }}"> <span><img src="{{asset('images/heart.png')}}" alt="" ></span>  My Favourite </a>
@@ -26,12 +26,12 @@
          <li>                          
             <a href="{{ route('school.search') }}"> <span><img src="{{asset('images/claim-school.png')}}" alt="" ></span>Claim School </a>
          </li>
-         <li>                          
+         {{-- <li>                          
             <a href="{{ route('user.subscription') }}" class="{{ Route::is('user.subscription')?'active' : '' }}"> <span><img src="{{asset('images/subscription.png')}}" alt="" ></span>Subscription</a>
          </li>
          <li>                          
             <a href="{{ route('user.subscription.history') }}" class="{{ Route::is('user.subscription.history')?'active' : '' }}"> <span><img src="{{asset('images/subs-history.png')}}" alt="" ></span>  Subscription History </a>
-         </li>
+         </li> --}}
          <li>                          
             <a href="{{ route('logout') }}" class=""> <span><img src="{{asset('images/dash6.png')}}" alt="" ></span>  Logout </a>
          </li>

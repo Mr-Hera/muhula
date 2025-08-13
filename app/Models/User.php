@@ -76,4 +76,11 @@ class User extends Authenticatable
     { 
         return $this->belongsTo(Curriculum::class); 
     }
+
+    public function claimedSchools()
+    {
+        return $this->belongsToMany(School::class, 'school_user')
+            ->withPivot('claim_status', 'claimed_at')
+            ->withTimestamps();
+    }
 }

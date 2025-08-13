@@ -261,15 +261,18 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                      </div>
                      <div class="claim_sc_body">                        
                         <div class="clam_sc">
-                           {{-- @if($schoolDetails->Claim_status == 'N')
+                           @if($currentUserClaim && $currentUserClaim->pivot->claim_status === 'pending')
                               @auth
-                                 <a href="javascript:void(0)"  data-bs-toggle="modal" data-bs-target="#myModal"> <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school </a>
+                                 <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#myModal">
+                                    <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
+                                 </a>
                               @endauth
                               @guest
-                                 <a href="javascript:void(0)"  class="notLogin"> <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school </a>
+                                 <a href="javascript:void(0)" class="notLogin">
+                                    <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
+                                 </a>
                               @endguest
-                           @endif --}}
-                           <a href="javascript:void(0)"  class="notLogin"> <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school </a>
+                           @endif
                         </div>
                         <div class="share_a">
                               <p> <img src="{{ asset('images/share2.png') }}" alt=""> Share</p>
@@ -1116,14 +1119,14 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                         <div class="col-sm-6">
                            <div class="search_in">
                               <label>Name</label>
-                              <input type="text" name="name" placeholder="Enter here">
+                              <input type="text" name="user_name" placeholder="Enter here">
                            </div>
-                           <label id="name-error" class="error" for="name" style="display:none;">This field is required.</label>
+                           <label id="name-error" class="error" for="user_name" style="display:none;">This field is required.</label>
                         </div>
                         <div class="col-sm-6">
                            <div class="search_in">
                               <label>Association with the School</label>
-                              <select name="school_association" required>
+                              <select name="contact_position_id" required>
                                     <option value="">Select</option>
                                     @foreach($contactPositions as $position)
                                        <option value="{{ $position->id }}">{{ $position->name }}</option>

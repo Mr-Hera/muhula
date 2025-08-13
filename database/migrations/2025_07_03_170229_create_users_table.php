@@ -31,8 +31,6 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('ward_id')->nullable();
             $table->foreign('ward_id')->references('id')->on('wards')->onDelete('cascade');
 
-            $table->string('school_name')->nullable();
-
             $table->unsignedBigInteger('curriculum_id')->nullable();
             $table->foreign('curriculum_id')->references('id')->on('curricula')->onDelete('cascade');
 

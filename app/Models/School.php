@@ -146,4 +146,11 @@ class School extends Model
     {
         return $this->hasMany(SchoolFee::class);
     }
+
+    public function claimingUsers()
+    {
+        return $this->belongsToMany(User::class, 'school_user')
+            ->withPivot('claim_status', 'claimed_at')
+            ->withTimestamps();
+    }
 }
