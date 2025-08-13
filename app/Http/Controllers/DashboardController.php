@@ -261,4 +261,32 @@ class DashboardController extends Controller
             'favourites' => $favourites,
         ]);
     }
+
+    // DASHBOARD: ADD NEWS
+    public function addNews(){
+        $user = Auth::user();
+        $claimedSchools = $user->claimedSchools()
+            ->with([
+                'country',
+                'county',
+                'address',
+                'contact.position',
+                'curriculum',       // Curriculum relation
+                'operationHours',    // Operation hours relation
+                'type',
+                'religion',          // Religion relation
+                'population',
+                'extendedSchoolServices',
+                'facilities',
+                'courses',
+                'fees.level',
+                'branches.county',   // County for each branch
+                'branches.type',     // Type for each branch
+                'branches.school'    // Parent school info
+            ])
+            ->get();
+        return view('dashboard.add_news')->with([
+        'claimedSchools' => $claimedSchools,
+        ]);
+      }
 }

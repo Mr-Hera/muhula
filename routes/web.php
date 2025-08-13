@@ -159,7 +159,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('create-news/{school_id?}/{news_id?}', 'School\SchoolController@createNews')->name('user.create.news');
         Route::post('create-news-save', 'School\SchoolController@createNewsSave')->name('user.create.news.save');
         Route::get('delete-news/{id?}', 'School\SchoolController@deleteNews')->name('user.news.delete');
-        Route::get('add-news', 'School\SchoolController@addNews')->name('user.add.news');
+        Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news');
 
         //for my reviews
         Route::get('my-reviews-for-by-me', 'Review\ReviewController@myReviewsByMe')->name('user.my.review.by.me');
