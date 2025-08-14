@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\School;
 use App\Models\Message;
 use App\Models\Favourite;
+use App\Models\NewsArticle;
+use Illuminate\Support\Str;
 use App\Models\SchoolReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -288,5 +290,44 @@ class DashboardController extends Controller
         return view('dashboard.add_news')->with([
         'claimedSchools' => $claimedSchools,
         ]);
-      }
+    }
+
+    public function createNewsSave(Request $request){
+        // dd($request);
+        // 1️⃣ Validate request
+        $validated = $request->validate([
+            'news_title'   => 'required|string|max:255',
+            'news_excerpt' => 'nullable|string|max:500',
+            'description'  => 'required|string',
+            'news_image'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // 2️⃣ Prepare slug from title
+        $slug = Str::slug($validated['news_title']);
+
+        // 3️⃣ Handle cover image upload
+        // $coverImagePath = null;
+        // if ($request->hasFile('news_image')) {
+        //     $file = $request->file('news_image');
+        //     $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+        //     $coverImagePath = $file->storeAs('public/news_covers', $filename);
+        //     $coverImagePath = str_replace('public/', 'storage/', $coverImagePath); // Make it web-accessible
+        // }
+
+        // 4️⃣ Insert into DB
+        $article = NewsArticle::create([
+            'title'        => $validated['news_title'],
+            'slug'         => $slug,
+            'excerpt'      => $validated['news_excerpt'] ?? null,
+            'body'         => $validated['description'],
+            'cover_image'  => $coverImagePath ?? null,
+            'author_id'    => Auth::id(), // current logged in user
+            'published_at' => now(),
+            'is_published' => true, // Or false if you want to draft first
+        ]);
+        // dd($article);
+
+        // 5️⃣ Redirect with success
+        return redirect()->back()->with('success', 'News article created successfully.');
+    }
 }

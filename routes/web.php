@@ -68,7 +68,7 @@ Route::group(['namespace' => 'Modules'], function() {
     //Route::get('terms-conditions','Content\ContentController@termCondition')->name('term.condition');
     Route::get('disclaimer',[ContentController::class, 'disclaimer'])->name('disclaimer');
     Route::any('news','Content\ContentController@newsList')->name('news.list');
-    Route::get('news-details/{slug?}','Content\ContentController@newsDetails')->name('news.details');
+    Route::get('news-details/{slug?}',[ContentController::class, 'newsDetails'])->name('news.details');
 
      //School Listing
      Route::get('add-school-step1/{id?}',[SchoolController::class, 'addSchoolStep1'])->name('add.school.step1');
@@ -157,7 +157,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('delete-favourite/{id?}', 'School\SchoolController@deleteFavourite')->name('user.favourite.delete');
 
         Route::get('create-news/{school_id?}/{news_id?}', 'School\SchoolController@createNews')->name('user.create.news');
-        Route::post('create-news-save', 'School\SchoolController@createNewsSave')->name('user.create.news.save');
+        Route::post('create-news-save', [DashboardController::class, 'createNewsSave'])->name('user.create.news.save');
         Route::get('delete-news/{id?}', 'School\SchoolController@deleteNews')->name('user.news.delete');
         Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news');
 

@@ -483,7 +483,7 @@
 
 
 
-      {{-- @if(@$featuredNews->isNotEmpty())
+      @if($news_articles->isNotEmpty())
       <section class="featured_news">
          <div class="container">
             <div class="row">
@@ -494,39 +494,41 @@
 
                <div class="featured-news-inr">
                   <div class="owl-carousel owl_produs owl-theme owl_produs owl-news position-relative">
-                     @foreach($featuredNews as $data) 
+                     @foreach($news_articles as $news_article) 
                      <div class="item">
                         <div class="news_box">
                            <div class="news_imgs">
-                              <div class="spans"><p> {{@$data->news_date?date('d',strtotime(@$data->news_date)):'' }} <span>{{ @$data->news_date?date('M',strtotime(@$data->news_date)):'' }}</span></p> </div> 
-                              <a href="{{ route('news.details',@$data->slug) }}"> 
-                              @if(@$data->image != null)
-                                 <img src="{{ URL::to('storage/app/public/images/news_image') }}/{{ @$data->image }}" alt=""> 
+                              <div class="spans"><p> {{$news_article->published_at?date('d',strtotime($news_article->published_at)):'' }} <span>{{ $news_article->published_at?date('M',strtotime($news_article->published_at)):'' }}</span></p> </div> 
+                              <a href="{{ route('news.details',$news_article->slug) }}"> 
+                                 @if($news_article->cover_image != null)
+                                    {{-- <img src="{{ URL::to('storage/app/public/images/news_image') }}/{{ $news_article->cover_image }}" alt=""> --}}
+                                 @else
+                                    <img src="{{ asset('storage/default_images/default.jpg') }}" alt="">
                                  @endif
-                               </a>
+                              </a>
                            </div>
                            <div class="news_text">
                               <div class="news_info">
                                  <div class="adm_namee">
-                                    <img src="{{ url('public/images/user.png') }}" alt="">
+                                    <img src="{{ asset('images/user.png') }}" alt="">
                                     <p>Posted by, <span>
-                                    @if(@$newsData->posted_by == 'U')
-                                    {{ @$newsData->getUser->first_name.' '.@$newsData->getUser->last_name }}
-                                    @else
-                                    Admin
-                                    @endif
+                                       @if(@$newsData->posted_by == 'U')
+                                          {{ @$newsData->getUser->first_name.' '.@$newsData->getUser->last_name }}
+                                       @else
+                                          Admin
+                                       @endif
                                     </span></p>
                                  </div>
-                                 <h2> <a href="{{ route('news.details',@$data->slug) }}">
-                                 @if(strlen(@$data->news_title)>100)
-                                 {{ substr(@$data->news_title,0,100) }}
+                                 <h2> <a href="{{ route('news.details',$news_article->slug) }}">
+                                 @if(strlen($news_article->title)>100)
+                                    {{ substr($news_article->title,0,100) }}
                                  @else
-                                 {{ @$data->news_title }}
+                                    {{ @$news_article->title }}
                                  @endif
                                  </a> </h2>
 
                                  <div class="read_more_b">
-                                    <a href="{{ route('news.details',@$data->slug) }}">Read More <img src="{{ url('public/images/chevrone.png') }}" alt=""> </a>
+                                    <a href="{{ route('news.details',$news_article->slug) }}">Read More <img src="{{ asset('images/chevrone.png') }}" alt=""> </a>
                                  </div>
                               </div>
                            </div>
@@ -538,7 +540,7 @@
             </div>
          </div>
       </section>
-      @endif --}}
+      @endif
 
       <!-- <section class="adv2">
          <div class="container">
