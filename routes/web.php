@@ -162,8 +162,8 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news');
 
         //for my reviews
-        Route::get('my-reviews-for-by-me', 'Review\ReviewController@myReviewsByMe')->name('user.my.review.by.me');
-        Route::get('my-reviews-for-by-school', 'Review\ReviewController@myReviewsBySchool')->name('user.my.review.by.school');
+        Route::get('my-reviews-for-by-me', [DashboardController::class, 'myReviewsByMe'])->name('user.my.review.by.me');
+        Route::get('my-reviews-for-by-school', [DashboardController::class, 'myReviewsBySchool'])->name('user.my.review.by.school');
         Route::post('review-reply', 'Review\ReviewController@reviewReply')->name('user.review.reply');
         Route::get('featured-review/{id?}', 'Review\ReviewController@featuredReview')->name('user.featured.review');
 

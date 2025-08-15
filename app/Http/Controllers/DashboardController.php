@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Review;
 use App\Models\School;
 use App\Models\Message;
 use App\Models\Favourite;
@@ -329,5 +330,52 @@ class DashboardController extends Controller
 
         // 5️⃣ Redirect with success
         return redirect()->back()->with('success', 'News article created successfully.');
+    }
+
+    public function myReviewsByMe(){
+
+        $reviews = SchoolReview::with(['school.address'])
+            ->where('user_id', Auth::id())
+            ->orderBy('id','desc')
+            ->paginate(10);
+
+        return view('dashboard.my_review_by_me')->with([
+            'reviews' => $reviews,
+        ]);
+    }
+
+    public function myReviewsBySchool(){
+        $user = Auth::user();
+
+        // Get IDs of schools claimed by this user
+        $claimedSchoolIds = $user->claimedSchools()->pluck('schools.id');
+
+        // Fetch reviews for those claimed schools
+        $reviews = SchoolReview::with([
+                'school.country',
+                'school.county',
+                'school.address',
+                'school.contact.position',
+                'school.curriculum',
+                'school.operationHours',
+                'school.type',
+                'school.religion',
+                'school.population',
+                'school.extendedSchoolServices',
+                'school.facilities',
+                'school.courses',
+                'school.fees.level',
+                'school.branches.county',
+                'school.branches.type',
+                'school.branches.school'
+            ])
+            ->whereIn('school_id', $claimedSchoolIds)
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        return view('dashboard.my_review_by_school')->with([
+            'reviews' => $reviews,
+            'user' => $user,
+        ]);
     }
 }
