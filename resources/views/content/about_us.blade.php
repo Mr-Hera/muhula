@@ -57,13 +57,21 @@
                            </svg>                              
                         </a> -->
                         <h4>MUHULA</h4>
-                        <p>Muhula simplifies the search and access to information about learning institutions and education partners for parents and students, regardless of their educational journey. It also allows for authentic reviews that helps improve decision making when it comes to education.</p>
+                        <p>
+                           Muhula simplifies access to information about learning institutions and education partners for parents and students, regardless of their educational journey. It also allows for authentic reviews that help improve decision-making in education.
+                        </p>
                         <h4>For learning institutions</h4>
-                        <p>We give you a place to shape and share the learning experiences and requirements at your institution. Post what makes you standout,  respond to reviews, and gain insights to shape your messaging.</p>
+                        <p>
+                           We give you a place to shape and share the learning experiences and requirements at your institution. Post what makes you stand out,  respond to reviews, and gain insights to shape your messaging.
+                        </p>
                         <h4>For Parents & learners</h4>
-                        <p>We simplify your search, so you can choose the right learning institution with confidence. Filter millions of options and ratings, talk to professionals, and make smart about your eduation—then apply with ease. Leave reviews, search  and join candid conversations about your learning institution.</p>
+                        <p>
+                           We simplify your search so that you can choose the right learning institution with confidence. Filter millions of options and ratings, talk to professionals, and make smart decisions about your education—then apply with ease. Leave reviews, search and join candid conversations about your learning institution.
+                        </p>
                         <h4>For education partners</h4>
-                        <p>We amplify your voice, so you can be visible to a captive audience that needs the services  or products you offer. enhance the learning experience at your learning institution. Respond and Leave reviews, post & sale your product/service, to a captive audience.</p>
+                        <p>
+                           We amplify your voice, so you can be visible to a captive audience that needs the services or products you offer. enhance the learning experience at your learning institution. Respond and Leave reviews, post & sale your product/service, to a captive audience.
+                        </p>
                         <h4>Reviews</h4>
                         <p>To post a review, each person must be registered and choose under one of the categories Learning institution, Parent, student/alumni or education partner that they would like to comment as.</p>
                      </div>
