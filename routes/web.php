@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SocialAuthController;
 
 /*
@@ -67,7 +69,7 @@ Route::group(['namespace' => 'Modules'], function() {
     //Route::get('terms-conditions','Content\ContentController@termCondition')->name('term.condition');
     Route::get('disclaimer',[ContentController::class, 'disclaimer'])->name('disclaimer');
     Route::any('news','Content\ContentController@newsList')->name('news.list');
-    Route::get('news-details/{slug?}','Content\ContentController@newsDetails')->name('news.details');
+    Route::get('news-details/{slug?}',[ContentController::class, 'newsDetails'])->name('news.details');
 
      //School Listing
      Route::get('add-school-step1/{id?}',[SchoolController::class, 'addSchoolStep1'])->name('add.school.step1');
@@ -116,7 +118,7 @@ Route::group(['namespace' => 'Modules'], function() {
      Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
      Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
      Route::post('post-review','School\SearchSchoolController@postReview')->name('post.review');
-     Route::post('school-claim-save','School\SearchSchoolController@shoolClaimSave')->name('school.claim.save');
+     Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
      Route::post('upload-photo-save','School\SearchSchoolController@uploadPhotoSave')->name('school.photo.save');
      Route::post('send-message-save','School\SearchSchoolController@sendMessage')->name('user.send.message');
      Route::post('add-favourite','School\SearchSchoolController@addFavourite')->name('user.add.favourite');
@@ -125,8 +127,8 @@ Route::group(['namespace' => 'Modules'], function() {
 
     Route::group(['namespace' => 'User','middleware' => 'auth'], function(){
 
-        Route::get('dashboard', 'Dashboard\DashboardController@dashboard')->name('user.dashboard');
-        Route::get('edit-profile', 'Profile\ProfileController@profile')->name('user.profile');
+        Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('user.dashboard');
+        Route::get('edit-profile', [DashboardController::class, 'profile'])->name('user.profile');
         Route::get('profile-image-delete', 'Profile\ProfileController@profileImageDelete')->name('user.profile.image.delete');
         Route::post('update-profile', 'Profile\ProfileController@update')->name('user.update.profile');
         Route::post('email-check', 'Profile\ProfileController@userEmailCheck')->name('email.check');
@@ -136,7 +138,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('user-email-update/{vcode?}/{id?}', 'Profile\ProfileController@verifyEmail')->name('user.email.update');
 
         //for my school
-        Route::get('my-school', 'School\SchoolController@mySchool')->name('user.my.school');
+        Route::get('my-school', [DashboardController::class, 'mySchool'])->name('user.my.school');
         Route::get('edit-school-info/{id?}/{sub_id?}', 'School\SchoolController@editSchool')->name('user.edit.school');
         Route::post('update-school-info', 'School\SchoolController@schoolInfoUpdate')->name('user.school.info.update');
         Route::post('update-school-image', 'School\SchoolController@updateImage')->name('user.update.school.image');
@@ -152,22 +154,22 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('edit-school-result/{id?}/{result_id?}', 'School\SchoolController@editSchoolResult')->name('user.edit.school.result');
         Route::post('update-school-result', 'School\SchoolController@updateSchoolResult')->name('user.update.school.result');
 
-        Route::get('my-favourite', 'School\SchoolController@myFavourite')->name('user.my.favourite');
+        Route::get('my-favourite', [DashboardController::class, 'myFavourite'])->name('user.my.favourite');
         Route::get('delete-favourite/{id?}', 'School\SchoolController@deleteFavourite')->name('user.favourite.delete');
 
         Route::get('create-news/{school_id?}/{news_id?}', 'School\SchoolController@createNews')->name('user.create.news');
-        Route::post('create-news-save', 'School\SchoolController@createNewsSave')->name('user.create.news.save');
+        Route::post('create-news-save', [DashboardController::class, 'createNewsSave'])->name('user.create.news.save');
         Route::get('delete-news/{id?}', 'School\SchoolController@deleteNews')->name('user.news.delete');
-        Route::get('add-news', 'School\SchoolController@addNews')->name('user.add.news');
+        Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news');
 
         //for my reviews
-        Route::get('my-reviews-for-by-me', 'Review\ReviewController@myReviewsByMe')->name('user.my.review.by.me');
-        Route::get('my-reviews-for-by-school', 'Review\ReviewController@myReviewsBySchool')->name('user.my.review.by.school');
+        Route::get('my-reviews-for-by-me', [DashboardController::class, 'myReviewsByMe'])->name('user.my.review.by.me');
+        Route::get('my-reviews-for-by-school', [DashboardController::class, 'myReviewsBySchool'])->name('user.my.review.by.school');
         Route::post('review-reply', 'Review\ReviewController@reviewReply')->name('user.review.reply');
         Route::get('featured-review/{id?}', 'Review\ReviewController@featuredReview')->name('user.featured.review');
 
         //messages
-        Route::get('messages', 'Message\MessageController@messageList')->name('user.message.list');
+        Route::get('messages', [MessageController::class, 'messageList'])->name('user.message.list');
         Route::get('message-details/{message_id?}', 'Message\MessageController@messageDetail')->name('user.message.detail');
         Route::post('send-message-reply','Message\MessageController@sendMessage')->name('user.send.message.reply');
 

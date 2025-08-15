@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Ward;
 use App\Models\County;
+use App\Models\Favourite;
 use App\Models\Curriculum;
 use App\Models\Constituency;
 use Laravel\Sanctum\HasApiTokens;
@@ -75,5 +76,17 @@ class User extends Authenticatable
     public function curriculum() 
     { 
         return $this->belongsTo(Curriculum::class); 
+    }
+
+    public function claimedSchools()
+    {
+        return $this->belongsToMany(School::class, 'school_user')
+            ->withPivot('claim_status', 'claimed_at')
+            ->withTimestamps();
+    }
+
+    public function favourites()
+    {
+        return $this->hasMany(Favourite::class);
     }
 }

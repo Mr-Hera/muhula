@@ -35,7 +35,6 @@ class UsersTableSeeder extends Seeder
                 'county_id' => $countyId,
                 'constituency_id' => $constituencyId,
                 'ward_id' => $wardId,
-                'school_name' => "School {$i}",
                 'curriculum_id' => $curriculumId,
                 'password' => Hash::make('password'),
             ]);

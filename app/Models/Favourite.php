@@ -13,11 +13,6 @@ class Favourite extends Model
     protected $table = 'favourites';
     protected $guarded = [];
 
-    public function getSchool(){
-
-        return $this->hasOne('App\Models\SchoolMaster','id','school_id');
-    }
-
     public function user() 
     { 
         return $this->belongsTo(User::class); 
