@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SocialAuthController;
 
@@ -168,7 +169,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('featured-review/{id?}', 'Review\ReviewController@featuredReview')->name('user.featured.review');
 
         //messages
-        Route::get('messages', 'Message\MessageController@messageList')->name('user.message.list');
+        Route::get('messages', [MessageController::class, 'messageList'])->name('user.message.list');
         Route::get('message-details/{message_id?}', 'Message\MessageController@messageDetail')->name('user.message.detail');
         Route::post('send-message-reply','Message\MessageController@sendMessage')->name('user.send.message.reply');
 
