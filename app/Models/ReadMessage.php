@@ -11,6 +11,12 @@ class ReadMessage extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'message_id',
+        'user_id',
+        'read_at',
+    ];
+
     public function message() 
     { 
         return $this->belongsTo(Message::class); 

@@ -17,33 +17,33 @@
                      <p>See all your messages here.</p>
                   </div>
                   <div class="dashboard_box">
-                  @if(@$messages->isNotEmpty())
+                  @if($messages->isNotEmpty())
                   <?php $sub_array = []; ?>
                      @foreach($messages as $data)
-                     @if(!in_array(@$data->from_user_id, $sub_array))
+                     @if(!in_array($data->from_user_id, $sub_array))
                      <div class="message-list-box">
                         <div class="message_owner">
                            <div class="measge_name">
-                              <a href="{{ route('user.message.detail',[@$data->id]) }}">
-                              @if(@$data->getUser->profile_pic != null)
-                              <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ @$data->getUser->profile_pic }}" alt="">
+                              <a href="{{ route('user.message.detail',[$data->id]) }}">
+                              @if($data->sender->profile_image != null)
+                                 <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ $data->sender->profile_image }}" alt="">
                               @else
-                              <img src="{{ url('public/images/avatar.png') }}" alt="">
-                               @endif
-                                 <h3>{{ @$data->getUser->first_name.' '.@$data->getUser->last_name }}</h3>
+                                 <img src="{{ asset('images/avatar.png') }}" alt="">
+                              @endif
+                                 <h3>{{ $data->sender->first_name.' '.$data->sender->last_name }}</h3>
                               </a>
                            </div>
                            <div class="message_date">
-                              <p> <img src="{{ url('public/images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime(@$data->date)) }}, {{ date('h:i A',strtotime(@$data->date)) }} </p>
-                              <a href="{{ route('user.message.detail',[@$data->id]) }}"> <img src="{{ url('public/images/repeat.png') }}"> Reply</a>
+                              <p> <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->date)) }}, {{ date('h:i A',strtotime(@$data->date)) }} </p>
+                              <a href="{{ route('user.message.detail',[$data->id]) }}"> <img src="{{ asset('images/repeat.png') }}"> Reply</a>
                            </div>
                         </div>
                            <div class="message_body">
-                              <p>{{ @$data->message }}</p>
+                              <p>{{ $data->message }}</p>
                            </div>
                      </div>
                      @endif
-                     <?php array_push($sub_array,@$data->from_user_id); ?>
+                     <?php array_push($sub_array,$data->from_user_id); ?>
                      @endforeach
                      @else
                      <h3><center>No Data Found</center></h3>

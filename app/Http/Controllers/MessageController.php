@@ -3,30 +3,50 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Models\Conversation;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
     public function messageList(Request $request){
         
-        $messages = Message::all();
+        $messages = Message::with('sender')->get();
+        $conversations = Conversation::whereHas('participants', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->with('participants')->get();
+
         return view('dashboard.message_list')->with([
             'messages' => $messages,
+            'conversations' => $conversations,
         ]);
-     }
+    }
 
-     public function messageDetail($message_id=null){
+    public function messageDetail($message_id=null){
 
-           $data['message'] = Message::where('id',@$message_id)->first();
-           if($data['message'] == null){
+        // Load the requested message with its sender + conversation
+        $message = Message::with(['sender', 'conversation'])->find($message_id);
 
-                return redirect()->route('user.message.list');
-           }
-           $data['allMessage'] = Message::where('to_user_id',Auth::user()->id)->where('from_user_id',@$data['message']->from_user_id)
-                                  ->orWhere('to_user_id',@$data['message']->from_user_id)->where('from_user_id',Auth::user()->id)->get();
+        if (!$message) {
+            return redirect()->route('user.message.list');
+        }
 
-           return view('modules.user.message.message_Details')->with($data);
-     }
+        // Fetch all messages in the same conversation, eager load senders
+        $allMessages = Message::with('sender')
+            ->where('conversation_id', $message->conversation_id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Optionally fetch participants of this conversation (if needed in blade)
+        $participants = $message->conversation
+            ? $message->conversation->participants()->get()
+            : collect();
+
+        return view('dashboard.message_Details')->with([
+            'message'      => $message,
+            'allMessages'  => $allMessages,
+            'participants' => $participants,
+        ]);
+    }
 
 
      public function sendMessage(Request $request){

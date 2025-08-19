@@ -18,7 +18,7 @@
             <a href="{{ route('user.add.news') }}" class="{{ Route::is('user.add.news')?'active' : '' }}"> <span><img src="{{asset('images/news.PNG')}}" alt="" ></span> Add News </a>
          </li>
          <li>                          
-            <a href="{{ route('user.my.review.by.me') }}" class="{{ Route::is('user.my.review.by.me','user.my.review.by.school')?'active' : '' }}"> <span><img src="{{asset('images/dash-4.png')}}" alt="" ></span>  My Reviews </a>
+            <a href="{{ route('user.my.review.by.me') }}" class="{{ Route::is('user.my.review.by.me','user.my.review.by.school')?'active' : '' }}"> <span><img src="{{asset('images/dash4.png')}}" alt="" ></span>  My Reviews </a>
          </li>
          <li>                          
             <a href="{{ route('user.message.list') }}" class="{{ Route::is('user.message.list','user.message.detail')?'active' : '' }}"> <span><img src="{{ asset('images/dash5.png') }}" alt=""></span>  Messages </a>
