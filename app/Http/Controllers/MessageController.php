@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Models\Conversation;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
     public function messageList(Request $request){
         
-        $messages = Message::all();
+        $messages = Message::with('sender')->get();
+        $conversations = Conversation::whereHas('participants', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->with('participants')->get();
+
         return view('dashboard.message_list')->with([
             'messages' => $messages,
+            'conversations' => $conversations,
         ]);
      }
 

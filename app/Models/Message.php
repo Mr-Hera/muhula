@@ -17,7 +17,7 @@ class Message extends Model
 
     public function getUser(){
 
-         return $this->hasOne('App\User','id','from_user_id');
+        return $this->belongsTo(User::class, 'sender_id', 'id');
     }
 
     public function conversation() 
