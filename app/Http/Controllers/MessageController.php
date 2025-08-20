@@ -19,7 +19,25 @@ class MessageController extends Controller
         $messages = Message::with('sender')->get();
         $conversations = Conversation::whereHas('participants', function ($q) {
             $q->where('user_id', auth()->id());
-        })->with('participants')->get();
+        })
+        ->with(['messages' => function ($q) {
+            $q->latest(); // ensure messages come sorted by latest first
+        }, 'messages.sender', 'participants'])
+        ->get();
+
+        // Group conversations by title and keep only the one with the latest message
+        $conversations = $conversations
+            ->groupBy('title')
+            ->map(function ($group) {
+                return $group->sortByDesc(function ($conv) {
+                    // get latest message date for each conversation
+                    return optional($conv->messages->first())->created_at;
+                })->first(); // pick latest by message date
+            })
+            ->values(); // reset keys to have a clean collection
+
+        // Flatten messages from the reduced conversations
+        $messages = $conversations->pluck('messages')->flatten();
 
         return view('dashboard.message_list')->with([
             'schools' => $schools,
@@ -69,13 +87,15 @@ class MessageController extends Controller
         $school_contact = School::with('contact')
             ->find($request->school_id)
             ->contact;
+        $school = School::where('school_contact_id', $school_contact->id)->first();
+        // dd($school);
         $receiver = User::where('id', $school_contact->id)->first();
         // dd($receiver);
 
         try {
             // Create a conversation
             $conversation = Conversation::create([
-                'title' => $sender->name . ' & ' . $receiver->name . ' Chat',
+                'title' => $school->name . ' Chat',
             ]);
 
             // Add both as participants

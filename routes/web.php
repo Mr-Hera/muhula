@@ -170,6 +170,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
         //messages
         Route::get('messages', [MessageController::class, 'messageList'])->name('user.message.list');
+        Route::get('/messages/load', [MessageController::class, 'loadMore'])->name('messages.load');
         Route::get('message-details/{message_id?}', [MessageController::class, 'messageDetail'])->name('user.message.detail');
         Route::post('send-message-reply','Message\MessageController@sendMessage')->name('user.send.message.reply');
 

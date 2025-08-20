@@ -100,44 +100,49 @@
                   <!-- End of modal -->
 
                   <div class="dashboard_box">
-                  @if($messages->isNotEmpty())
-                  <?php $sub_array = []; ?>
-                     @foreach($messages as $data)
-                     @if(!in_array($data->from_user_id, $sub_array))
-                     <div class="message-list-box">
-                        <div class="message_owner">
-                           <div class="measge_name">
-                              <a href="{{ route('user.message.detail',[$data->id]) }}">
-                              @if($data->sender->profile_image != null)
-                                 <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ $data->sender->profile_image }}" alt="">
-                              @else
-                                 <img src="{{ asset('images/avatar.png') }}" alt="">
-                              @endif
-                                 <h3>{{ $data->sender->first_name.' '.$data->sender->last_name }}</h3>
-                              </a>
+                     @if($messages->isNotEmpty())
+                     <?php $sub_array = []; ?>
+                        <div id="message-container" style="max-height: 500px; overflow-y: auto; padding-right: 10px;">
+                        @foreach($messages as $data)
+                           <div class="message-list-box">
+                              <div class="message_owner">
+                                 <div class="measge_name">
+                                    <a href="{{ route('user.message.detail',[$data->id]) }}">
+                                    @if($data->sender->profile_image != null)
+                                       <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ $data->sender->profile_image }}" alt="">
+                                    @else
+                                       <img src="{{ asset('images/avatar.png') }}" alt="">
+                                    @endif
+                                       <h3>{{ $data->conversation?->title }}</h3>
+                                    </a>
+                                 </div>
+                                 <div class="message_date">
+                                    <p>
+                                       <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->date)) }}, {{ date('h:i A',strtotime($data->date)) }}
+                                    </p>
+                                    <a href="{{ route('user.message.detail',[$data->id]) }}">
+                                       <img src="{{ asset('images/repeat.png') }}"> Reply
+                                    </a>
+                                 </div>
+                              </div>
+                                 <div class="message_body">
+                                    <p>{{ $data->content }}</p>
+                                 </div>
                            </div>
-                           <div class="message_date">
-                              <p> <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->date)) }}, {{ date('h:i A',strtotime(@$data->date)) }} </p>
-                              <a href="{{ route('user.message.detail',[$data->id]) }}"> <img src="{{ asset('images/repeat.png') }}"> Reply</a>
-                           </div>
+                        <?php array_push($sub_array,$data->sender_id); ?>
+                        @endforeach
                         </div>
-                           <div class="message_body">
-                              <p>{{ $data->message }}</p>
-                           </div>
-                     </div>
-                     @endif
-                     <?php array_push($sub_array,$data->from_user_id); ?>
-                     @endforeach
-                     @else
-                     <h3><center>No Data Found</center></h3>
+                        <div id="loading" class="text-center mt-2" style="display: none;">
+                           <p>Loading...</p>
+                        </div>
+                        @else
+                        <h3><center>No Data Found</center></h3>
                      @endif
 
                      <div class="dashboard_pagination">
                         <div class="pagination_box">
-                        {{-- {{@$messageData->appends(request()->except(['page', '_token']))->links('pagination')}} --}}
-
-
-                  </div>
+                           {{-- {{@$messageData->appends(request()->except(['page', '_token']))->links('pagination')}} --}}
+                        </div>
                      </div>
 
                   </div>
@@ -151,4 +156,70 @@
 @endsection
 @section('script')
 @include('includes.scripts')
-@endsection       
+@endsection
+<script>
+let currentPage = 1;
+let loading = false;
+let hasMore = true;
+
+function loadMessages(page = 1) {
+    if (loading || !hasMore) return;
+
+    loading = true;
+    document.getElementById('loading').style.display = 'block';
+
+    fetch(`{{ route('messages.load') }}?page=${page}`)
+        .then(res => res.json())
+        .then(res => {
+            let container = document.getElementById('message-container');
+
+            res.data.forEach(msg => {
+                let box = document.createElement('div');
+                box.classList.add('message-list-box', 'mb-3');
+                box.innerHTML = `
+                    <div class="message_owner">
+                        <div class="measge_name">
+                            <a href="/user/messages/${msg.id}">
+                                <img src="${msg.sender?.profile_image 
+                                    ? '/storage/app/public/images/userImage/' + msg.sender.profile_image 
+                                    : '{{ asset('images/avatar.png') }}'}" alt="">
+                                <h3>${msg.conversation?.title ?? 'No Title'}</h3>
+                            </a>
+                        </div>
+                        <div class="message_date">
+                            <p>
+                                <img src="{{ asset('images/clock.png') }}" alt="">
+                                ${new Date(msg.date).toLocaleDateString()} 
+                                ${new Date(msg.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </p>
+                            <a href="/user/messages/${msg.id}">
+                                <img src="{{ asset('images/repeat.png') }}"> Reply
+                            </a>
+                        </div>
+                    </div>
+                    <div class="message_body">
+                        <p>${msg.content}</p>
+                    </div>
+                `;
+                container.appendChild(box);
+            });
+
+            hasMore = res.next_page !== null;
+            if (hasMore) currentPage = res.next_page;
+        })
+        .finally(() => {
+            loading = false;
+            document.getElementById('loading').style.display = 'none';
+        });
+}
+
+// initial load
+loadMessages();
+
+// listen to scroll
+document.getElementById('message-container').addEventListener('scroll', function() {
+    if (this.scrollTop + this.clientHeight >= this.scrollHeight - 50) {
+        loadMessages(currentPage);
+    }
+});
+</script>
