@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\County;
 use App\Models\Course;
 use App\Models\School;
@@ -20,11 +21,12 @@ use App\Models\SchoolContact;
 use App\Models\SchoolUniform;
 use App\Models\ContactPosition;
 use Illuminate\Support\Facades\DB;
+use App\Models\SchoolOperationHour;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\ExtendedSchoolService;
 use App\Models\SchoolExamPerformance;
-use App\Models\SchoolOperationHour;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -101,6 +103,22 @@ class SchoolController extends Controller
         $schoolContact->email = $validated['contact_email'][0];
         $schoolContact->phone_no = $validated['contact_phone'][0];
         $schoolContact->save();
+
+        // Take the full_names string (e.g., "John Mwangi" or "John")
+        $names = explode(' ', trim($schoolContact->full_names));
+
+        // Always grab the first and second parts only
+        $firstName = $names[0] ?? '';
+        $lastName  = $names[1] ?? '';
+
+        // Add contact as a user
+        $school_contact_user = new User();
+        $school_contact_user->first_name = $firstName;
+        $school_contact_user->last_name = $lastName;
+        $school_contact_user->email = $schoolContact->email;
+        $school_contact_user->phone = $schoolContact->phone_no;
+        $school_contact_user->password =  Hash::make(env('SECURE_APP_PASSWORD'));
+        $school_contact_user->save();
 
         // 2. Save school_address
         $schoolAddress = new SchoolAddress();
