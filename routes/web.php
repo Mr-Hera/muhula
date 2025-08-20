@@ -27,7 +27,7 @@ use App\Http\Controllers\SocialAuthController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login
-Route::get('login', [SocialAuthController::class, 'showUserLoginForm'])->name('login')->middleware('guest');
+Route::get('/login', [SocialAuthController::class, 'showUserLoginForm'])->name('login')->middleware('guest');
 // Handle login submission
 Route::post('/login', [SocialAuthController::class, 'login'])->name('login.post')->middleware('guest');
 

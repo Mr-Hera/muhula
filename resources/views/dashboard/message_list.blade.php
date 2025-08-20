@@ -108,11 +108,11 @@
                               <div class="message_owner">
                                  <div class="measge_name">
                                     <a href="{{ route('user.message.detail',[$data->id]) }}">
-                                    @if($data->sender->profile_image != null)
-                                       <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ $data->sender->profile_image }}" alt="">
-                                    @else
-                                       <img src="{{ asset('images/avatar.png') }}" alt="">
-                                    @endif
+                                       @if($data->sender->profile_image != null)
+                                          <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ $data->sender->profile_image }}" alt="">
+                                       @else
+                                          <img src="{{ asset('images/avatar.png') }}" alt="">
+                                       @endif
                                        <h3>{{ $data->conversation?->title }}</h3>
                                     </a>
                                  </div>
