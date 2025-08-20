@@ -120,7 +120,7 @@ Route::group(['namespace' => 'Modules'], function() {
      Route::post('post-review','School\SearchSchoolController@postReview')->name('post.review');
      Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
      Route::post('upload-photo-save','School\SearchSchoolController@uploadPhotoSave')->name('school.photo.save');
-     Route::post('send-message-save','School\SearchSchoolController@sendMessage')->name('user.send.message');
+     Route::post('send-message-save',[MessageController::class, 'sendMessage'])->name('user.send.message');
      Route::post('add-favourite','School\SearchSchoolController@addFavourite')->name('user.add.favourite');
      Route::post('header-image-video-save','School\SearchSchoolController@addHeaderImageVideo')->name('user.add.header.image.video');
      

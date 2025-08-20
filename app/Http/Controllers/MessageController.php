@@ -2,20 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\School;
 use App\Models\Message;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Models\ConversationParticipant;
 
 class MessageController extends Controller
 {
     public function messageList(Request $request){
         
+        $schools = School::all();
         $messages = Message::with('sender')->get();
         $conversations = Conversation::whereHas('participants', function ($q) {
             $q->where('user_id', auth()->id());
         })->with('participants')->get();
 
         return view('dashboard.message_list')->with([
+            'schools' => $schools,
             'messages' => $messages,
             'conversations' => $conversations,
         ]);
@@ -35,6 +42,7 @@ class MessageController extends Controller
             ->where('conversation_id', $message->conversation_id)
             ->orderBy('created_at', 'asc')
             ->get();
+        // dd($allMessages);
 
         // Optionally fetch participants of this conversation (if needed in blade)
         $participants = $message->conversation
@@ -49,41 +57,58 @@ class MessageController extends Controller
     }
 
 
-     public function sendMessage(Request $request){
+    public function sendMessage(Request $request){
+        // dd($request);
+        $request->validate([
+            'school_id' => 'required|integer|exists:schools,id',
+            'message' => 'required|string',
+            'attached_message_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
 
-          $ins = [];
+        $sender = User::where('id', Auth::id())->first();
+        $school_contact = School::with('contact')
+            ->find($request->school_id)
+            ->contact;
+        $receiver = User::where('id', $school_contact->id)->first();
+        // dd($receiver);
 
-          $ins['school_id'] = $request->school_id;
-          $ins['from_user_id'] = Auth::user()->id;
-          $ins['to_user_id'] = $request->to_user_id;
-          $ins['message'] = $request->message;
-          $ins['date'] = date('Y-m-d H:i:s');
-          $ins['is_read'] = 'N';
-          $ins['new_message'] = 'Y';
+        try {
+            // Create a conversation
+            $conversation = Conversation::create([
+                'title' => $sender->name . ' & ' . $receiver->name . ' Chat',
+            ]);
 
-          $create = Message::create($ins);
+            // Add both as participants
+            ConversationParticipant::create([
+                'conversation_id' => $conversation->id,
+                'user_id' => $sender->id,
+                'joined_at' => now(),
+            ]);
 
-          Message::where('id',@$request->message_id)->update(['is_read'=>'Y','new_message'=>'N']);
+            ConversationParticipant::create([
+                'conversation_id' => $conversation->id,
+                'user_id' => $receiver->id,
+                'joined_at' => now(),
+            ]);
 
-          $toUser = User::where('id',@$request->to_user_id)->first();
-          $fromUser = User::where('id',Auth::user()->id)->first();
+            // Track message being sent
+            $message = Message::create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => $sender->id,
+                'content' => $request->message,
+                'sent_at' => now(),
+            ]);
 
-          $mailData = [];
-          
-           $mailData['to_user_name'] = @$toUser->first_name.' '.@$toUser->last_name;
-           $mailData['to_user_email'] = @$toUser->email;
-           $mailData['from_user_name'] = @$fromUser->first_name.' '.@$fromUser->last_name;
-           $mailData['message'] = $request->message;
-           $mailData['subject'] = "Message Mail";
+            // Mail::send(new MessageMailToUser(@$mailData));
 
-           Mail::send(new MessageMailToUser(@$mailData));
+            // return success response
+            return redirect()->back()->with('success', 'Message sent successfully!');
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            Log::error('Message sending failed: ' . $e->getMessage());
 
-          if(@$create){
-
-              return redirect()->back()->with('success','Message send successfully');
-          }else{
-
-            return redirect()->back()->with('error','Something went wrong');
-          }
-     }
+            // Redirect back with error message
+            return redirect()->back()->with('error', 'Something went wrong while sending message.');
+        }
+    }
 }
