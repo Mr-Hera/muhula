@@ -27,9 +27,7 @@
                      @include('includes.message')
                      <form action="{{ route('user.send.message.reply') }}" method="post" id="messageForm">
                         @csrf
-                        <input type="hidden" name="to_user_id" id="" value="{{ $message->from_user_id }}">
-                        <input type="hidden" name="message_id" id="" value="{{ $message->id }}"> 
-                        <input type="hidden" name="school_id" id="" value="{{ $message->school_id }}"> 
+                        <input type="hidden" name="message_id" id="" value="{{ $message->id }}">
                         <div class="message_details_reply">
                            <div class="dash_input">
                               <label>Reply</label>
@@ -58,7 +56,7 @@
                                           <h3>{{ $data->sender->first_name.' '.$data->sender->last_name }}</h3>
                                        </div>
                                        <div class="message_date">
-                                          <p> <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->date)) }}, {{ date('h:i A',strtotime($data->date)) }}</p>
+                                          <p> <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->created_at)) }}, {{ date('h:i A',strtotime($data->created_at)) }}</p>
                                        </div>
                                     </div>
                                        <div class="message_body">

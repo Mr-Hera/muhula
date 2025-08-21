@@ -138,4 +138,60 @@ class MessageController extends Controller
             return redirect()->back()->with('error', 'Something went wrong while sending message.');
         }
     }
+
+    public function replyMessage(Request $request){
+        // dd($request);
+        // Validate only what reply needs
+        $request->validate([
+            'message_id' => 'required|integer|exists:messages,id',
+            'message' => 'required|string',
+            'attached_message_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        try {
+            // Get the original message being replied to
+            $originalMessage = Message::findOrFail($request->message_id);
+
+            // Fetch the conversation from that message
+            $conversation = Conversation::findOrFail($originalMessage->conversation_id);
+
+            // Get the current authenticated user
+            $sender = User::findOrFail(Auth::id());
+
+            // Ensure the sender is a participant in the conversation
+            $alreadyParticipant = ConversationParticipant::where('conversation_id', $conversation->id)
+                ->where('user_id', $sender->id)
+                ->exists();
+
+            if (!$alreadyParticipant) {
+                ConversationParticipant::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $sender->id,
+                    'joined_at' => now(),
+                ]);
+            }
+
+            // Create the reply message
+            $message = Message::create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => $sender->id,
+                'content' => $request->message,
+                'reply_to_id' => $originalMessage->id, // track reply relationship
+                'sent_at' => now(),
+            ]);
+
+            // If you want to store attachment
+            if ($request->hasFile('attached_message_image')) {
+                $path = $request->file('attached_message_image')->store('message_attachments', 'public');
+                $message->attachment_path = $path;
+                $message->save();
+            }
+
+            // Success response
+            return redirect()->back()->with('success', 'Message sent successfully!');
+        } catch (\Exception $e) {
+            Log::error('Reply message failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong while replying to message.');
+        }
+    }
 }

@@ -118,7 +118,7 @@
                                  </div>
                                  <div class="message_date">
                                     <p>
-                                       <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->date)) }}, {{ date('h:i A',strtotime($data->date)) }}
+                                       <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->created_at)) }}, {{ date('h:i A',strtotime($data->created_at)) }}
                                     </p>
                                     <a href="{{ route('user.message.detail',[$data->id]) }}">
                                        <img src="{{ asset('images/repeat.png') }}"> Reply
