@@ -47,30 +47,37 @@ class MessageController extends Controller
     }
 
     public function messageDetail($message_id=null){
+        // 1. Find the message we came from (with its conversation)
+        $message = Message::with('conversation')->find($message_id);
 
-        // Load the requested message with its sender + conversation
-        $message = Message::with(['sender', 'conversation'])->find($message_id);
-
-        if (!$message) {
+        if (!$message || !$message->conversation) {
             return redirect()->route('user.message.list');
         }
 
-        // Fetch all messages in the same conversation, eager load senders
-        $allMessages = Message::with('sender')
-            ->where('conversation_id', $message->conversation_id)
-            ->orderBy('created_at', 'asc')
-            ->get();
-        // dd($allMessages);
+        // 2. Get the conversation title
+        $conversationTitle = $message->conversation->title;
 
-        // Optionally fetch participants of this conversation (if needed in blade)
-        $participants = $message->conversation
-            ? $message->conversation->participants()->get()
-            : collect();
+        // 3. Find all conversation IDs that share this title
+        $conversationIds = Conversation::where('title', $conversationTitle)->pluck('id');
+
+        // 4. Get all messages from those conversations, latest first, eager load senders
+        $allMessages = Message::with('sender')
+            ->whereIn('conversation_id', $conversationIds)
+            ->orderBy('created_at', 'desc') // latest first
+            ->get();
+
+        // 5. Get all participants (from ALL these conversations if needed)
+        $participants = Conversation::whereIn('id', $conversationIds)
+            ->with('participants')
+            ->get()
+            ->pluck('participants')
+            ->flatten()
+            ->unique('id'); // remove duplicates
 
         return view('dashboard.message_Details')->with([
-            'message'      => $message,
-            'allMessages'  => $allMessages,
-            'participants' => $participants,
+            'message'      => $message,       // original message
+            'allMessages'  => $allMessages,   // all related messages
+            'participants' => $participants,  // unique participants
         ]);
     }
 
@@ -129,6 +136,62 @@ class MessageController extends Controller
 
             // Redirect back with error message
             return redirect()->back()->with('error', 'Something went wrong while sending message.');
+        }
+    }
+
+    public function replyMessage(Request $request){
+        // dd($request);
+        // Validate only what reply needs
+        $request->validate([
+            'message_id' => 'required|integer|exists:messages,id',
+            'message' => 'required|string',
+            'attached_message_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        try {
+            // Get the original message being replied to
+            $originalMessage = Message::findOrFail($request->message_id);
+
+            // Fetch the conversation from that message
+            $conversation = Conversation::findOrFail($originalMessage->conversation_id);
+
+            // Get the current authenticated user
+            $sender = User::findOrFail(Auth::id());
+
+            // Ensure the sender is a participant in the conversation
+            $alreadyParticipant = ConversationParticipant::where('conversation_id', $conversation->id)
+                ->where('user_id', $sender->id)
+                ->exists();
+
+            if (!$alreadyParticipant) {
+                ConversationParticipant::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $sender->id,
+                    'joined_at' => now(),
+                ]);
+            }
+
+            // Create the reply message
+            $message = Message::create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => $sender->id,
+                'content' => $request->message,
+                'reply_to_id' => $originalMessage->id, // track reply relationship
+                'sent_at' => now(),
+            ]);
+
+            // If you want to store attachment
+            if ($request->hasFile('attached_message_image')) {
+                $path = $request->file('attached_message_image')->store('message_attachments', 'public');
+                $message->attachment_path = $path;
+                $message->save();
+            }
+
+            // Success response
+            return redirect()->back()->with('success', 'Message sent successfully!');
+        } catch (\Exception $e) {
+            Log::error('Reply message failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong while replying to message.');
         }
     }
 }

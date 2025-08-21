@@ -27,7 +27,7 @@ use App\Http\Controllers\SocialAuthController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login
-Route::get('login', [SocialAuthController::class, 'showUserLoginForm'])->name('login')->middleware('guest');
+Route::get('/login', [SocialAuthController::class, 'showUserLoginForm'])->name('login')->middleware('guest');
 // Handle login submission
 Route::post('/login', [SocialAuthController::class, 'login'])->name('login.post')->middleware('guest');
 
@@ -172,7 +172,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('messages', [MessageController::class, 'messageList'])->name('user.message.list');
         Route::get('/messages/load', [MessageController::class, 'loadMore'])->name('messages.load');
         Route::get('message-details/{message_id?}', [MessageController::class, 'messageDetail'])->name('user.message.detail');
-        Route::post('send-message-reply','Message\MessageController@sendMessage')->name('user.send.message.reply');
+        Route::post('send-message-reply',[MessageController::class, 'replyMessage'])->name('user.send.message.reply');
 
         //for subscription
         Route::get('subscription', 'Subscription\SubscriptionController@subscription')->name('user.subscription');

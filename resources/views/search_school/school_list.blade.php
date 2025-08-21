@@ -181,7 +181,13 @@
                                     <li>
                                        <div class="radiobx">
                                           <label for="">{{ $level->name }}
-                                             <input type="checkbox" value="{{ $level->id }}" name="school_level[]" id="{{ $level->name }}" />
+                                             <input
+                                                type="checkbox"
+                                                value="{{ $level->id }}"
+                                                name="school_level[]"
+                                                id="{{ $level->name }}"
+                                                @if(isset($dynamic_school_level) && $level->name === $dynamic_school_level) checked @endif
+                                             />
                                              <span class="checkbox"></span>
                                           </label>
                                        </div>

@@ -34,7 +34,7 @@ use Illuminate\Validation\ValidationException;
 class SchoolController extends Controller
 {
   public function addSchoolStep1($id=null){
-    $schoolDetails = School::where(DB::raw('id'),@$id)->first();
+    $schoolDetails = School::where(DB::raw('id'),$id)->first();
     
     return view('listSchool.add_school_step1')->with([
       'school_details' => $schoolDetails,
@@ -747,6 +747,7 @@ class SchoolController extends Controller
     
     // Get the school_id from session
     $schoolId = Session::get('school_creation.step2.school_id');
+    $school = School::find($schoolId);
     // dd($schoolId);
 
     // Create the school fee record
@@ -767,7 +768,7 @@ class SchoolController extends Controller
         'currency'    => 'KES', // Again, replace with $request->currency if needed
     ]);
 
-    return redirect()->route('add.school.success')->with('success', 'School listing added successfully.');
+    return redirect()->route('add.school.success')->with('success', 'School listing added successfully.')->with('school_name', $school?->name);
   }
 
   public function addSchoolSuccessPage()
@@ -821,53 +822,66 @@ class SchoolController extends Controller
   {
     // Fetch filters from request
     $school_type = $request->school_type;
+    $school_level = $school_type ? SchoolLevel::find($school_type) : null;
+    $dynamic_school_level = $school_level ? $school_level->name : null;
+    // dd($dynamic_school_level);
     $keyword     = $request->keyword;
     $location    = $request->location;
     $curriculum_id = $request->curriculum_id;
     $county_id = $request->county_id;
+    $city = $request->city;
+    $school_name   = $request->school; // 👈 comes from school listing success page
 
     // Start building query
     $query = School::query()->with(['schoolLevel', 'type', 'curriculum', 'country', 'county', 'address', 'courses']);
 
-    // Filter: school type
-    if ($school_type) {
-      $query->where('school_level_id', $school_type);
-    }
+    // If school_name is provided, override other filters and return only that record
+    if ($school_name) {
+        $query->where('name', $school_name);
+    } else {
 
-    // Filter: curriculum
-    if ($curriculum_id) {
-      $query->where('curriculum_id', $curriculum_id);
-    }
-
-    // Filter: curriculum
-    if ($curriculum_id) {
-      $query->where('county_id', $curriculum_id);
-    }
-
-    // Filter: keyword (search in name, description, and course name)
-    if ($keyword) {
-      $query->where(function ($q) use ($keyword) {
-        $q->where('name', 'LIKE', "%{$keyword}%")
-          ->orWhere('description', 'LIKE', "%{$keyword}%")
-          ->orWhereHas('courses', function ($q2) use ($keyword) {
-            $q2->where('name', 'LIKE', "%{$keyword}%");
-          });
-      });
-    }
-
-    // Filter: location (search in county name, country name, or address text)
-    if ($location) {
-      $query->where(function ($q) use ($location) {
-        $q->whereHas('county', function ($q1) use ($location) {
-          $q1->where('name', 'LIKE', "%{$location}%");
-        })
-        ->orWhereHas('country', function ($q2) use ($location) {
-          $q2->where('name', 'LIKE', "%{$location}%");
-        })
-        ->orWhereHas('address', function ($q3) use ($location) {
-          $q3->where('address_text', 'LIKE', "%{$location}%");
+      // Filter: school type
+      if ($school_type) {
+        $query->where('school_level_id', $school_type);
+      }
+  
+      // Filter: curriculum
+      if ($curriculum_id) {
+        $query->where('curriculum_id', $curriculum_id);
+      }
+  
+      // Filter: county by name (from city param)
+      if ($city) {
+        $query->whereHas('county', function ($q) use ($city) {
+          $q->where('name', $city);
         });
-      });
+      }
+  
+      // Filter: keyword (search in name, description, and course name)
+      if ($keyword) {
+        $query->where(function ($q) use ($keyword) {
+          $q->where('name', 'LIKE', "%{$keyword}%")
+            ->orWhere('description', 'LIKE', "%{$keyword}%")
+            ->orWhereHas('courses', function ($q2) use ($keyword) {
+              $q2->where('name', 'LIKE', "%{$keyword}%");
+            });
+        });
+      }
+  
+      // Filter: location (search in county name, country name, or address text)
+      if ($location) {
+        $query->where(function ($q) use ($location) {
+          $q->whereHas('county', function ($q1) use ($location) {
+            $q1->where('name', 'LIKE', "%{$location}%");
+          })
+          ->orWhereHas('country', function ($q2) use ($location) {
+            $q2->where('name', 'LIKE', "%{$location}%");
+          })
+          ->orWhereHas('address', function ($q3) use ($location) {
+            $q3->where('address_text', 'LIKE', "%{$location}%");
+          });
+        });
+      }
     }
 
     // Final results
@@ -893,6 +907,7 @@ class SchoolController extends Controller
         'school_types_day_n_boarding' => $school_types_day_n_boarding,
         'schools' => $schools,
         'key' => $key,
+        'dynamic_school_level' => $dynamic_school_level,
     ]);
   }
 

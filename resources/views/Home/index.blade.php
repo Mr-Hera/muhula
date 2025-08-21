@@ -325,14 +325,14 @@
                         @endphp
 
                         <div class="subject-box">
-                              <a href="javascript:;" class="school_type" data-school_type="{{ $level->id }}">
-                                 <div class="sub-img">
-                                    <img src="{{ asset("images/type{$imageNumber}.png") }}" alt="{{ $level->name }}">
-                                 </div>
-                                 <div class="sub-txt">
-                                    <h3>{{ $level->name }} <span>({{ $schoolCount }})</span></h3>
-                                 </div>
-                              </a>
+                           <a class="nav-link" href="{{ route('school.search') }}?school_type={{ $level->id }}">
+                              <div class="sub-img">
+                                 <img src="{{ asset("images/type{$imageNumber}.png") }}" alt="{{ $level->name }}">
+                              </div>
+                              <div class="sub-txt">
+                                 <h3>{{ $level->name }} <span>({{ $schoolCount }})</span></h3>
+                              </div>
+                           </a>
                         </div>
                      @endforeach
                   @endif
@@ -434,10 +434,14 @@
                            <div class="item">
                                  @foreach($group as $c)
                                     <div class="loc_box">
-                                       <a href="javascript:;" class="town" data-town="{{ $c->id }}">
+                                       <a class="town" href="{{ route('school.search') }}?city={{ $c->name }}">
                                              <h2>{{ $c->name }}<span>({{ $c->schools_count ?? 0 }})</span></h2>
                                              <img src="{{ asset('images/chevrone.png') }}" alt="">
                                        </a>
+                                       {{-- <a href="javascript:;" class="town" data-town="{{ $c->id }}">
+                                             <h2>{{ $c->name }}<span>({{ $c->schools_count ?? 0 }})</span></h2>
+                                             <img src="{{ asset('images/chevrone.png') }}" alt="">
+                                       </a> --}}
                                     </div>
                                  @endforeach
                            </div>

@@ -31,8 +31,10 @@
                         </div>
 
                         <div class="action-buttons mt-4 d-flex gap-3 justify-content-center">
-                            <a href="#" class="text-black btn btn-link"><u>View Your School</u></a>
-                            <a href="#" class="text-black btn btn-link"><u>Back to Dashboard</u></a>
+                            <a class="text-black btn btn-link" href="{{ route('school.search') }}?school={{ $school_name ?? '' }}">
+                                <u>View Your School</u>
+                            </a>
+                            <a href="{{ route('user.dashboard') }}" class="text-black btn btn-link"><u>Back to Dashboard</u></a>
                         </div>
 
                         <div class="ad-schl-sub-go mt-4">

@@ -108,17 +108,17 @@
                               <div class="message_owner">
                                  <div class="measge_name">
                                     <a href="{{ route('user.message.detail',[$data->id]) }}">
-                                    @if($data->sender->profile_image != null)
-                                       <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ $data->sender->profile_image }}" alt="">
-                                    @else
-                                       <img src="{{ asset('images/avatar.png') }}" alt="">
-                                    @endif
+                                       @if($data->sender->profile_image != null)
+                                          <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ $data->sender->profile_image }}" alt="">
+                                       @else
+                                          <img src="{{ asset('images/avatar.png') }}" alt="">
+                                       @endif
                                        <h3>{{ $data->conversation?->title }}</h3>
                                     </a>
                                  </div>
                                  <div class="message_date">
                                     <p>
-                                       <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->date)) }}, {{ date('h:i A',strtotime($data->date)) }}
+                                       <img src="{{ asset('images/clock.png') }}" alt="">{{ date('d/m/Y',strtotime($data->created_at)) }}, {{ date('h:i A',strtotime($data->created_at)) }}
                                     </p>
                                     <a href="{{ route('user.message.detail',[$data->id]) }}">
                                        <img src="{{ asset('images/repeat.png') }}"> Reply
