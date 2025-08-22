@@ -51,7 +51,7 @@
                            <div class="col-lg-6 col-sm-6  col-md-6 col-12 cols">
                               <div class="dash_input">
                                  <label>Phone Number</label>
-                                 <input type="text" name="mobile" placeholder="Enter here" value="{{ $user->phone }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                 <input type="text" name="mobile" placeholder="E.g. 254765498701..." value="{{ $user->phone }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
                               </div>
                            </div>
                         </div>
@@ -116,7 +116,7 @@
                               <div class="dash_input">
                                  <label class=" nob" data-content="Password">Confirm Password </label>
                                  <div class="posit_rela">
-                                    <input id="password_confirmation"  name="password_confirmation" type="password" placeholder="Enter here"
+                                    <input id="new_password_confirmation"  name="new_password_confirmation" type="password" placeholder="Enter here"
                                     readonly=""
                                         onfocus="this.removeAttribute('readonly');" onclick="this.removeAttribute('readonly');" onblur="this.removeAttribute('readonly');">
                                     <span toggle="#password-field" id="togglePassword3" class="fa fa-eye field-icon toggle-password"></span>
@@ -460,31 +460,31 @@ $(document).ready(function() {
                 required: true,
                 email: true,
                 maxlength: 100,
-                remote: {
-                    url: '{{ route("email.check") }}',
-                    type: "post",
-                    data: {
-                        email: function() {
-                            return $("#temp_email").val();
-                        },
-                        _token: '{{ csrf_token() }}'
-                    }
-                }
+                //remote: {
+                //    url: '{{ route("email.check") }}',
+                //    type: "post",
+                //    data: {
+                //        email: function() {
+                //            return $("#temp_email").val();
+                //        },
+                //        _token: '{{ csrf_token() }}'
+                //    }
+                //}
 
             },
             current_password: {
 
                 required: true,
-                remote: {
-                    url: '{{ route("password.check") }}',
-                    type: "post",
-                    data: {
-                        current_password: function() {
-                            return $("#current_password").val();
-                        },
-                        _token: '{{ csrf_token() }}'
-                    }
-                }
+                // remote: {
+                //     url: '{{ route("password.check") }}',
+                //     type: "post",
+                //     data: {
+                //         current_password: function() {
+                //             return $("#current_password").val();
+                //         },
+                //         _token: '{{ csrf_token() }}'
+                //     }
+                // }
 
             },
 

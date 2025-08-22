@@ -130,11 +130,11 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('user.dashboard');
         Route::get('edit-profile', [DashboardController::class, 'profile'])->name('user.profile');
         Route::get('profile-image-delete', 'Profile\ProfileController@profileImageDelete')->name('user.profile.image.delete');
-        Route::post('update-profile', 'Profile\ProfileController@update')->name('user.update.profile');
-        Route::post('email-check', 'Profile\ProfileController@userEmailCheck')->name('email.check');
+        Route::post('update-profile', [SocialAuthController::class, 'updateProfile'])->name('user.update.profile');
+        Route::post('email-check', [SocialAuthController::class, 'userEmailCheck'])->name('email.check');
         Route::post('mobile-check', 'Profile\ProfileController@userMobileCheck')->name('mobile.check');
-        Route::post('user-update-email', 'Profile\ProfileController@updateEmail')->name('user.update.email');
-        Route::post('password-check', 'Profile\ProfileController@passwordCheck')->name('password.check');
+        Route::post('user-update-email', [SocialAuthController::class, 'updateEmail'])->name('user.update.email');
+        Route::post('password-check', [SocialAuthController::class, 'passwordCheck'])->name('password.check');
         Route::get('user-email-update/{vcode?}/{id?}', 'Profile\ProfileController@verifyEmail')->name('user.email.update');
 
         //for my school
