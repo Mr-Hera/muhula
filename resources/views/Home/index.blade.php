@@ -118,6 +118,20 @@
         </div>
       </section>
 
+      <section class="adv2 py-4">
+         <div class="container">
+            <div class="row justify-content-center">
+               <div class="col-lg-10 col-md-12">
+                  <div class="adv_n text-center">
+                     <a href="#">
+                        <img src="{{ asset('images/adv1.png') }}" alt="" class="img-fluid w-100 rounded">
+                     </a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+
       {{-- <section class="featured-school">
          <div class="shpa_gr">
             <img src="{{ url('public/images/banner-fest.png') }}" alt="">
@@ -546,22 +560,22 @@
       </section>
       @endif
 
-      <!-- <section class="adv2">
+      <section class="adv2">
          <div class="container">
             <div class="row">
                <div class="col-sm-6">
                   <div class="adv_n">
-                     <a href="#"> <img src="{{ url('public/images/adv1.png') }}" alt=""> </a>
+                     <a href="#"> <img src="{{ asset('images/adv1.png') }}" alt=""> </a>
                   </div>
                </div>
                <div class="col-sm-6">
                   <div class="adv_n">
-                     <a href="#"> <img src="{{ url('public/images/adv2.png') }}" alt=""> </a>
+                     <a href="#"> <img src="{{ asset('images/adv2.png') }}" alt=""> </a>
                   </div>
                </div>
             </div>
          </div>
-      </section> -->
+      </section>
 
       {{--<section class="featured_testimonials">
          <div class="container">
