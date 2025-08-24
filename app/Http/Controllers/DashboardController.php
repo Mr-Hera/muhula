@@ -10,6 +10,7 @@ use App\Models\NewsArticle;
 use Illuminate\Support\Str;
 use App\Models\SchoolReview;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -59,6 +60,43 @@ class DashboardController extends Controller
         {
             return redirect()->back()->with('error','Wrong current password');
         }
+    }
+
+    // DASHBOARD: MANAGE-CLAIMS PAGE
+    public function getManageClaims(){
+        $claims = DB::table('school_user')
+            ->join('users', 'school_user.user_id', '=', 'users.id')
+            ->join('schools', 'school_user.school_id', '=', 'schools.id')
+            ->leftJoin('contact_positions', 'school_user.contact_position_id', '=', 'contact_positions.id')
+            ->select(
+                'school_user.id as claim_id',
+                'users.first_name',
+                'users.last_name',
+                'schools.name as school_name',
+                'contact_positions.name as position_name',
+                'school_user.claim_status'
+            )
+            ->get();
+
+        return view('dashboard.manage_claims')->with([
+            'user' => Auth::user(),
+            'claims' => $claims
+        ]);
+    }
+    public function updateClaimStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:approved,rejected'
+        ]);
+
+        DB::table('school_user')
+            ->where('id', $id)
+            ->update([
+                'claim_status' => $request->status,
+                'claimed_at' => now(),
+            ]);
+
+        return redirect()->back()->with('success', 'Claim status updated successfully!');
     }
 
     // DASHBOARD: EDIT-PROFILE PAGE

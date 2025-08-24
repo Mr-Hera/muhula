@@ -266,18 +266,26 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                      </div>
                      <div class="claim_sc_body">                        
                         <div class="clam_sc">
-                           @if($currentUserClaim && $currentUserClaim->pivot->claim_status === 'pending')
-                              @auth
-                                 <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#myModal">
+                           @auth
+                              @if(!$currentUserClaim)
+                                    {{-- User has not claimed this school yet --}}
+                                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#myModal">
+                                       <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
+                                    </a>
+                              @elseif($currentUserClaim->pivot->claim_status === 'pending')
+                                    {{-- User has claimed, but status is still pending --}}
+                                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#myModal">
+                                       <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
+                                    </a>
+                              @endif
+                           @endauth
+
+                           @guest
+                              {{-- Guests can’t claim — show login prompt --}}
+                              <a href="javascript:void(0)" class="notLogin">
                                     <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
-                                 </a>
-                              @endauth
-                              @guest
-                                 <a href="javascript:void(0)" class="notLogin">
-                                    <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
-                                 </a>
-                              @endguest
-                           @endif
+                              </a>
+                           @endguest
                         </div>
                         <div class="share_a">
                               <p> <img src="{{ asset('images/share2.png') }}" alt=""> Share</p>

@@ -957,6 +957,7 @@ class SchoolController extends Controller
         ->where('id', Auth::id())
         ->first();
     }
+    // dd($currentUserClaim);
 
     return view('search_school.school_details')->with([
       'school_record' => $school_record,

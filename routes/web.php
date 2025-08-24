@@ -162,6 +162,10 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('delete-news/{id?}', 'School\SchoolController@deleteNews')->name('user.news.delete');
         Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news');
 
+        // for manage claims
+        Route::get('manage-claims', [DashboardController::class, 'getManageClaims'])->name('get.manage.claims');
+        Route::post('/claims/{id}/update-status', [DashboardController::class, 'updateClaimStatus'])->name('claims.update.status');
+
         //for my reviews
         Route::get('my-reviews-for-by-me', [DashboardController::class, 'myReviewsByMe'])->name('user.my.review.by.me');
         Route::get('my-reviews-for-by-school', [DashboardController::class, 'myReviewsBySchool'])->name('user.my.review.by.school');
