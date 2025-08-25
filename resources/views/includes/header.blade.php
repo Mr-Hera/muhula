@@ -75,14 +75,33 @@
                   </div>
                   <div class="loggd-nv-list" style="display: none;">
                      <ul>
-                        <li> <a href="{{ route('user.dashboard') }}">Dashboard</a> </li>
-                        <li><a href="{{ route('user.profile') }}">Edit Profile</a></li>
-                        <li><a href="{{ route('user.my.school') }}">My School</a></li>
-                        <li><a href="{{ route('user.my.favourite') }}">My Favourite</a></li>
-                        <li><a href="{{ route('user.add.news') }}">Add News</a></li>
-                        <li><a href="{{ route('user.my.review.by.me') }}">My Reviews</a></li>
-                        <li><a href="{{ route('user.message.list') }}">Messages</a></li>
-                        <li><a href="{{ route('school.search') }}">Claim School</a></li>
+                        <li>
+                           <a href="{{ route('user.dashboard') }}">Dashboard</a>
+                        </li>
+                        <li>
+                           <a href="{{ route('user.profile') }}">Edit Profile</a>
+                        </li>
+                        <li>
+                           <a href="{{ route('user.my.school') }}">My School</a>
+                        </li>
+                        <li>
+                           <a href="{{ route('user.my.favourite') }}">My Favourite</a>
+                        </li>
+                        <li>
+                           <a href="{{ route('user.add.news') }}">Add News</a>
+                        </li>
+                        <li>
+                           <a href="{{ route('user.my.review.by.me') }}">My Reviews</a>
+                        </li>
+                        <li>
+                           <a href="{{ route('user.message.list') }}">Messages</a>
+                        </li>
+                        <li>
+                           <a href="{{ route('school.search') }}">Claim School</a>
+                        </li>
+                        <li>                          
+                           <a href="{{ route('get.manage.claims') }}">Manage Claims</a>
+                        </li>
                         {{-- <li><a href="{{ route('user.subscription') }}">Subscription</a></li>
                         <li><a href="{{ route('user.subscription.history') }}">Subscription History</a></li> --}}
                         <span class="list-dvdr"></span>

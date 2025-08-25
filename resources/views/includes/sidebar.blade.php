@@ -26,6 +26,9 @@
          <li>                          
             <a href="{{ route('school.search') }}"> <span><img src="{{asset('images/claim-school.png')}}" alt="" ></span>Claim School </a>
          </li>
+         <li>                          
+            <a href="{{ route('get.manage.claims') }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Claims </a>
+         </li>
          {{-- <li>                          
             <a href="{{ route('user.subscription') }}" class="{{ Route::is('user.subscription')?'active' : '' }}"> <span><img src="{{asset('images/subscription.png')}}" alt="" ></span>Subscription</a>
          </li>

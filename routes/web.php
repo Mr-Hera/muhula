@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\MessageController;
@@ -117,11 +118,11 @@ Route::group(['namespace' => 'Modules'], function() {
      Route::match(['get', 'post'], 'search-school', [SchoolController::class, 'schoolSearch'])->name('school.search');
      Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
      Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
-     Route::post('post-review','School\SearchSchoolController@postReview')->name('post.review');
+     Route::post('post-review',[ReviewController::class, 'postReview'])->name('post.review');
      Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
      Route::post('upload-photo-save','School\SearchSchoolController@uploadPhotoSave')->name('school.photo.save');
      Route::post('send-message-save',[MessageController::class, 'sendMessage'])->name('user.send.message');
-     Route::post('add-favourite','School\SearchSchoolController@addFavourite')->name('user.add.favourite');
+     Route::post('add-favourite',[SchoolController::class, 'addFavourite'])->name('user.add.favourite');
      Route::post('header-image-video-save','School\SearchSchoolController@addHeaderImageVideo')->name('user.add.header.image.video');
      
 
@@ -161,6 +162,10 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::post('create-news-save', [DashboardController::class, 'createNewsSave'])->name('user.create.news.save');
         Route::get('delete-news/{id?}', 'School\SchoolController@deleteNews')->name('user.news.delete');
         Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news');
+
+        // for manage claims
+        Route::get('manage-claims', [DashboardController::class, 'getManageClaims'])->name('get.manage.claims');
+        Route::post('/claims/{id}/update-status', [DashboardController::class, 'updateClaimStatus'])->name('claims.update.status');
 
         //for my reviews
         Route::get('my-reviews-for-by-me', [DashboardController::class, 'myReviewsByMe'])->name('user.my.review.by.me');

@@ -266,18 +266,26 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                      </div>
                      <div class="claim_sc_body">                        
                         <div class="clam_sc">
-                           @if($currentUserClaim && $currentUserClaim->pivot->claim_status === 'pending')
-                              @auth
-                                 <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#myModal">
+                           @auth
+                              @if(!$currentUserClaim)
+                                    {{-- User has not claimed this school yet --}}
+                                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#myModal">
+                                       <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
+                                    </a>
+                              @elseif($currentUserClaim->pivot->claim_status === 'pending')
+                                    {{-- User has claimed, but status is still pending --}}
+                                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#myModal">
+                                       <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
+                                    </a>
+                              @endif
+                           @endauth
+
+                           @guest
+                              {{-- Guests can’t claim — show login prompt --}}
+                              <a href="javascript:void(0)" class="notLogin">
                                     <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
-                                 </a>
-                              @endauth
-                              @guest
-                                 <a href="javascript:void(0)" class="notLogin">
-                                    <img src="{{ asset('images/clam.png') }}" alt=""> Claim the school
-                                 </a>
-                              @endguest
-                           @endif
+                              </a>
+                           @endguest
                         </div>
                         <div class="share_a">
                               <p> <img src="{{ asset('images/share2.png') }}" alt=""> Share</p>
@@ -632,7 +640,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            </div>
                         </div>
                      @endif
-                     {{-- <div id="what_why_panel23" class="about_sc_bo">
+                     <div id="what_why_panel23" class="about_sc_bo">
                         <div class="abot_all_headings">
                            <h3>Reviews</h3>
                            <ul class="stars_sc">
@@ -657,134 +665,135 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                               <li> <p>({{ @$schoolDetails->tot_review }} reviews)</p> </li>
                            </ul>
                         </div>
-                         @if(@$reviews->isNotEmpty())
-                        <div class="reviews_des new-rev-row">
-                           <div class="row align-items-stretch">
-                           @foreach($reviews as $data)     
-                           <div class="col-lg-4 col-md-6 col-12 col" style="display:none;">
-                                 <div class="school_review_box">
-                                    <div class="school_rev_name">
-                                       <div class="school_use_re">
-                                          <span>
-                                            @if(@$data->getUser->profile_pic != null)
-                                             <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ @$data->getUser->profile_pic }}" alt="">
-                                              @else
-                                             <img src="{{ asset('images/avatar.png') }}" alt="">
-                                             @endif 
-                                          </span>
-                                          <div class="sch_us_de">
-                                             <h5>{{ @$data->getUser->first_name.' '.@$data->getUser->last_name }}</h5>
-                                             <p>
-                                                @if(@$data->designation == 'CS')
-                                                Current Student
-                                                @elseif(@$data->designation == 'E')
-                                                Employer
-                                                @elseif(@$data->designation == 'G')
-                                                General
-                                                @endif
-                                             </p>
+                        @if($reviews->isNotEmpty())
+                           <div class="reviews_des new-rev-row">
+                              <div class="row align-items-stretch">
+                              @foreach($reviews as $data)     
+                                 <div class="col-lg-4 col-md-6 col-12 col" style="display:none;">
+                                       <div class="school_review_box">
+                                          <div class="school_rev_name">
+                                             <div class="school_use_re">
+                                                <span>
+                                                   @if(@$data->getUser->profile_pic != null)
+                                                      <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ @$data->getUser->profile_pic }}" alt="">
+                                                   @else
+                                                      <img src="{{ asset('images/avatar.png') }}" alt="">
+                                                   @endif 
+                                                </span>
+                                                <div class="sch_us_de">
+                                                   <h5>{{ $data->user->first_name.' '.$data->user->last_name }}</h5>
+                                                   <p>
+                                                      @if(@$data->designation == 'CS')
+                                                      Current Student
+                                                      @elseif(@$data->designation == 'E')
+                                                      Employer
+                                                      @elseif(@$data->designation == 'G')
+                                                      General
+                                                      @endif
+                                                   </p>
+                                                </div>
+                                             </div>
+                                             <ul class="stars_sc">
+                                             @for($i=1;$i<=$data->rating;$i++)
+                                                <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
+                                             @endfor
+                                             @for($j=$data->rating+1;$j<=5;$j++)
+                                                <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
+                                             @endfor
+                                             </ul>
+                                          </div>
+                                          <div class="revie_sc_para">
+                                             <p>{{ $data->review_text }} </p>
+                                          </div>
+                                          <div class="revie_sc_date">
+                                             <p>{{ date('jS M, Y',strtotime($data->created_at)) }}</p>
                                           </div>
                                        </div>
-                                       <ul class="stars_sc">
-                                       @for($i=1;$i<=@$data->review_point;$i++)
-                                       <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
-                                        @endfor
-                                        @for($j=@$data->review_point+1;$j<=5;$j++)
-                                        <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
-                                         @endfor
-                                       </ul>
                                     </div>
-                                    <div class="revie_sc_para">
-                                       <p>{{ @$data->review_text }} </p>
-                                    </div>
-                                    <div class="revie_sc_date">
-                                       <p>{{ date('jS M, Y',strtotime(@$data->created_at)) }}</p>
-                                    </div>
+                                 @endforeach
+                                 <div class="col-12" @if($reviews->count() > 6) style="display:block;" @else style="display:none;" @endif>
+                                    <button class="loadtst view_more_btn">Load more
+                                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                       <path opacity="0.2" d="M12 6C13.1046 6 14 5.10457 14 4C14 2.89543 13.1046 2 12 2C10.8954 2 10 2.89543 10 4C10 5.10457 10.8954 6 12 6Z" fill="#5BD75B"/>
+                                       <path opacity="0.6" d="M12 22C13.1046 22 14 21.1046 14 20C14 18.8954 13.1046 18 12 18C10.8954 18 10 18.8954 10 20C10 21.1046 10.8954 22 12 22Z" fill="#5BD75B"/>
+                                       <path d="M17.1961 9.00012C17.7483 9.9567 18.9715 10.2845 19.9281 9.73217C20.8847 9.17988 21.2124 7.9567 20.6602 7.00012C20.1079 6.04353 18.8847 5.71578 17.9281 6.26807C16.9715 6.82035 16.6438 8.04353 17.1961 9.00012Z" fill="#5BD75B"/>
+                                       <path opacity="0.4" d="M3.33985 17.0001C3.89214 17.9567 5.11532 18.2844 6.07191 17.7321C7.02849 17.1799 7.35624 15.9567 6.80396 15.0001C6.25167 14.0435 5.02849 13.7158 4.07191 14.268C3.11532 14.8203 2.78757 16.0435 3.33985 17.0001Z" fill="#5BD75B"/>
+                                       <path opacity="0.8" d="M17.1961 15.0001C16.6438 15.9567 16.9715 17.1799 17.9281 17.7321C18.8847 18.2844 20.1079 17.9567 20.6602 17.0001C21.2124 16.0435 20.8847 14.8203 19.9281 14.268C18.9715 13.7158 17.7483 14.0435 17.1961 15.0001Z" fill="#5BD75B"/>
+                                       <path opacity="0.3" d="M3.33985 7.00012C2.78757 7.9567 3.11532 9.17988 4.0719 9.73217C5.02849 10.2845 6.25167 9.9567 6.80396 9.00012C7.35624 8.04353 7.02849 6.82035 6.0719 6.26807C5.11532 5.71578 3.89214 6.04353 3.33985 7.00012Z" fill="#5BD75B"/>
+                                       </svg>
+                                    </button>
                                  </div>
                               </div>
-                              @endforeach
-                              <div class="col-12" @if(@$reviews->count() > 6) style="display:block;" @else style="display:none;" @endif>
-                                 <button class="loadtst view_more_btn">Load more
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path opacity="0.2" d="M12 6C13.1046 6 14 5.10457 14 4C14 2.89543 13.1046 2 12 2C10.8954 2 10 2.89543 10 4C10 5.10457 10.8954 6 12 6Z" fill="#5BD75B"/>
-                                    <path opacity="0.6" d="M12 22C13.1046 22 14 21.1046 14 20C14 18.8954 13.1046 18 12 18C10.8954 18 10 18.8954 10 20C10 21.1046 10.8954 22 12 22Z" fill="#5BD75B"/>
-                                    <path d="M17.1961 9.00012C17.7483 9.9567 18.9715 10.2845 19.9281 9.73217C20.8847 9.17988 21.2124 7.9567 20.6602 7.00012C20.1079 6.04353 18.8847 5.71578 17.9281 6.26807C16.9715 6.82035 16.6438 8.04353 17.1961 9.00012Z" fill="#5BD75B"/>
-                                    <path opacity="0.4" d="M3.33985 17.0001C3.89214 17.9567 5.11532 18.2844 6.07191 17.7321C7.02849 17.1799 7.35624 15.9567 6.80396 15.0001C6.25167 14.0435 5.02849 13.7158 4.07191 14.268C3.11532 14.8203 2.78757 16.0435 3.33985 17.0001Z" fill="#5BD75B"/>
-                                    <path opacity="0.8" d="M17.1961 15.0001C16.6438 15.9567 16.9715 17.1799 17.9281 17.7321C18.8847 18.2844 20.1079 17.9567 20.6602 17.0001C21.2124 16.0435 20.8847 14.8203 19.9281 14.268C18.9715 13.7158 17.7483 14.0435 17.1961 15.0001Z" fill="#5BD75B"/>
-                                    <path opacity="0.3" d="M3.33985 7.00012C2.78757 7.9567 3.11532 9.17988 4.0719 9.73217C5.02849 10.2845 6.25167 9.9567 6.80396 9.00012C7.35624 8.04353 7.02849 6.82035 6.0719 6.26807C5.11532 5.71578 3.89214 6.04353 3.33985 7.00012Z" fill="#5BD75B"/>
-                                    </svg>
-                                 </button>
-                              </div>
                            </div>
-                        </div>
-                         @endif
+                        @endif
                         <div class="post_school_reviews" id="post-schs">
                            <div class="post_re_heading">
                               <h2>Post Your Reviews</h2>
                            </div>
-                            <form action="{{ route('post.review') }}" method="post" id="reviewForm">
+                           <form action="{{ route('post.review') }}" method="post" id="reviewForm">
                               @csrf
-                              <input type="hidden" name="school_id" value="{{ @$schoolDetails->id }}">
-                              <input type="hidden" name="school_owner_id" value="{{ @$schoolDetails->user_id }}">
-                           <div class="rating_sec_po">  
-                              <div class="row">
-                                 <div class="col-md-4 col-sm-6">
-                                    <div class="post_ins">
-                                       <label class="label_po">Rating</label>
-                                       <div class="star-rating">
-                                         <input class="radio-input" type="radio" id="star5" name="review_point" value="5" />
-                                         <label class="radio-label" class for="star5" title="5 stars">5 stars</label>
+                              <input type="hidden" name="school_id" value="{{ $school_record->id }}">
+                              {{-- <input type="hidden" name="school_owner_id" value="{{ @$schoolDetails->user_id }}"> --}}
+                              <div class="rating_sec_po">  
+                                 <div class="row">
+                                    <div class="col-md-4 col-sm-6">
+                                       <div class="post_ins">
+                                          <label class="label_po">Rating</label>
+                                          <div class="star-rating">
+                                          <input class="radio-input" type="radio" id="star5" name="rating" value="5" />
+                                          <label class="radio-label" class for="star5" title="5 stars">5 stars</label>
 
-                                         <input class="radio-input" type="radio" id="star4" name="review_point" value="4" />
-                                         <label class="radio-label" for="star4" title="4 stars">4 stars</label>
+                                          <input class="radio-input" type="radio" id="star4" name="rating" value="4" />
+                                          <label class="radio-label" for="star4" title="4 stars">4 stars</label>
 
-                                         <input class="radio-input" type="radio" id="star3" name="review_point" value="3" />
-                                         <label class="radio-label" for="star3" title="3 stars">3 stars</label>
+                                          <input class="radio-input" type="radio" id="star3" name="rating" value="3" />
+                                          <label class="radio-label" for="star3" title="3 stars">3 stars</label>
 
-                                         <input class="radio-input" type="radio" id="star2" name="review_point" value="2" />
-                                         <label class="radio-label" for="star2" title="2 stars">2 stars</label>
+                                          <input class="radio-input" type="radio" id="star2" name="rating" value="2" />
+                                          <label class="radio-label" for="star2" title="2 stars">2 stars</label>
 
-                                         <input class="radio-input" type="radio" id="star1" name="review_point" value="1" />
-                                         <label class="radio-label" for="star1" title="1 star">1 star</label>
+                                          <input class="radio-input" type="radio" id="star1" name="rating" value="1" />
+                                          <label class="radio-label" for="star1" title="1 star">1 star</label>
+                                          </div>
+                                          <label id="rating-error" class="error" for="rating" style="display:none;"></label>
                                        </div>
-                                       <label id="review_point-error" class="error" for="review_point" style="display:none;"></label>
                                     </div>
-                                 </div>
 
-                                 <div class="col-md-4 col-sm-6">
-                                    <div class="post_ins">
-                                       <label class="label_po">designation</label>
-                                       <select class="post_se" name="designation">
-                                          <option value="">Select</option>
-                                          <option value="CS">Current Student</option>
-                                          <option value="E">Employee</option>
-                                          <option value="G">General</option>
-                                       </select>
+                                    {{-- TEMPORARILY REMOVING THIS --}}
+                                    {{-- <div class="col-md-4 col-sm-6">
+                                       <div class="post_ins">
+                                          <label class="label_po">designation</label>
+                                          <select class="post_se" name="designation">
+                                             <option value="">Select</option>
+                                             <option value="Current Student">Current Student</option>
+                                             <option value="Employee">Employee</option>
+                                             <option value="General">General</option>
+                                          </select>
+                                       </div>
+                                    </div> --}}
+
+                                    <div class="col-md-12">
+                                       <div class="post_ins">
+                                          <textarea placeholder="Enter your review" name="review_text"></textarea>
+                                          
+                                       </div>
                                     </div>
-                                 </div>
 
-                                 <div class="col-md-12">
-                                    <div class="post_ins">
-                                       <textarea placeholder="Enter your review" name="review_text"></textarea>
-                                       
+                                    <div class="sub_btns_post">
+                                       @auth
+                                       <button type="submit">Post Reviews</button>
+                                       @endauth
+                                       @guest
+                                       <button class="noReview">Post Reviews</button>
+                                       @endguest
                                     </div>
-                                 </div>
 
-                                 <div class="sub_btns_post">
-                                    @auth
-                                    <button type="submit">Post Reviews</button>
-                                    @endauth
-                                    @guest
-                                    <button class="noReview">Post Reviews</button>
-                                    @endguest
                                  </div>
-
                               </div>
-                           </div>
                            </form>
                         </div>
 
-                     </div> --}}
+                     </div>
                      {{-- @if(@$allNews->isNotEmpty())
                      <div id="how_sec23" >
                         <div class="section_header">
