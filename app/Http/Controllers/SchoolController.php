@@ -10,6 +10,7 @@ use App\Models\School;
 use App\Models\Country;
 use App\Models\Facility;
 use App\Models\Religion;
+use App\Models\Favourite;
 use App\Models\SchoolFee;
 use App\Models\Curriculum;
 use App\Models\SchoolType;
@@ -1019,5 +1020,42 @@ class SchoolController extends Controller
     */
 
     return redirect()->back()->with('success', 'Your school claim has been submitted and is pending approval.');
+  }
+
+  public function addFavourite(Request $request) {
+    // dd($request);
+    // Ensure user is logged in
+    if (!Auth::check()) {
+      return redirect()->back()->withErrors('You need to be logged in to favourite a school.');
+    }
+
+    // Validate & sanitize input
+    $validated = $request->validate([
+        'school_id' => 'required|integer|exists:schools,id',
+    ]);
+
+    $userId = Auth::id();
+    $schoolId = $validated['school_id'];
+
+    // Check if already favourited
+    $favourite = Favourite::where('user_id', $userId)
+        ->where('favouritable_id', $schoolId)
+        ->where('favouritable_type', School::class)
+        ->first();
+
+    if ($favourite) {
+        // If already favourited → remove (toggle behaviour)
+        $favourite->delete();
+        return redirect()->back()->with('success', 'Removed from favourites successfully.');
+    }
+
+    // Otherwise → add new favourite
+    Favourite::create([
+        'user_id'          => $userId,
+        'favouritable_id'  => $schoolId,
+        'favouritable_type'=> School::class,
+    ]);
+
+    return redirect()->back()->with('success', 'Added to favourites successfully.');
   }
 }
