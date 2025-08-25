@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\County;
 use App\Models\Course;
+use App\Models\Review;
 use App\Models\School;
 use App\Models\Country;
 use App\Models\Facility;
@@ -15,6 +16,7 @@ use App\Models\SchoolType;
 use App\Models\SchoolLevel;
 use Illuminate\Support\Str;
 use App\Models\SchoolBranch;
+use App\Models\SchoolReview;
 use Illuminate\Http\Request;
 use App\Models\SchoolAddress;
 use App\Models\SchoolContact;
@@ -958,11 +960,18 @@ class SchoolController extends Controller
         ->first();
     }
 
+    // Get ONLY reviews for this school & include user
+    $reviews = SchoolReview::with('user')
+        ->where('school_id', $school_record->id)
+        ->latest()
+        ->get();
+
     return view('search_school.school_details')->with([
       'school_record' => $school_record,
       'school_branches' => $school_branches,
       'contactPositions'  => $contactPositions,
-      'currentUserClaim' => $currentUserClaim
+      'currentUserClaim' => $currentUserClaim,
+      'reviews' => $reviews
     ]);
   }
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\MessageController;
@@ -117,7 +118,7 @@ Route::group(['namespace' => 'Modules'], function() {
      Route::match(['get', 'post'], 'search-school', [SchoolController::class, 'schoolSearch'])->name('school.search');
      Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
      Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
-     Route::post('post-review','School\SearchSchoolController@postReview')->name('post.review');
+     Route::post('post-review',[ReviewController::class, 'postReview'])->name('post.review');
      Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
      Route::post('upload-photo-save','School\SearchSchoolController@uploadPhotoSave')->name('school.photo.save');
      Route::post('send-message-save',[MessageController::class, 'sendMessage'])->name('user.send.message');

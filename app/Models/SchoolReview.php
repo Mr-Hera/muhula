@@ -11,6 +11,13 @@ class SchoolReview extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'school_id',
+        'user_id',
+        'rating',
+        'review_text',
+    ];
+
     public function school() 
     { 
         return $this->belongsTo(School::class); 
