@@ -251,10 +251,10 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  @else
                                     <a href="javascript:void(0)" class="userNotSendMessage">Send Message</a>
                                  @endif --}}
-                                 <a href="javascript:void(0)" class="userNotSendMessage">Send Message</a>
+                                 <a href="{{ route('user.message.list') }}" class="userNotSendMessage">Send Message</a>
                               @endauth
                               @guest
-                                 <a href="javascript:void(0)" class="noMessage">Send Message</a>
+                                 <a href="{{ route('user.message.list') }}" class="noMessage">Send Message</a>
                               @endguest
 
                               <button  class=" post_tab">Post a Review</button>
@@ -1689,14 +1689,14 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
        })
 
-         $("body").on('click','.userNotSendMessage', function(e){
-          e.preventDefault();
-         Swal.fire({
-         title: "This is your own school, so you can not send a message",
-         //text: "Someone has placed a bid so unable to edit the auction",
-         icon: "info"
-         });
-       });
+      //    $("body").on('click','.userNotSendMessage', function(e){
+      //     e.preventDefault();
+      //    Swal.fire({
+      //    title: "This is your own school, so you can not send a message",
+      //    //text: "Someone has placed a bid so unable to edit the auction",
+      //    icon: "info"
+      //    });
+      //  });
 
        $("body").on('click','.schoolNotClaim', function(e){
           e.preventDefault();
