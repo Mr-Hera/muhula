@@ -89,7 +89,7 @@
                      
                      
                         <div class="ad-schl-card adscl-crd9">
-                           <h2>Add Subject</h2>
+                           <h2>Add Subject <span style="color: red;">*</span></h2>
                            <form action="{{ route('add.school.step6.subject.save') }}" method="post" enctype="multipart/form-data" id="subjectForm">
                               @csrf
                               

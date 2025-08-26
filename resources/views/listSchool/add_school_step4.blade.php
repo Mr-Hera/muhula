@@ -91,7 +91,7 @@
                         
                        
                         <div class="ad-schl-card adscl-crd7">
-                           <h2>School Services Offered</h2>
+                           <h2>School Services Offered <span style="color: red;">*</span></h2>
                            <form action="{{ route('add.school.step4.rules.save') }}" method="post" enctype="multipart/form-data" id="rulesForm">
                               @csrf
                               
@@ -112,7 +112,7 @@
                                     </div>
                                  </div>
                                  <div class="col-12">
-                                    <h3 class="ratio-hd">Day learning period</h3>
+                                    <h3 class="ratio-hd">Day learning period <span style="color: red;">*</span></h3>
                                     <div class="row">
                                        <div class="col-sm-6 col-12">
                                           <div class="dash_input">
@@ -159,7 +159,7 @@
                                     </div>
                                  </div>
                                  <div class="col-12">
-                                    <h3 class="ratio-hd mt-3p">Evening Studies</h3>
+                                    <h3 class="ratio-hd mt-3p">Evening Studies <span style="color: red;">*</span></h3>
                                     <div class="row">
                                        <div class="col-sm-6 col-12">
                                           <div class="dash_input">
@@ -212,7 +212,7 @@
                            </form>                        
                         </div>
                         <div class="ad-schl-card adscl-crd7">
-                           <h2>Teacher-Student ratio</h2>
+                           <h2>Teacher-Student ratio <span style="color: red;">*</span></h2>
                            <form action="{{ route('add.school.step4.ratio.save') }}" method="post" enctype="multipart/form-data" id="ratioForm">
                               @csrf
                               
@@ -248,7 +248,7 @@
                                     </div>
                                  </div> --}}
                                  <div class="col-12">
-                                    <h3 class="ratio-hd">Students</h3>
+                                    <h3 class="ratio-hd">Students <span style="color: red;">*</span></h3>
                                     <div class="row">
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                           <div class="dash_input">
@@ -278,7 +278,7 @@
                                     </div>
                                  </div>
                                  <div class="col-12">
-                                    <h3 class="ratio-hd mt-3p">Teachers</h3>
+                                    <h3 class="ratio-hd mt-3p">Teachers <span style="color: red;">*</span></h3>
                                     <div class="row">
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                           <div class="dash_input">

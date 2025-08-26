@@ -104,13 +104,13 @@
                                     </li>                              
                                  </ul> --}}
                                  <div class="dash_input">
-                                    <label>School Name</label>
+                                    <label>School Name <span style="color: red;">*</span></label>
                                     <input type="text" name="school_name" id="school_name" placeholder="Enter here" value="{{ @$schoolBranchDetails->school_name }}">
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>School Type</label>
+                                    <label>School Type <span style="color: red;">*</span></label>
                                     <select multiple name="school_type[]" id="school_type" class="filter-multi-select">
                                        @foreach($school_levels as $level)
                                           <option value="{{ $level->id }}" >{{ $level->name }}</option>
@@ -122,7 +122,7 @@
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Country</label>
+                                    <label>Country <span style="color: red;">*</span></label>
                                     <select name="country" id="country">
                                        <option value="">Select</option>
                                        @foreach($countries as $country)
@@ -140,10 +140,11 @@
                               <div class="col-lg-6 col-md-6">
                               <div class="dash_input">
                                     <label>Town
-                                    <span class="d-inlne-block ml-1 tooltip-main position-relative">
-                                       <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                       <div class="tooltip-body position-absolute">If town is missing scroll to bottom & select other to add missing town.</div>
+                                       <span class="d-inlne-block ml-1 tooltip-main position-relative">
+                                          <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                          <div class="tooltip-body position-absolute">If town is missing scroll to bottom & select other to add missing town.</div>
                                        </span>
+                                       <span style="color: red;">*</span>
                                     </label>
                                     <select name="town" id="town">
                                        <option value="">Select</option>
@@ -162,7 +163,7 @@
                               </div>
                               <div class="col-12">
                                  <div class="dash_input">
-                                    <label>Full Address</label>
+                                    <label>Full Address <span style="color: red;">*</span></label>
                                     <input type="text" name="full_address" id="full_address" placeholder="Enter here" value="">
                                  </div>
                               </div>
@@ -177,13 +178,13 @@
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Email <small>(Optional)</small></label>
+                                    <label>Email  <span style="color: red;">*</span></label>
                                     <input type="text" name="email" id="email" placeholder="Enter here" value="">
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Phone <small>(Optional)</small></label>
+                                    <label>Phone  <span style="color: red;">*</span></label>
                                     <input type="text" name="phone" id="phone" placeholder="Enter here" value="">
                                  </div>
                               </div>

@@ -124,7 +124,7 @@
                                  </div>
                               </div>
                               <div class="col-12">
-                                 <label for="" class="mb-2"><b>School Ownership</b></label>
+                                 <label for="" class="mb-2"><b>School Ownership <span style="color: red;">*</span></b></label>
                                  <div class="check_gender adscl-type">
                                     <ul>
                                        <li>
@@ -144,13 +144,13 @@
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Year of Establishment <small>(Optional)</small></label>
+                                    <label>Year of Establishment <span style="color: red;">*</span></label>
                                     <input type="text" name="year_of_establishment" id="year_of_establishment" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>School Levels</label>
+                                    <label>School Levels <span style="color: red;">*</span></label>
                                     <select multiple name="school_level_id[]" id="school_level" class="filter-multi-select">
                                        @foreach($school_levels as $level)
                                           <option value="{{ $level->id }}" >{{ $level->name }}</option>
@@ -162,7 +162,7 @@
                               </div>
                               <div class="col-12">
                                  <div class="dash_input">
-                                    <label>Curriculum</label>
+                                    <label>Curriculum <span style="color: red;">*</span></label>
                                     <ul class="category-ul agree d-flex justify-content-start align-items-center flex-wrap row-gap-2">
                                        @if($school_curricula)
                                           @foreach($school_curricula as $curriculum)
@@ -199,7 +199,7 @@
                               <div class="clearfix"></div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input mb-1">
-                                    <label>Gender</label>
+                                    <label>Gender <span style="color: red;">*</span></label>
                                  </div>
                                  <div class="check_gender adscl-type">
                                     <ul>
@@ -227,7 +227,7 @@
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input mb-1">
-                                    <label>Type</label>
+                                    <label>Type <span style="color: red;">*</span></label>
                                  </div>
                                  <div class="check_gender adscl-type adscl-tp2">
                                     <ul>
@@ -256,7 +256,7 @@
 
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label style="text-transform: none !important;">What is your Relationship with this School?</label>
+                                    <label style="text-transform: none !important;">What is your Relationship with this School? <span style="color: red;">*</span></label>
                                     <select name="contact_relationship_id" id="contact_relationship_id">
                                         <option value="">Select</option>
                                          @foreach($school_contact_positions as $position)
@@ -274,7 +274,7 @@
 
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Religion <small>(Optional)</small></label>
+                                    <label>Religion <span style="color: red;">*</span></label>
                                     <select name="religion_id" id="religion_id">
                                         <option value="">Select</option>
                                          @foreach($school_religion as $religion)
@@ -285,7 +285,7 @@
                               </div>
 
                            </div>
-                           <h2 class="mt-4">Facilities / Amenities</h2>
+                           <h2 class="mt-4">Facilities / Amenities <span style="color: red;">*</span></h2>
                            <div class="row">
                               <div class="col-12">
                                 <div class="amenities-select">
