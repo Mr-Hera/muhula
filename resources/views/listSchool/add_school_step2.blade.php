@@ -88,14 +88,14 @@
                            <div class="row">
                               <div class="col-12">
                                  <div class="dash_input">
-                                    <label>School Name</label>
+                                    <label>School Name <span style="color: red;">*</span></label>
                                     <input type="text" name="school_name" id="school_name" placeholder="Enter school name...">
                                  </div>
                               </div>
                               
                               <div class="col-12">
                                  <div class="dash_input mb-0 mt-2" id="aboutSchoolBox">
-                                    <label>About the school</label>
+                                    <label>About the school <span style="color: red;">*</span></label>
                                     <textarea name="about_school" id="about_school" placeholder="Describe school here..."></textarea>
                                  </div>
                               </div>
@@ -103,30 +103,30 @@
                         </div>
                         <div class="ad-schl-card adscl-crd3 add-more-btn more-contact-info">
                            <a href="javascript:;" class="addMore"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add More</a>
-                           <h2>Contact Information</h2>
+                           <h2>Contact Information <span style="color: red;">*</span></h2>
                            <div class="row">
                               <div class="col-lg-4 col-md-4">
                                  <div class="dash_input">
-                                    <label>Contact Full Names <small>(Optional)</small></label>
+                                    <label>Contact Full Names</label>
                                     <input type="text" name="contact_title[]" id="contact_title1"  placeholder="Enter here..." value="{{ old('contact_email',@$schoolDetails->contact_email) }}">
                                  </div>
                               </div>
                               <div class="col-lg-4 col-md-4">
                                  <div class="dash_input">
-                                    <label>Email <small>(Optional)</small></label>
+                                    <label>Email</label>
                                     <input type="text" name="contact_email[]" id="contact_email1" placeholder="Enter here..." value="{{ old('contact_email',@$schoolDetails->contact_email) }}">
                                  </div>
                               </div>
                               <div class="col-lg-4 col-md-4">
                                  <div class="dash_input">
-                                    <label>Phone <small>(Optional)</small></label>
+                                    <label>Phone</label>
                                     <input type="text" name="contact_phone[]" id="contact_phone1" placeholder="Enter here..." value="{{ old('contact_phone',@$schoolDetails->contact_phone) }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
                                  </div>
                               </div>
                            </div>
                         </div>
                         <div class="ad-schl-card adscl-crd5">
-                           <h2>Address Information</h2>
+                           <h2>Address Information <span style="color: red;">*</span></h2>
                            <div class="row">
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
@@ -164,7 +164,7 @@
                               </div> --}}
                               <div class="col-12">
                                  <div class="dash_input">
-                                    <label>Full Address</label>
+                                    <label>Full Address <span style="color: red;">*</span></label>
                                     <input type="text" name="full_address" id="full_address" placeholder="Enter here..."/>
                                  </div>
                               </div>
@@ -288,7 +288,7 @@
                 school_name: {
 
                     required: true,
-                    name_Regex: true, 
+                  //   name_Regex: true, 
                 },
                 year_of_establishment: {
 
@@ -331,20 +331,20 @@
                 },
                 google_location: {
 
-                   required: true,
+                  required: true,
                 },
                  'contact_title[]': {
                   name_Regex: true,
                   maxlength:30,
                 },
                 'contact_email[]': {
-
+                  required: true,
                   validate_email: true,
                 },
                 'contact_phone[]':{
 
-                    minlength:10,
-                    maxlength:13,
+                  minlength:10,
+                  maxlength:13,
                 },
                 about_school: {
 
