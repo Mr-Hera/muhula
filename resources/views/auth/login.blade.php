@@ -63,10 +63,10 @@
 
                                  <div class="login_gma">
                                     <div class="gmail_log">
-                                    <a href="{{ route('login.social') }}">
+                                    {{-- <a href="{{ route('login.social') }}">
                                        <div class="google_logo"> <img src="{{ asset('images/google.png') }}" alt=""> </div>
                                        <h3>Login with  Google account</h3>
-                                    </a> 
+                                    </a>  --}}
                                     </div>
                                     <p>Don't have an account? <a href="{{ route('user.register') }}">Signup</a> </p>
                                  </div>

@@ -116,7 +116,7 @@
                               </div> --}}
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Exam</label>
+                                    <label>Exam <span style="color: red;">*</span></label>
                                     <select name="exam" id="">
                                        <option value="0" selected disabled>Select</option>
                                        <option value="Half Yearly">Half Yearly</option>
@@ -127,13 +127,13 @@
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Ranking position</small></label>
+                                    <label>Ranking position <span style="color: red;">*</span></small></label>
                                     <input type="number" name="ranking_position" placeholder="Enter here" min="0"/>
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Region</label>
+                                    <label>Region <span style="color: red;">*</span></label>
                                     <select name="region" id="">
                                        <option value="0" selected disabled>Select</option>
                                        <option value="International">International</option>
@@ -145,19 +145,19 @@
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>Mean score points</label>
+                                    <label>Mean score points <span style="color: red;">*</span></label>
                                     <input type="text" name="mean_score_point" placeholder="Enter here" />
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input position-relative g-map">
-                                    <label>Mean Grade</label>
+                                    <label>Mean Grade <span style="color: red;">*</span></label>
                                     <input type="text" name="mean_grade" placeholder="Enter Here" />
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input position-relative g-map">
-                                    <label>Number of candidates</label>
+                                    <label>Number of candidates <span style="color: red;">*</span></label>
                                     <input type="text" name="no_of_candidate" placeholder="Enter Here" />
                                  </div>
                               </div>
