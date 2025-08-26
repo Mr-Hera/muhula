@@ -1123,7 +1123,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                </div>
                  
               </div>
-              <div class="cliam_from">
+               <div class="cliam_from">
                   <h3>Claim:</h3>
                   <form action="{{ route('school.claim.save') }}" method="post" id="claimForm" enctype="multipart/form-data">
                      @csrf
@@ -1142,7 +1142,9 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                               <label>Association with the School</label>
                               <select name="contact_position_id" required>
                                     <option value="">Select</option>
-                                    @foreach($contactPositions as $position)
+                                    {{-- <option value="Admin">Admin</option>
+                                    <option value="Owner">Owner</option> --}}
+                                    @foreach($contactPositions->whereIn('name', ['Admin', 'Owner']) as $position)
                                        <option value="{{ $position->id }}">{{ $position->name }}</option>
                                     @endforeach
                               </select>
@@ -1183,14 +1185,18 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
 
                      </div>
+                     <!-- Modal footer -->
+                     <div class="modal-footer">
+                     <button class="clain_btns submitBtn">Submit <img src="{{ asset('images/arrow-righr.png') }}" alt="">  </button>
+                     </div>
                   </form>
                </div>
             </div>
 
-            <!-- Modal footer -->
+            {{-- <!-- Modal footer -->
             <div class="modal-footer">
               <button class="clain_btns submitBtn">Submit <img src="{{ asset('images/arrow-righr.png') }}" alt="">  </button>
-            </div>
+            </div> --}}
 
           </div>
         </div>
