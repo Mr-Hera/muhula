@@ -73,10 +73,18 @@ class SchoolController extends Controller
   public function addSchoolStep2(){
     $countries = Country::all();
     $counties = County::all();
+
+    // Try to get school details from session if exists
+    $schoolDetails = null;
+    if (Session::has('school_creation.step2.school_id')) {
+      $schoolId = Session::get('school_creation.step2.school_id');
+      $schoolDetails = School::with(['contact', 'address'])->find($schoolId);
+    }
     
     return view('listSchool.add_school_step2')->with([
       'countries' => $countries,
       'counties' => $counties,
+      'schoolDetails'  => $schoolDetails,
     ]);
   }
 
@@ -95,6 +103,16 @@ class SchoolController extends Controller
       'county'             => 'required|integer|exists:counties,id',
       'full_address'     => 'required|string|max:500',
       'google_location'  => 'nullable|string|max:500',
+    ], [], [
+        'school_name'      => 'School name',
+        'about_school'     => 'About the school',
+        'contact_title.*'  => 'Contact full name',
+        'contact_email.*'  => 'Contact email',
+        'contact_phone.*'  => 'Contact phone',
+        'country'          => 'Country',
+        'county'           => 'Town',
+        'full_address'     => 'Full address',
+        'google_location'  => 'Google map link',
     ]);
     
     DB::beginTransaction();
@@ -219,6 +237,8 @@ class SchoolController extends Controller
     }
 
     $schoolId = Session::get('school_creation.step2.school_id');
+    $currentSchoolInput = School::where('id', $schoolId)->first();
+    // dd($currentSchoolInput->name);
     $contactId = Session::get('school_creation.step2.contact_id');
 
     if (!$schoolId) {
@@ -236,11 +256,15 @@ class SchoolController extends Controller
       $schoolLogoPath = "";
 
       // TODO:RESOLVE LOGO STORAGE ISSUE
-      // if ($request->hasFile('school_logo')) {
-      //   $image = $request->file('school_logo');
-      //   $imageName = $image->getClientOriginalName();
-      //   $schoolLogoPath = $image->storeAs('images/school_logo', $imageName, 'public');
-      // }
+      if ($request->hasFile('school_logo')) {
+        $image = $request->files->get('school_logo'); // Symfony object
+        $imageName = $currentSchoolInput->name . '_logo.' . $image->getClientOriginalExtension();
+
+        $destination = storage_path('app/public/images/school_logo');
+        $image->move($destination, $imageName);
+
+        $schoolLogoPath = 'images/school_logo/' . $imageName; // relative path for DB
+      }
 
       // Assuming one curriculum ID is picked (if not, you'll need a pivot table)
       // Also assuming first item from arrays is used for singular fields in the schools table
@@ -345,14 +369,22 @@ class SchoolController extends Controller
     return redirect()->route('add.school.step3',[md5(@$uniform->school_master_id)]); 
    }
 
-   public function addSchoolStep4(){
+  public function addSchoolStep4(){
     $extended_school_services = ExtendedSchoolService::all();
-    // dd(Session::get('school_creation.extended_services.step4')['operation_hours'][0]['starts_at']);
+    $schoolId = Session::get('school_creation.step2.school_id');
+    $school   = School::findOrFail($schoolId);
+
+    // Prefer DB values, fallback to session
+    $operationHours = $school->operationHours()->get()->toArray();
+    if (empty($operationHours)) {
+        $operationHours = Session::get('school_creation.extended_services.step4.operation_hours', []);
+    }
 
     return view('listSchool.add_school_step4')->with([
-      'extended_school_services' => $extended_school_services,
-      'extended_services' => Session::get('school_creation.extended_services.step4'),
-      'school_population' => Session::get('school_creation.school_population.step4'),
+        'extended_school_services' => $extended_school_services,
+        'extended_services'        => Session::get('school_creation.extended_services.step4'),
+        'school_population'        => Session::get('school_creation.school_population.step4'),
+        'operation_hours'          => $operationHours,
     ]);
   }
 
@@ -438,7 +470,10 @@ class SchoolController extends Controller
       ];
 
       foreach ($operationHours as $data) {
-          $school->operationHours()->create($data);
+        $school->operationHours()->updateOrCreate(
+          ['period_of_day' => $data['period_of_day']], // match by period
+          $data // update values
+        );
       }
       // dd("operation hours added!");
 

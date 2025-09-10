@@ -120,38 +120,32 @@
                                              <select name="day_learn_period_from" id="day_learn_period_from">
                                                 <option value="">Select</option>  
                                                 @foreach (range(1,17) as $number) 
-                                                   @if($number < 10)
-                                                      @php
-                                                         $time1 = '0'.$number.':00';
-                                                      @endphp
-                                                      <option value="{{ $time1 }}" >{{ @$time1 }}</option>
-                                                   @else
-                                                      @php
-                                                         $time2 = $number.':00';
-                                                      @endphp
-                                                      <option value="{{$time2}}" >{{@$time2}}</option>
-                                                   @endif
+                                                   @php
+                                                      $time = str_pad($number, 2, '0', STR_PAD_LEFT) . ':00';
+                                                      // Load saved value (from DB/session)
+                                                      $savedFrom = old('day_learn_period_from', $operation_hours[0]['starts_at'] ?? null);
+                                                   @endphp
+                                                   <option value="{{ $time }}" {{ $savedFrom == $time ? 'selected' : '' }}>
+                                                      {{ $time }}
+                                                   </option>
                                                 @endforeach
                                              </select>
                                           </div>
                                        </div>
+
                                        <div class="col-sm-6 col-6">
                                           <div class="dash_input">
                                              <label>Until</label>
                                              <select name="day_learn_period_until" id="day_learn_period_until">
                                                 <option value="">Select</option>
                                                 @foreach (range(1,17) as $number) 
-                                                   @if($number < 10)
-                                                      @php
-                                                         $time1 = '0'.$number.':00';
-                                                      @endphp
-                                                      <option value="{{ $time1 }}" >{{ $time1 }}</option>
-                                                   @else
-                                                      @php
-                                                         $time2 = $number.':00';
-                                                      @endphp
-                                                      <option value="{{$time2}}" >{{$time2}}</option>
-                                                   @endif
+                                                   @php
+                                                      $time = str_pad($number, 2, '0', STR_PAD_LEFT) . ':00';
+                                                      $savedUntil = old('day_learn_period_until', $operation_hours[0]['ends_at'] ?? null);
+                                                   @endphp
+                                                   <option value="{{ $time }}" {{ $savedUntil == $time ? 'selected' : '' }}>
+                                                      {{ $time }}
+                                                   </option>
                                                 @endforeach
                                              </select>
                                           </div>
