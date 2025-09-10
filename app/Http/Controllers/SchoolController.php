@@ -171,9 +171,9 @@ class SchoolController extends Controller
         return redirect()->route('add.school.step3');
 
     } catch (\Exception $e) {
-      dd($e);
-        DB::rollBack();
-        return back()->withErrors(['error' => 'Failed to save school step 2: ' . $e->getMessage()]);
+      // dd($e);
+      DB::rollBack();
+      return back()->withErrors(['error' => 'Failed to save school step 2: ' . $e->getMessage()]);
     }
   }
 
@@ -204,37 +204,32 @@ class SchoolController extends Controller
   public function addSchoolStep3Save(Request $request)
   {
     // dd($request);
-    try {
-      $validated = Validator::make($request->all(), [
-        'ownership_type'         => 'required|string|in:Private,Public',
-        'year_of_establishment'  => 'required|digits:4|integer|min:1900|max:' . now()->year,
-  
-        'school_level_id'        => 'required|array|min:1',
-        'school_level_id.*'      => 'required|integer|exists:school_levels,id',
-  
-        'curricula'              => 'required|array|min:1',
-        'curricula.*'            => 'required|string|max:255',
-  
-        'gender'                 => 'required|string|in:Mixed,Boys,Girls',
-  
-        'school_type_id'         => 'required|integer|exists:school_types,id',
-  
-        'contact_relationship_id'=> 'required|integer|exists:contact_positions,id',
-        'other_relationship'     => 'nullable|string|max:255',
-  
-        'religion_id'            => 'required|integer|exists:religions,id',
-  
-        'facilities'             => 'required|array|min:1',
-        'facilities.*'           => 'required|integer|exists:facilities,id',
-  
-        'other_facilities'       => 'nullable|string|max:255',
-  
-        'school_logo'            => 'nullable|file|mimes:image/jpeg,image/png,image/gif,image/jpg|max:2048', // 2MB max
-      ]);
-      
-    } catch (ValidationException $e) {
-      dd($e);
-    }
+    $validated = $request->validate([
+      'ownership_type'         => 'required|string|in:Private,Public',
+      'year_of_establishment'  => 'required|digits:4|integer|min:1900|max:' . now()->year,
+
+      'school_level_id'        => 'required|array|min:1',
+      'school_level_id.*'      => 'required|integer|exists:school_levels,id',
+
+      'curricula'              => 'required|array|min:1',
+      'curricula.*'            => 'required|string|max:255',
+
+      'gender'                 => 'required|string|in:Mixed,Boys,Girls',
+
+      'school_type_id'         => 'required|integer|exists:school_types,id',
+
+      'contact_relationship_id'=> 'required|integer|exists:contact_positions,id',
+      'other_relationship'     => 'nullable|string|max:255',
+
+      'religion_id'            => 'required|integer|exists:religions,id',
+
+      'facilities'             => 'required|array|min:1',
+      'facilities.*'           => 'required|integer|exists:facilities,id',
+
+      'other_facilities'       => 'nullable|string|max:255',
+
+      'school_logo'            => 'nullable|file|mimes:image/jpeg,image/png,image/gif,image/jpg|max:2048', // 2MB max
+    ]);
 
     $schoolId = Session::get('school_creation.step2.school_id');
     $currentSchoolInput = School::where('id', $schoolId)->first();
@@ -242,7 +237,7 @@ class SchoolController extends Controller
     $contactId = Session::get('school_creation.step2.contact_id');
 
     if (!$schoolId) {
-      dd('Previous school data not found');
+      // dd('Previous school data not found');
       return back()->withErrors(['error' => 'Previous school data not found. Please restart the form.']);
     }
 
@@ -317,7 +312,7 @@ class SchoolController extends Controller
       return redirect()->route('add.school.step4');
 
     } catch (\Exception $e) {
-      dd($e);
+      // dd($e);
       DB::rollBack();
       return back()->withErrors(['error' => 'Failed to save school step 3: ' . $e->getMessage()]);
     }
