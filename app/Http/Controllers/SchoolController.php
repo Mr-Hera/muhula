@@ -214,7 +214,7 @@ class SchoolController extends Controller
       'curricula'              => 'required|array|min:1',
       'curricula.*'            => 'required|string|max:255',
 
-      'gender'                 => 'required|string|in:Mixed,Boys,Girls',
+      'gender'                 => 'required|string|in:Mixed,Male,Female',
 
       'school_type_id'         => 'required|integer|exists:school_types,id',
 
@@ -375,11 +375,19 @@ class SchoolController extends Controller
         $operationHours = Session::get('school_creation.extended_services.step4.operation_hours', []);
     }
 
+    // Try to get school details from session if exists
+    $schoolDetails = null;
+    if (Session::has('school_creation.step2.school_id')) {
+      $schoolId = Session::get('school_creation.step2.school_id');
+      $schoolDetails = School::with(['contact', 'address'])->find($schoolId);
+    }
+
     return view('listSchool.add_school_step4')->with([
         'extended_school_services' => $extended_school_services,
         'extended_services'        => Session::get('school_creation.extended_services.step4'),
         'school_population'        => Session::get('school_creation.school_population.step4'),
         'operation_hours'          => $operationHours,
+        'schoolDetails'  => $schoolDetails,
     ]);
   }
 

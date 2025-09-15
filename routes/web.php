@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SchoolController;
@@ -84,7 +85,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::post('add-school-step3-uniform-save',[SchoolController::class, 'addSchoolStep3UniformSave'])->name('add.school.step3.uniform.save');
     Route::get('school-uniform-delete/{id?}',[SchoolController::class, 'schoolUniformDelete'])->name('school.uniform.delete');
 
-    Route::get('add-school-step4/{id?}',[SchoolController::class, 'addSchoolStep4'])->name('add.school.step4');
+    Route::get('add-school-step4',[SchoolController::class, 'addSchoolStep4'])->name('add.school.step4');
     Route::post('add-school-step4-rules-save',[SchoolController::class, 'addSchoolStep4RulesSave'])->name('add.school.step4.rules.save');
     Route::post('add-school-step4-ratio-save',[SchoolController::class, 'addSchoolStep4RatioSave'])->name('add.school.step4.ratio.save');
 
