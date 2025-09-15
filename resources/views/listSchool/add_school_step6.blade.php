@@ -94,50 +94,6 @@
                               @csrf
                               
                               <div class="row">
-                                 {{-- <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="dash_input">
-                                       <label>Curriculum </label>
-                                       <select name="curriculum_id" id="board_id" class="board_id">
-                                          <option value="" >Select</option>
-                                          @foreach($curricula as $curriculum)
-                                             <option value="{{ $curriculum->id }}" >{{ $curriculum->name }}</option>
-                                          @endforeach
-                                       </select>
-                                    </div>
-                                 </div> --}}
-                                 {{-- <div class="col-12">
-                                    <div class="row align-items-center">
-                                       <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="new_class_level">
-                                          <div class="dash_input">
-                                             <label>Class Level </label>
-                                             <select name="school_level_id" id="class_level">
-                                                <option value="">Select</option>
-                                                @foreach($school_levels as $level)
-                                                <option value="{{ $level->id }}">{{ $level->name }}</option>
-                                                @endforeach
-                                             </select>
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="otherPet" @if(@$schoolDetails->curriculum == 5) style="display:block;" @else style="display: none;" @endif>
-                                          <div class="dash_input">
-                                             <label>Class Level </label>
-                                             <input type="text" name="other_class_level" id="other_class_level" placeholder="Enter here">
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                          <ul class="add-grade agree d-flex justify-content-start align-items-center">
-                                             <li>
-                                                <div class="radiobx" id="add_new">
-                                                   <label for="">Add New
-                                                      <input type="checkbox" name="" id="otherpetdrop">
-                                                      <span class="checkbox"></span>
-                                                   </label>
-                                                </div>
-                                             </li>                              
-                                          </ul>
-                                       </div>
-                                    </div>
-                                 </div> --}}
                                  <div class="col-12">
                                     <div class="dash_input">
                                        <label>Select Subjects:</label>
@@ -147,7 +103,12 @@
                                              <li class="mb-1">
                                                 <div class="radiobx">
                                                    <label for="">{{ $course->name }}
-                                                      <input type="checkbox" name="courses[]" value="{{ $course->id }}" />
+                                                      <input
+                                                         type="checkbox"
+                                                         name="courses[]"
+                                                         value="{{ $course->id }}"
+                                                         {{ in_array($course->id, old('courses', array_column($selectedCourses, 'id'))) ? 'checked' : '' }}
+                                                      />
                                                       <span class="checkbox"></span>
                                                    </label>
                                                 </div>
@@ -155,14 +116,26 @@
                                              @endforeach
                                           @endif                                  
                                        </ul>
-                                       <label id="subject[]-error" class="error" for="courses[]" style="display:none;">This field is required.</label>
+                                       @error('courses')
+                                          <label id="courses-error" class="error" for="courses[]">
+                                                {{ $message }}
+                                          </label>
+                                       @enderror
                                     </div>
                                     
                                  </div>
                                  <div class="col-lg-6 col-md-6">
                                     <div class="dash_input">
                                        <label>Other subjects </label>
-                                       <input type="text" name="other_subject" placeholder="Enter here">
+                                       <input
+                                          type="text"
+                                          name="other_subject"
+                                          placeholder="Enter here"
+                                          value="{{ old('other_subject') }}"
+                                       />
+                                       @error('other_subject')
+                                          <label class="error">{{ $message }}</label>
+                                       @enderror
                                     </div>
                                  </div>
                                  <div class="col-12">

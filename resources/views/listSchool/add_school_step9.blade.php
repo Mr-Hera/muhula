@@ -17,7 +17,6 @@
 <section class="add-school-container">
          <div class="container">
             <div class="row">
-            @include('includes.message')
                <div class="col-lg-8">
                   <div class="add-schl-lft">
                      <div class="ad-schl-card adscl-crd1">
@@ -91,8 +90,7 @@
                            <h2>Fees</h2>
                            <form action="{{ route('add.school.step9.fees.save') }}" method="post" enctype="multipart/form-data" id="feesForm">
                               @csrf
-                              {{-- <input type="hidden" name="school_master_id" id="" value="">
-                              <input type="hidden" name="school_fees_id" id=""> --}}
+
                               <div class="row align-items-stretch">
                                  <div class="col-lg-6 col-md-6">
                                     <div class="dash_input">
@@ -100,20 +98,29 @@
                                        <select name="grade_level" id="">
                                           <option value="" selected disabled>Select</option>
                                           @foreach ($school_levels as $level)
-                                             <option value="{{ $level->id }}">{{ $level->name }}</option>
+                                             <option value="{{ $level->id }}" {{ old('grade_level') == $level->id ? 'selected' : '' }}>{{ $level->name }}</option>
                                           @endforeach
                                        </select>
+                                       @error('grade_level')
+                                          <div class="text-danger">{{ $message }}</div>
+                                       @enderror
                                     </div>
                                  </div>
                                  <div class="col-lg-6 col-md-6 col-sm-6">
                                     <div class="fees-tofrm d-flex justify-content-between align-items-end">
                                        <div class="dash_input">
                                           <label>Minimum</label>
-                                          <input type="text" name="min_amount" id="from_fees" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')"  maxlength="10">
+                                          <input type="text" name="min_amount" id="from_fees" placeholder="Enter here" value="{{ old('min_amount') }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')"  maxlength="10" />
+                                          @error('min_amount')
+                                             <div class="text-danger">{{ $message }}</div>
+                                          @enderror
                                        </div>
                                        <div class="dash_input">
                                           <label>Maximum</label>
-                                          <input type="text" name="max_amount" id="to_fees" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')" maxlength="10">
+                                          <input type="text" name="max_amount" id="to_fees" placeholder="Enter here" value="{{ old('max_amount') }}" oninput="this.value = this.value.replace(/[^0-9]/g,'')" maxlength="10" />
+                                          @error('max_amount')
+                                             <div class="text-danger">{{ $message }}</div>
+                                          @enderror
                                        </div>
                                        
                                        <button class="fees-frm2-btn" type="submit">+ Add</button>

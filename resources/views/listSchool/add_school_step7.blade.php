@@ -118,47 +118,65 @@
                                  <div class="dash_input">
                                     <label>Exam <span style="color: red;">*</span></label>
                                     <select name="exam" id="">
-                                       <option value="0" selected disabled>Select</option>
-                                       <option value="Half Yearly">Half Yearly</option>
-                                       <option value="Annual">Annual</option>
-                                       <option value="Board Exam">Board Exam</option>
+                                       <option value="" disabled {{ old('exam') ? '' : 'selected' }}>Select</option>
+                                       <option value="Half Yearly" {{ old('exam') == 'Half Yearly' ? 'selected' : '' }}>Half Yearly</option>
+                                       <option value="Annual" {{ old('exam') == 'Annual' ? 'selected' : '' }}>Annual</option>
+                                       <option value="Board Exam" {{ old('exam') == 'Board Exam' ? 'selected' : '' }}>Board Exam</option>
                                     </select>
+                                    @error('exam')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Ranking position <span style="color: red;">*</span></small></label>
-                                    <input type="number" name="ranking_position" placeholder="Enter here" min="0"/>
+                                    <input type="number" name="ranking_position" placeholder="Enter here" min="0" value="{{ old('ranking_position') }}" />
+                                    @error('ranking_position')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Region <span style="color: red;">*</span></label>
                                     <select name="region" id="">
-                                       <option value="0" selected disabled>Select</option>
-                                       <option value="International">International</option>
-                                       <option value="National">National</option>
-                                       <option value="Country">Country</option>
-                                       <option value="N/A">N/A</option>
+                                       <option value="" disabled {{ old('region') ? '' : 'selected' }}>Select</option>
+                                       <option value="International" {{ old('region') == 'International' ? 'selected' : '' }}>International</option>
+                                       <option value="National" {{ old('region') == 'National' ? 'selected' : '' }}>National</option>
+                                       <option value="Country" {{ old('region') == 'Country' ? 'selected' : '' }}>Country</option>
+                                       <option value="N/A" {{ old('region') == 'N/A' ? 'selected' : '' }}>N/A</option>
                                     </select>
+                                    @error('region')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Mean score points <span style="color: red;">*</span></label>
-                                    <input type="text" name="mean_score_point" placeholder="Enter here" />
+                                    <input type="text" name="mean_score_point" placeholder="Enter here" value="{{ old('mean_score_point') }}" />
+                                    @error('mean_score_point')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input position-relative g-map">
                                     <label>Mean Grade <span style="color: red;">*</span></label>
-                                    <input type="text" name="mean_grade" placeholder="Enter Here" />
+                                    <input type="text" name="mean_grade" placeholder="Enter Here" value="{{ old('mean_grade') }}" />
+                                    @error('mean_grade')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input position-relative g-map">
                                     <label>Number of candidates <span style="color: red;">*</span></label>
-                                    <input type="text" name="no_of_candidate" placeholder="Enter Here" />
+                                    <input type="text" name="no_of_candidate" placeholder="Enter Here" value="{{ old('no_of_candidate') }}" />
+                                    @error('no_of_candidate')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               
@@ -206,17 +224,17 @@
                         <div class="ad-schl-card adscl-crd4">
                            <div class="ad-schl-sub-go mt-0">
                               <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
-                                 <button class="completeBtn" data-url="{{ route('add.school.step8',[md5(@$schoolDetails->id)]) }}">Save and Complete <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <button class="completeBtn" data-url="{{ route('add.school.step8') }}">Save and Complete <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                  </button>
-                                 <a href="{{ route('add.school.step6',[md5(@$schoolDetails->id)]) }}">
+                                 <a href="{{ route('add.school.step6') }}">
                                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                        <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                     Back   
                                  </a>
-                                 <a href="{{ route('add.school.step8',[md5(@$schoolDetails->id)]) }}">
+                                 <a href="{{ route('add.school.step8') }}">
                                     Skip 
                                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5 4L9.08625 7.97499L5 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 

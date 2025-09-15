@@ -17,7 +17,6 @@
 <section class="add-school-container">
          <div class="container">
             <div class="row">
-            @include('includes.message')
                <div class="col-lg-8">
                   <div class="add-schl-lft">
                      <div class="ad-schl-card adscl-crd1">
@@ -105,7 +104,10 @@
                                  </ul> --}}
                                  <div class="dash_input">
                                     <label>School Name <span style="color: red;">*</span></label>
-                                    <input type="text" name="school_name" id="school_name" placeholder="Enter here" value="{{ @$schoolBranchDetails->school_name }}">
+                                    <input type="text" name="school_name" id="school_name" placeholder="Enter here" value="{{ old('school_name', optional($schoolBranchDetails)->school_name) }}">
+                                    @error('school_name')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
@@ -113,10 +115,12 @@
                                     <label>School Type <span style="color: red;">*</span></label>
                                     <select multiple name="school_type[]" id="school_type" class="filter-multi-select">
                                        @foreach($school_levels as $level)
-                                          <option value="{{ $level->id }}" >{{ $level->name }}</option>
+                                          <option value="{{ $level->id }}" {{ in_array($level->id, old('school_type', [])) ? 'selected' : '' }}>{{ $level->name }}</option>
                                        @endforeach
-                                   </select>
-                                   <label id="school_type[]-error" class="error" for="school_type[]" style="display:none;">This field is required.</label>
+                                    </select>
+                                    @error('school_type')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                                  
                               </div>
@@ -126,9 +130,12 @@
                                     <select name="country" id="country">
                                        <option value="">Select</option>
                                        @foreach($countries as $country)
-                                       <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                       <option value="{{ $country->id }}" {{ old('country') == $country->id ? 'selected' : '' }}>{{ $country->name }}</option>
                                        @endforeach
                                     </select>
+                                    @error('country')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               {{--<div class="col-lg-6 col-md-6">
@@ -149,43 +156,55 @@
                                     <select name="town" id="town">
                                        <option value="">Select</option>
                                           @foreach($counties as $county)
-                                             <option value="{{ $county->id }}" >{{ $county->name }}</option>
+                                             <option value="{{ $county->id }}" {{ old('town') == $county->id ? 'selected' : '' }}>{{ $county->name }}</option>
                                           @endforeach
-                                       <option value="0">Other</option>
+                                       <option value="0" {{ old('town') == "0" ? 'selected' : '' }}>Other</option>
                                     </select>
+                                    @error('town')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6" style="display:none;" id="otherTown">
                                  <div class="dash_input">
                                     <label>Other Town</label>
-                                    <input type="text" name="other_town" id="other_town" placeholder="Enter here">
+                                    <input type="text" name="other_town" id="other_town" placeholder="Enter here" value="{{ old('other_town') }}" />
                                  </div>
                               </div>
                               <div class="col-12">
                                  <div class="dash_input">
                                     <label>Full Address <span style="color: red;">*</span></label>
-                                    <input type="text" name="full_address" id="full_address" placeholder="Enter here" value="">
+                                    <input type="text" name="full_address" id="full_address" placeholder="Enter here" value="{{ old('full_address') }}" />
+                                    @error('full_address')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-12">
                                  <div class="dash_input position-relative g-map">
                                     <label>Google map location</label>
-                                    <input type="text" name="google_location" id="google_location" placeholder="Enter / paste link here"  value="">
+                                    <input type="text" name="google_location" id="google_location" placeholder="Enter / paste link here" value="{{ old('google_location') }}">
                                     <img src="{{ asset('images/google-map.png') }}" alt="" class="position-absolute">
-                                    <input type="hidden" name="google_lat" id="lat" value="{{old('google_lat',@$schoolBranchDetails->google_lat)}}">
-                                    <input type="hidden" name="google_long" id="long" value="{{old('google_long',@$schoolBranchDetails->google_long)}}">
+                                    <input type="hidden" name="google_lat" id="lat" value="{{ old('google_lat', optional($schoolBranchDetails)->google_lat) }}">
+                                    <input type="hidden" name="google_long" id="long" value="{{ old('google_lat', optional($schoolBranchDetails)->google_lat) }}">
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Email  <span style="color: red;">*</span></label>
-                                    <input type="text" name="email" id="email" placeholder="Enter here" value="">
+                                    <input type="text" name="email" id="email" placeholder="Enter here" value="{{ old('email') }}" />
+                                    @error('email')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Phone  <span style="color: red;">*</span></label>
-                                    <input type="text" name="phone" id="phone" placeholder="Enter here" value="">
+                                    <input type="text" name="phone" id="phone" placeholder="Enter here" value="{{ old('phone') }}" />
+                                    @error('phone')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                  </div>
                               </div>
                               <div class="col-12">
@@ -197,7 +216,9 @@
                                           <h3>Upload School Images</h3>
                                        </label>
                                     </div>
-                                    <label id="school_image-error" class="error" for="school_image" style="display:none;">This field is required.</label>
+                                    @error('school_image')
+                                       <label class="error">{{ $message }}</label>
+                                    @enderror
                                     <div class="upldd-scl-imgs">
                                        {{-- @if(@$schoolBranchImage)
                                        @foreach($schoolBranchImage as $data)
@@ -302,17 +323,17 @@
                         <div class="ad-schl-card adscl-crd4">
                            <div class="ad-schl-sub-go mt-0">
                               <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
-                                 <button class="continueBtn" data-url="{{ route('add.school.step9',[md5(@$schoolDetails->id)]) }}">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <button type="submit">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                  </button>
-                                 <a href="{{ route('add.school.step7',[md5(@$schoolDetails->id)]) }}">
+                                 <a href="{{ route('add.school.step7') }}">
                                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                        <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                     Back   
                                  </a>
-                                 <a href="{{ route('add.school.step9',[md5(@$schoolDetails->id)]) }}" width="50px;">
+                                 <a href="{{ route('add.school.step9') }}" width="50px;">
                                     No Affiliate  
                                  </a>
                               </div>

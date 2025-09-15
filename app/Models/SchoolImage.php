@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class SchoolImage extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'school_id',
+        'image_path',
+        'caption',
+    ];
 
     public function school() 
     { 

@@ -88,37 +88,9 @@
                      </div>
                      <form action="{{ route('add.school.step5.save') }}" method="post" enctype="multipart/form-data" id="imageForm">
                         @csrf
-                        <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                         {{-- <input type="hidden" name="" id="exist_image" value="{{ @$school_gallery->count() }}"> --}}
+                        <input type="hidden" name="school_master_id" id="" value="{{ optional($schoolDetails)->id }}">
                          
                         <div class="ad-schl-card adscl-crd11">
-                              {{---<div class="dash_input">
-                                    <label for="">School profile header image (Recommended Dimension 1600px*500px)</label>
-                                    <div class="row align-items-start">
-                                       <div class="col-lg-6 col-sm-6">
-                                          <div class="uplodimgfil2">
-                                             <input type="file" name="header_image" id="header_image" class="inputfile2 inputfile-1" data-multiple-caption="{count} files selected">
-                                             <label for="header_image">                                          
-                                                <h3>Click here to upload </h3>
-                                                <img src="{{ url('public/images/upload1.png') }}" alt="">
-                                             </label>
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-6 col-sm-6">
-                                          <div class="uploaded-img position-relative uplded-banner">
-                                              @if(@$schoolDetails->header_image != null)
-                                              <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="">
-                                              @endif
-                                             
-                                          </div>
-                                       </div>
-                                    </div>                                
-                                 </div>
-                                 <div class="dash_input">
-                                    <label>Youtube Link</label>
-                                    <input type="text" name="youtube_link" id="youtube_link" placeholder="Enter here" @if(@$schoolDetails->youtube_link) value="https://www.youtube.com/watch?v={{@$schoolDetails->youtube_link}}" @endif>
-                                    <label class="intro_video_error error error1" style="color: red"></label>
-                                 </div>--}}
                            <div class="uplodimgfil upld-schl-images">
                               <input type="file" name="school_image[]" id="school_image" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple="">
                               <label for="school_image">
@@ -126,7 +98,19 @@
                                  <h3>Upload School Images</h3>
                               </label>
                            </div>
-                           <label id="school_image-error" class="error" for="school_image" style="display:none;">This field is required.</label>
+                           
+                           @error('school_image')
+                              <label id="school_image-error" class="error" for="school_image">
+                                 {{ $message }}
+                              </label>
+                           @enderror
+
+                           @error('school_image.*')
+                              <label id="school_image-error" class="error" for="school_image">
+                                 {{ $message }}
+                              </label>
+                           @enderror
+                           
                            <p class="img-copy">
                               <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                  <g clip-path="url(#clip0_3329_453)">

@@ -95,7 +95,7 @@
                               {{-- 🔹 School Logo --}}
                               <div class="col-12">
                                     <div class="dash_input">
-                                       <label for="school_logo">School Logo</label>
+                                       <label for="school_logo">School Logo (Optional)</label>
                                        <div class="row align-items-center">
                                           <div class="col-lg-6 col-sm-6">
                                                 <div class="uplodimgfil2">
