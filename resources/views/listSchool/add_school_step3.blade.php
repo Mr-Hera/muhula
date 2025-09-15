@@ -293,18 +293,17 @@
                               </div>
                            </div>
 
-                           <div class="col-12">
+                           {{-- <div class="col-12">
                               <button class="submit-ratio" type="submit">+ &nbsp;Save</button>
-                           </div>
+                           </div> --}}
                         </form>
                      </div>
                         
-                        <div class="ad-schl-card adscl-crd6">
+                        {{-- <div class="ad-schl-card adscl-crd6">
                            <h2>Uniform</h2>
                            <form action="{{ route('add.school.step3.uniform.save') }}" method="post" enctype="multipart/form-data" id="uniformForm">
                               @csrf
-                              {{-- <input type="hidden" name="school_master_id" id="" value="{{ @$schoolDetails->id }}">
-                              <input type="hidden" name="school_uniform_id" id="">                          --}}
+                              
                               <div class="row">
                                  <div class="col-12">
                                     <div class="uni-type">
@@ -374,7 +373,7 @@
                                              </div>
                                           @endforeach
                                        @endif
-                                       {{--<div class="upld-uniform-div">
+                                       <div class="upld-uniform-div">
                                           <em><img src="{{ url('public/images/uniform-girl.png') }}" alt=""></em>
                                           <h6>Female</h6>
                                           <p>Uniform title here</p>
@@ -384,12 +383,12 @@
                                                 <path d="M3 3L9 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                              </svg>                                       
                                           </a>
-                                       </div>--}}
+                                       </div>
                                     </div>
                                  </div>
                               </div> 
                            </form>                      
-                        </div>
+                        </div> --}}
                         <div class="ad-schl-card adscl-crd4">
                            <div class="ad-schl-sub-go mt-0">
                               <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
@@ -400,7 +399,7 @@
                                        </svg>
                                     </button>
                                  </form>
-                                 <a href="{{ route('add.school.step2',[md5(@$schoolDetails->id)]) }}">
+                                 <a href="{{ route('add.school.step2') }}">
                                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                        <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>

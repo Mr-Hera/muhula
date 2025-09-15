@@ -708,62 +708,67 @@ class SchoolController extends Controller
     ]);
   }
 
-  public function addSchoolStep8Save(Request $request){
-    // dd($request);
-    // Step 1: Validate the request
+  public function addSchoolStep8Save(Request $request)
+  {
+    // Step 1: Validate request
     $validated = $request->validate([
-        'school_name' => 'required|string|max:255',
-        'school_type' => 'required|array',
-        'school_type.*' => 'exists:school_types,id',
-        'country' => 'required|exists:countries,id',
-        'town' => 'required|exists:counties,id',
-        'full_address' => 'required|string|max:255',
-        'google_location' => 'nullable|string',
-        'google_lat' => 'nullable|numeric',
-        'google_long' => 'nullable|numeric',
-        'email' => 'required|email',
-        'phone' => 'required|string|max:20',
+      'school_name'    => 'nullable|string|max:255',
+      'school_type'    => 'nullable|array',
+      'school_type.*'  => 'exists:school_types,id',
+      'country'        => 'nullable|exists:countries,id',
+      'town'           => 'nullable|exists:counties,id',
+      'full_address'   => 'nullable|string|max:255',
+      'google_location'=> 'nullable|string',
+      'google_lat'     => 'nullable|numeric',
+      'google_long'    => 'nullable|numeric',
+      'email'          => 'nullable|email',
+      'phone'          => 'nullable|string|max:20',
     ], [
-      'school_name.required' => 'The school name is required.',
-      'school_type.required' => 'Please select at least one school type.',
-      'country.required' => 'Please select a country.',
-      'town.required' => 'Please select a town.',
+      'school_name.nullable'   => 'The school name is required.',
+      'school_type.nullable'   => 'Please select at least one school type.',
+      'country.nullable'       => 'Please select a country.',
+      'town.nullable'          => 'Please select a town.',
     ]);
 
-    $schoolId = Session::get('school_creation.step2.school_id');
-    // dd($schoolId);
+    // Step 2: Check if *any* relevant data has been passed
+    $hasData = collect($validated)->filter(function ($value) {
+      return !is_null($value) && $value !== '' && $value !== [];
+    })->isNotEmpty();
 
-    // 2. Save school_address
-    $schoolAddress = new SchoolAddress();
-    $schoolAddress->address_text = $validated['full_address'] ?? null;
-    $schoolAddress->google_maps_link = $validated['google_location'] ?? null;
-    $schoolAddress->save();
+    if ($hasData) {
+      $schoolId = Session::get('school_creation.step2.school_id');
 
-    // Step 3: Create the branch
-    $branch = new SchoolBranch();
-    $branch->name = $validated['school_name'];
-    $branch->school_id = $schoolId;
-    $branch->school_type_id = $validated['school_type'][0]; // Assuming only one is selected
-    $branch->county_id = $validated['town']; // Assuming this refers to counties
-    $branch->school_address_id = $schoolAddress->id;
-    $branch->school_image_id = 1;
-    $branch->email = $validated['email'];
-    $branch->phone_no = $validated['phone'];
-    $branch->save();
-    // dd($branch);
+      // Save school_address
+      $schoolAddress = new SchoolAddress();
+      $schoolAddress->address_text = $validated['full_address'] ?? null;
+      $schoolAddress->google_maps_link = $validated['google_location'] ?? null;
+      $schoolAddress->save();
 
-    // Step 3: Store major data points in Session
-    Session::put('school_creation.school_branch', [
+      // Create branch
+      $branch = new SchoolBranch();
+      $branch->name = $validated['school_name'] ?? null;
+      $branch->school_id = $schoolId;
+      $branch->school_type_id = $validated['school_type'][0] ?? null;
+      $branch->county_id = $validated['town'] ?? null;
+      $branch->school_address_id = $schoolAddress->id;
+      $branch->school_image_id = 1;
+      $branch->email = $validated['email'] ?? null;
+      $branch->phone_no = $validated['phone'] ?? null;
+      $branch->save();
+
+      // Store in session
+      Session::put('school_creation.school_branch', [
         'school_branch_id' => $branch->id,
-        'school_name' => $branch->name,
-        'school_type_id' => $branch->school_type_id,
-        'school_image_id' => $branch->school_image_id,
-        'county_id' => $branch->county_id,
-        'email' => $branch->email,
-        'phone_no' => $branch->phone_no,
-    ]);
+        'school_name'      => $branch->name,
+        'school_type_id'   => $branch->school_type_id,
+        'school_image_id'  => $branch->school_image_id,
+        'county_id'        => $branch->county_id,
+        'email'            => $branch->email,
+        'phone_no'         => $branch->phone_no,
+      ]);
+    }
 
-    // Step 4: Redirect or return response
+    // Step 3: Always redirect
     return redirect()->route('add.school.step9')->with('success', 'School branch created successfully.');
   }
 
