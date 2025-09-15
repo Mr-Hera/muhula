@@ -587,8 +587,8 @@
       let minusBtn = document.getElementById("minus-btn");
       let count = document.getElementById("count");
       let plusBtn = document.getElementById("plus-btn");
-      @if(@$schoolDetails->teacher_student_ratio != null)
-      let countNum = '{{ @$schoolDetails->teacher_student_ratio }}';
+      @if($schoolDetails->teacher_student_ratio != null)
+      let countNum = '{{ $schoolDetails->teacher_student_ratio }}';
       countNum = parseInt(countNum);
       @else
       let countNum = 0;
