@@ -852,7 +852,9 @@ class SchoolController extends Controller
         'currency'    => 'KES', // Again, replace with $request->currency if needed
     ]);
 
-    return redirect()->route('add.school.success')->with('success', 'School listing added successfully.')->with('school_name', $school?->name);
+    return redirect()->route('add.school.success')->with('success', 'School listing added successfully.')->with([
+      'school_name' => $school?->name
+    ]);
   }
 
   public function addSchoolSuccessPage()
