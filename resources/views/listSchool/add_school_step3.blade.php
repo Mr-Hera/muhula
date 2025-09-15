@@ -296,8 +296,6 @@
                            {{-- <div class="col-12">
                               <button class="submit-ratio" type="submit">+ &nbsp;Save</button>
                            </div> --}}
-                        </form>
-                     </div>
                         
                         {{-- <div class="ad-schl-card adscl-crd6">
                            <h2>Uniform</h2>
@@ -392,13 +390,10 @@
                         <div class="ad-schl-card adscl-crd4">
                            <div class="ad-schl-sub-go mt-0">
                               <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
-                                 <form action="{{ route('add.school.step3.save') }}" method="POST" enctype="multipart/form-data" id="saveContinueForm">
-                                    @csrf
                                     <button type="submit" id="submitBtn" data-value="CO">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                        <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                        </svg>
                                     </button>
-                                 </form>
                                  <a href="{{ route('add.school.step2') }}">
                                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                        <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -409,6 +404,8 @@
                               <p>Step 3 Of 9</p>
                            </div>
                         </div>
+                        </form>
+                     </div>
                   </div>
                </div>
                <div class="col-lg-4">
