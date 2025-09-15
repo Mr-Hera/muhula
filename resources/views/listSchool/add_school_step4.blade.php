@@ -103,12 +103,20 @@
                                              <li style="text-transform: none !important;">
                                                 {{ $service->name }}
                                                 <label class="switch">
-                                                   <input type="checkbox" name="extended_school_services_id[]" value="{{ $service->id }}"/>
+                                                   <input
+                                                      type="checkbox"
+                                                      name="extended_school_services_id[]"
+                                                      value="{{ $service->id }}"
+                                                      {{ in_array($service->id, old('extended_school_services_id', $extended_services['extended_school_services_id'] ?? [])) ? 'checked' : '' }}
+                                                   />
                                                    <span class="slider round"></span>
                                                 </label>
                                              </li>
                                           @endforeach
                                        </ul>
+                                       @error('extended_school_services_id')
+                                          <small class="text-danger">{{ $message }}</small>
+                                       @enderror
                                     </div>
                                  </div>
                                  <div class="col-12">
@@ -120,40 +128,40 @@
                                              <select name="day_learn_period_from" id="day_learn_period_from">
                                                 <option value="">Select</option>  
                                                 @foreach (range(1,17) as $number) 
-                                                   @if($number < 10)
-                                                      @php
-                                                         $time1 = '0'.$number.':00';
-                                                      @endphp
-                                                      <option value="{{ $time1 }}" >{{ @$time1 }}</option>
-                                                   @else
-                                                      @php
-                                                         $time2 = $number.':00';
-                                                      @endphp
-                                                      <option value="{{$time2}}" >{{@$time2}}</option>
-                                                   @endif
+                                                   @php
+                                                      $time = str_pad($number, 2, '0', STR_PAD_LEFT) . ':00';
+                                                      // Load saved value (from DB/session)
+                                                      $savedFrom = old('day_learn_period_from', $operation_hours[0]['starts_at'] ?? null);
+                                                   @endphp
+                                                   <option value="{{ $time }}" {{ $savedFrom == $time ? 'selected' : '' }}>
+                                                      {{ $time }}
+                                                   </option>
                                                 @endforeach
                                              </select>
+                                             @error('day_learn_period_from')
+                                                <small class="text-danger">{{ $message }}</small>
+                                             @enderror
                                           </div>
                                        </div>
+
                                        <div class="col-sm-6 col-6">
                                           <div class="dash_input">
                                              <label>Until</label>
                                              <select name="day_learn_period_until" id="day_learn_period_until">
                                                 <option value="">Select</option>
                                                 @foreach (range(1,17) as $number) 
-                                                   @if($number < 10)
-                                                      @php
-                                                         $time1 = '0'.$number.':00';
-                                                      @endphp
-                                                      <option value="{{ $time1 }}" >{{ $time1 }}</option>
-                                                   @else
-                                                      @php
-                                                         $time2 = $number.':00';
-                                                      @endphp
-                                                      <option value="{{$time2}}" >{{$time2}}</option>
-                                                   @endif
+                                                   @php
+                                                      $time = str_pad($number, 2, '0', STR_PAD_LEFT) . ':00';
+                                                      $savedUntil = old('day_learn_period_until', $operation_hours[0]['ends_at'] ?? null);
+                                                   @endphp
+                                                   <option value="{{ $time }}" {{ $savedUntil == $time ? 'selected' : '' }}>
+                                                      {{ $time }}
+                                                   </option>
                                                 @endforeach
                                              </select>
+                                             @error('day_learn_period_until')
+                                                <small class="text-danger">{{ $message }}</small>
+                                             @enderror
                                           </div>
                                        </div>
                                     </div>
@@ -171,15 +179,18 @@
                                                       @php
                                                          $time1 = '0'.$number.':00';
                                                       @endphp
-                                                      <option value="{{ $time1 }}" >{{ $time1 }}</option>
+                                                      <option value="{{ $time1 }}" {{ old('evening_studies_from') == $time ? 'selected' : '' }} >{{ $time1 }}</option>
                                                    @else
                                                       @php
                                                          $time2 = $number.':00';
                                                       @endphp
-                                                      <option value="{{$time2}}" >{{$time2}}</option>
+                                                      <option value="{{$time2}}" {{ old('evening_studies_from') == $time ? 'selected' : '' }} >{{$time2}}</option>
                                                    @endif
                                                 @endforeach
                                              </select>
+                                             @error('evening_studies_from')
+                                                <small class="text-danger">{{ $message }}</small>
+                                             @enderror
                                           </div>
                                        </div>
                                        <div class="col-sm-6 col-6">
@@ -192,15 +203,18 @@
                                                       @php
                                                          $time1 = '0'.$number.':00';
                                                       @endphp
-                                                      <option value="{{ $time1 }}" >{{ $time1 }}</option>
+                                                      <option value="{{ $time1 }}" {{ old('evening_studies_until') == $time ? 'selected' : '' }} >{{ $time1 }}</option>
                                                    @else
                                                       @php
                                                          $time2 = $number.':00';
                                                       @endphp
-                                                      <option value="{{$time2}}" >{{$time2}}</option>
+                                                      <option value="{{$time2}}" {{ old('evening_studies_until') == $time ? 'selected' : '' }} >{{$time2}}</option>
                                                    @endif
                                                 @endforeach
                                              </select>
+                                             @error('evening_studies_until')
+                                                <small class="text-danger">{{ $message }}</small>
+                                             @enderror
                                           </div>
                                        </div>
                                     </div>
@@ -315,11 +329,11 @@
                      <div class="ad-schl-card adscl-crd4">
                         <div class="ad-schl-sub-go mt-0">
                            <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
-                              <button id="submitBtn" data-url="{{ route('add.school.step5',[md5(@$schoolDetails->id)]) }}">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <button id="submitBtn" data-url="{{ route('add.school.step5') }}">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                  <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                  </svg>
                               </button>
-                              <a href="{{ route('add.school.step3',[md5(@$schoolDetails->id)]) }}">
+                              <a href="{{ route('add.school.step3') }}">
                                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                  </svg>
