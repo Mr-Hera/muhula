@@ -90,6 +90,10 @@
                         @csrf
                         
                         <div class="ad-schl-card adscl-crd12">
+                           <label>If no branches are available click 
+                              <a href="{{ route('add.school.step9') }}"><span style="color: red;"><b>"Here"</b></span></a>
+                           </label><br>
+                           <label></label><br>
                            <div class="row">
                               <div class="col-12">
                                  {{-- <ul class="add-grade agree schl-same">
