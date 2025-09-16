@@ -446,14 +446,18 @@
                                  Private
                                  @endif
                                  </span>
-                                 @if($school->logo = null)
+                                 @if($school->logo == null)
                                     <a href="{{ route('school.details',$school->slug) }}">
                                        {{-- <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$school->getSchoolMainImage->image }}" alt=""> --}}
                                        <img src="{{asset('public/default_images/default.jpg')}}" alt="" />
                                     </a>
                                  @else
                                     <a href="{{ route('school.details',$school->slug) }}">
-                                       <img src="{{asset('storage/default_images/default.jpg')}}" alt="" />
+                                       {{-- <img src="{{asset('storage/default_images/default.jpg')}}" alt="" /> --}}
+                                       <img 
+                                          src="{{ asset('storage/'. $school->logo) }}" 
+                                          alt="{{ $school->name }}" 
+                                       />
                                     </a>
                                  @endif
                            </div>

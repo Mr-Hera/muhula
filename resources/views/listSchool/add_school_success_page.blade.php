@@ -31,7 +31,7 @@
                         </div>
 
                         <div class="action-buttons mt-4 d-flex gap-3 justify-content-center">
-                            <a class="text-black btn btn-link" href="{{ route('school.search') }}?school={{ $school_name ?? '' }}">
+                            <a class="text-black btn btn-link" href="{{ route('school.details', $school_slug ?? '') }}">
                                 <u>View Your School</u>
                             </a>
                             <a href="{{ route('user.dashboard') }}" class="text-black btn btn-link"><u>Back to Dashboard</u></a>
