@@ -41,7 +41,7 @@
                       <ul>
                           {{--<li> <span>Address :</span> <p>NHIF Building Ragati Road P.O Box 34670 - 00100. Nairobi - Kenya</p></li>
                           <li> <span>Call :</span> <a href="#">(254 20) 253 38 69 </a> / <a href="#">(254 713) 761 758</a> </li>--}}
-                          <li> <span>Email :</span> <a href="#">contact. mahula@gmail.com</a></li>
+                          <li> <span>Email :</span> <a href="mailto:muhulahub@gmail.com">muhulahub@gmail.com</a></li>
                       </ul>
                   </div>
                </div>

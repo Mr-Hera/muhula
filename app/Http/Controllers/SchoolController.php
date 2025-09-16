@@ -252,13 +252,17 @@ class SchoolController extends Controller
 
       // RESOLVED LOGO STORAGE ISSUE
       if ($request->hasFile('school_logo')) {
-        $image = $request->files->get('school_logo'); // Symfony object
-        $imageName = $currentSchoolInput->name . '_logo.' . $image->getClientOriginalExtension();
+        $image = $request->file('school_logo');
+
+        // Sanitize school name -> lowercase, underscores instead of spaces, remove invalid chars
+        $sanitizedName = Str::slug($currentSchoolInput->name, '_');
+
+        $imageName = $sanitizedName . '_logo.' . $image->getClientOriginalExtension();
 
         $destination = storage_path('app/public/images/school_logo');
         $image->move($destination, $imageName);
 
-        $schoolLogoPath = 'images/school_logo/' . $imageName; // relative path for DB
+        $schoolLogoPath = 'images/school_logo/' . $imageName;
       }
 
       // Assuming one curriculum ID is picked (if not, you'll need a pivot table)
@@ -320,7 +324,7 @@ class SchoolController extends Controller
 
 
   public function addSchoolStep3UniformSave(Request $request){
-    dd($request);
+    // dd($request);
     $validated = $request->validate([
         'uniform_type' => 'required|in:Male,Female,Mixed',
         'uniform_title' => 'nullable|string|max:255',
@@ -526,8 +530,11 @@ class SchoolController extends Controller
     if ($request->hasFile('school_image')) {
       foreach ($request->file('school_image') as $uploadedImage) {
         if ($uploadedImage->isValid()) {
+          // Sanitize school name
+          $sanitizedName = Str::slug($school->name, '_');
+
           // Create a unique name (e.g. schoolName_timestamp_random.ext)
-          $imageName = "test" . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+          $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
 
           // Destination inside storage/app/public/images/school_images
           $destination = storage_path('app/public/images/school_images');
@@ -539,7 +546,7 @@ class SchoolController extends Controller
           // Save to DB
           $school->images()->create([
             'image_path' => $path,
-            'caption'    => "test", // Add caption logic if needed
+            'caption'    => $school->name, // Keep original name for caption
           ]);
         }
       }
@@ -851,15 +858,24 @@ class SchoolController extends Controller
         'max_amount' => $validated['max_amount'],
         'currency'    => 'KES', // Again, replace with $request->currency if needed
     ]);
+    Session::put(['school_slug' => $school->slug]);
 
     return redirect()->route('add.school.success')->with('success', 'School listing added successfully.')->with([
-      'school_name' => $school?->name
+      'school_name' => $school?->name,
+      'school_slug' => $school->slug,
     ]);
   }
 
   public function addSchoolSuccessPage()
   {
-    return view('listSchool.add_school_success_page');
+    $school_slug = session()->get('school_slug');
+
+    // Clear everything under "school_creation.*"
+    Session::forget('school_creation');
+
+    return view('listSchool.add_school_success_page')->with([
+      'school_slug' => $school_slug,
+    ]);
   }
 
     
