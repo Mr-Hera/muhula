@@ -41,7 +41,7 @@
                      <div class="cont-page-lft">
                         <div class="cont-lft-hdr">
                            <h2>Get in touch</h2>
-                           <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>                          
+                           <p>Fill in the your details below and we'll reach back to you ASAP.</p>                          
                         </div>
                         <form action="{{ route('contact.us.save') }}" method="post" id="contactform">
                            @csrf
@@ -102,7 +102,7 @@
                                  </svg>                                    
                               </em>
                               <h5><span class="d-block">Address</span>
-                                 Lorem Ipsum is simply dummy text of the printing and typesetting
+                                 Nairobi, Kenya
                               </h5>
                            </li>
                            <li>
@@ -123,7 +123,7 @@
                                  </svg>                                                                       
                               </em>
                               <h5><span class="d-block">Email</span>
-                                <b><a href="mailto:muhula-info123@gmail.com;">muhula-info123@gmail.com</a></b>
+                                <b><a href="mailto:muhula-info123@gmail.com;">muhulahub@gmail.com</a></b>
                               </h5>
                            </li>
                         </ul>

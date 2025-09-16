@@ -320,7 +320,7 @@ class SchoolController extends Controller
 
 
   public function addSchoolStep3UniformSave(Request $request){
-    dd($request);
+    // dd($request);
     $validated = $request->validate([
         'uniform_type' => 'required|in:Male,Female,Mixed',
         'uniform_title' => 'nullable|string|max:255',
@@ -859,6 +859,9 @@ class SchoolController extends Controller
 
   public function addSchoolSuccessPage()
   {
+    // Clear everything under "school_creation.*"
+    Session::forget('school_creation');
+    
     return view('listSchool.add_school_success_page');
   }
 
