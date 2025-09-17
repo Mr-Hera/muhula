@@ -24,13 +24,15 @@
                               <div class="message_owner">
                                  <div class="measge_name">
                                     <a href="{{ route('school.details',$school->slug) }}"> 
-                                    @if($school->school_logo != null)
-                                       <img src="{{ URL::to('storage/app/public/images/school_logo') }}/{{ $school->school_logo }}" alt="">
-                                    @else
-                                       {{-- <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ $school->getSchoolMainImage->image }}" alt=""> --}}
-                                       <img src="{{ asset('storage/default_images/default.jpg') }}" alt="">
-                                    @endif
-                                    <h3>{{ $school->name }}</h3>
+                                       @if($school->logo == null)
+                                          <img src="{{ asset('storage/default_images/default.jpg') }}" alt="">
+                                       @else
+                                          <img 
+                                             src="{{ asset('storage/'. $school->logo) }}" 
+                                             alt="{{ $school->name }}" 
+                                          />
+                                       @endif
+                                       <h3>{{ $school->name }}</h3>
                                     </a>
                                  </div>
                                  <div class="message_date d-blocks">

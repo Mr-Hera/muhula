@@ -372,7 +372,12 @@ class DashboardController extends Controller
 
     public function myReviewsByMe(){
 
-        $reviews = SchoolReview::with(['school.address'])
+        $reviews = SchoolReview::with([
+                'school.address',
+                'school' => function ($q) {
+                    $q->withAvg('reviews', 'rating'); // 👈 load average rating
+                }
+            ])
             ->where('user_id', Auth::id())
             ->orderBy('id','desc')
             ->paginate(10);
@@ -405,7 +410,10 @@ class DashboardController extends Controller
                 'school.fees.level',
                 'school.branches.county',
                 'school.branches.type',
-                'school.branches.school'
+                'school.branches.school',
+                'school' => function ($q) {
+                    $q->withAvg('reviews', 'rating'); // 👈 load average rating
+                }
             ])
             ->whereIn('school_id', $claimedSchoolIds)
             ->orderBy('id', 'desc')

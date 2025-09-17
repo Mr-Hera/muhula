@@ -32,9 +32,8 @@
                      	<div class="posted_by">
                         	<span class="float-none">
                               @if($review->school->logo != null)
-                                 <img src="{{ URL::to('storage/app/public/images/school_logo') }}/{{ $review->school->logo }}" alt="">
+                                 <img src="{{ asset('storage/' . $review->school->logo) }}" alt="">
                               @else
-                                 {{-- <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ $review->getSchool->getSchoolMainImage->image }}" alt=""> --}}
                                  <img src="{{ asset('storage/default_images/default.jpg') }}" alt="">
                               @endif
                            </span>
@@ -45,11 +44,28 @@
                         </div>
                         <div class="posted_date">
                         	<div class="star_rrv">
-                              @for($i=1;$i<=$review->review_point;$i++)
-                                 <span><img src="{{ asset('images/star.png') }}" alt=""></span>
+                              {{-- Average school rating --}}
+                              <p>Your rating:</p>
+                              @php
+                                 $avg = round($review->school->reviews_avg_rating, 1); // e.g. 3.7
+                                 $fullStars = floor($avg);
+                                 $halfStar = ($avg - $fullStars) >= 0.5;
+                              @endphp
+
+                              {{-- Full stars --}}
+                              @for($i = 1; $i <= $fullStars; $i++)
+                                 <span><img src="{{ asset('images/star.png') }}" alt="★"></span>
                               @endfor
-                              @for($j=$review->review_point+1;$j<=5;$j++)
-                                 <span><img src="{{ asset('images/star1.png') }}" alt=""></span>
+
+                              {{-- Half star --}}
+                              @if($halfStar)
+                                 <span><img src="{{ asset('images/star-half.png') }}" alt="☆"></span>
+                                 @php $fullStars++; @endphp
+                              @endif
+
+                              {{-- Empty stars --}}
+                              @for($i = $fullStars + 1; $i <= 5; $i++)
+                                 <span><img src="{{ asset('images/star1.png') }}" alt="☆"></span>
                               @endfor
                            </div>
                            <div class="clearfix"></div>

@@ -43,12 +43,12 @@
 @if(@$schoolDetails->youtube_link == null)
 <div class="position-relative">
 <a href="javascript:;" class="school-banner position-relative w-100 overflow-hidden img-trigger">
-   @if( @$schoolDetails->header_image != null)
-   <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="blurred-image">
-   <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$schoolDetails->header_image }}" alt="" class="img-clear">
+   @if( $school_record->logo == null)
+      <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="blurred-image">
+      <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="img-clear">
    @else
-   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="blurred-image">
-   <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="img-clear">
+      <img src="{{ asset('storage/'. $school_record->logo) }}" alt="{{ $school_record->name }}"  class="blurred-image" />
+      <img src="{{ asset('storage/'. $school_record->logo) }}" alt="{{ $school_record->name }}"  class="img-clear" />
    @endif
 </a>
 @php
@@ -112,13 +112,14 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  Private
                               @endif
                           </span>
-                           {{-- @if($school_record->logo != null)
-                              <img src="{{ URL::to('storage/app/public/images/school_logo') }}/{{ $school_record->logo }}" alt="">
-                           @elseif($school_record->getSchoolMainImage->image != null)
-                              <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ $school_record->getSchoolMainImage->image }}" alt="">
-                              <img src="{{asset('public/default_images/default.jpg')}}" alt="" />
-                           @endif --}}
-                           <img src="{{asset('storage/default_images/default.jpg')}}" alt="" />
+                           @if($school_record->logo == null)
+                              <img src="{{asset('storage/default_images/default.jpg')}}" alt="" />
+                           @else
+                              <img 
+                                 src="{{ asset('storage/'. $school_record->logo) }}" 
+                                 alt="{{ $school_record->name }}" 
+                              />
+                           @endif
                         </div>
                         <div class="school_names">
                            <h3>{{ $school_record->name }}
@@ -168,7 +169,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                               <li> <p>({{ $schoolDetails->tot_review }} reviews)</p> </li>
                            </ul> --}}
                            <div class="sc_thub_ab">
-                              <p>{{ optional($school_record->address)->address_text ?? 'Address not available' }}</p>
+                              <p>Address: {{ optional($school_record->address)->address_text ?? 'Address not available' }}</p>
                            </div>
                            {{-- @if($contact_info->isNotEmpty())
                               @foreach($contact_info as $contact)
@@ -208,7 +209,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
 
                            <div class="sc_thub_ab">
                               @if($school_record->year_of_establishment != null)
-                                 <p class="text-capital">Year of establishment </p>
+                                 <p class="text-capital">Year of establishment: {{ $school_record->year_of_establishment }} </p>
                                  <span class="no-marmin">|</span>
                               @endif
                               <p>
@@ -513,24 +514,24 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                         @endif
                      </div>
                      
-                     {{-- <div id="how_sec" class="about_sc_bo">
+                     <div id="how_sec" class="about_sc_bo">
                         <div class="abot_all_headings">
                            <h3>Gallery</h3>
                         </div>
-                        @if(@$school_gallery->isNotEmpty())
-                        <div class="galley_des">
-                           <div class="owl-carousel owl-theme owl-gallery position-relative">
-                              @foreach($school_gallery as $data)
-                              <div class="item showImage" data-image_url="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$data->image }}">
-                                 <div class="school_gallery_img">
-                                    <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$data->image }}" alt="">
-                                 </div>
+                        @if($school_gallery->isNotEmpty())
+                           <div class="galley_des">
+                              <div class="owl-carousel owl-theme owl-gallery position-relative">
+                                 @foreach($school_gallery as $data)
+                                    <div class="item showImage" data-image_url="{{ asset('storage/' . $data->image_path) }}">
+                                       <div class="school_gallery_img">
+                                          <img src="{{ asset('storage/' . $data->image_path) }}" alt="{{ asset('storage/' . $data->image_path) }}">
+                                       </div>
+                                    </div>
+                                 @endforeach
                               </div>
-                              @endforeach
                            </div>
-                        </div>
                         @endif
-                     </div> --}}
+                     </div>
 
                       
                      <div id="what_why_panel12" class="about_sc_bo">
