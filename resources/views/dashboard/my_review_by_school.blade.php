@@ -70,13 +70,31 @@
                             @elseif($data->is_featured == 1 && $data->status != 'D')
                                 <a href="{{ route('user.featured.review',$data->id) }}" class="mk-ftrd" onclick="return confirm('Do you want to remove this from Featured review?')">Remove Featured</a>
                             @endif
-                        	<div class="star_rrv">
-                              @for($i=1;$i<=$data->review_point;$i++)
-                              <span><img src="{{ asset('images/star.png') }}" alt=""></span>
-                              @endfor
-                               @for($j=$data->review_point+1;$j<=5;$j++)
-                               <span><img src="{{ asset('images/star1.png') }}" alt=""></span>
-                               @endfor
+                        	<div class="star_rrv flex flex-col space-y-1">
+                                {{-- ⭐ School’s average rating --}}
+                                <div class="flex items-center space-x-2">
+                                    @php
+                                        $avg = round($data->school->reviews_avg_rating, 1); // e.g. 3.7
+                                        $fullStars = floor($avg);
+                                        $halfStar = ($avg - $fullStars) >= 0.5;
+                                    @endphp
+
+                                    {{-- Full stars --}}
+                                    @for($i = 1; $i <= $fullStars; $i++)
+                                        <span><img src="{{ asset('images/star.png') }}" alt="★" class="w-4 h-4 inline-block"></span>
+                                    @endfor
+
+                                    {{-- Half star --}}
+                                    @if($halfStar)
+                                        <span><img src="{{ asset('images/star-half.png') }}" alt="☆" class="w-4 h-4 inline-block"></span>
+                                        @php $fullStars++; @endphp
+                                    @endif
+
+                                    {{-- Empty stars --}}
+                                    @for($i = $fullStars + 1; $i <= 5; $i++)
+                                        <span><img src="{{ asset('images/star1.png') }}" alt="☆" class="w-4 h-4 inline-block"></span>
+                                    @endfor
+                                </div>
                             </div>
                             <div class="clearfix"></div>
                             <p><img src="{{ asset('images/clock.png') }}" alt=""> {{ date('jS M, Y H:i',strtotime($data->created_at)) }}</p>

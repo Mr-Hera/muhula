@@ -935,7 +935,8 @@ class SchoolController extends Controller
     $school_name   = $request->school; // 👈 comes from school listing success page
 
     // Start building query
-    $query = School::query()->with(['schoolLevel', 'type', 'curriculum', 'country', 'county', 'address', 'courses']);
+    $query = School::query()->with(['schoolLevel', 'type', 'curriculum', 'country', 'county', 'address', 'courses'])
+      ->withAvg('reviews', 'rating'); // 👈 this gives us avg_review
 
     // If school_name is provided, override other filters and return only that record
     if ($school_name) {
@@ -1033,7 +1034,8 @@ class SchoolController extends Controller
       'branches.county', // load county for each branch
       'branches.type',   // load type for each branch
       'branches.school',  // just in case you need parent school info
-      'claimingUsers' // check claims
+      'claimingUsers', // check claims
+      'images'
     ])->where('slug', $slug)->firstOrFail();
     // dd($school_operation_hours);
 
@@ -1071,7 +1073,8 @@ class SchoolController extends Controller
       'school_branches' => $school_branches,
       'contactPositions'  => $contactPositions,
       'currentUserClaim' => $currentUserClaim,
-      'reviews' => $reviews
+      'reviews' => $reviews,
+      'school_gallery'  => $school_record->images
     ]);
   }
 

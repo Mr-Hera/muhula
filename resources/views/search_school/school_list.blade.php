@@ -513,24 +513,34 @@
                                        @endauth
                                     </div>
                                        <ul>
-                                             @if($school->avg_review)
-                                             @php $school->avg_review = $school->avg_review+0; @endphp
-                                             @for($sst = 1; $sst <= $school->avg_review; $sst++)
-                                             <li><img src="{{ asset('images/fstar.png') }}" alt=""></li>
+                                          @if($school->reviews_avg_rating)
+                                             @php
+                                                $avg = round($school->reviews_avg_rating, 1); // e.g. 3.7
+                                                $fullStars = floor($avg); // 3
+                                                $halfStar = ($avg - $fullStars) >= 0.5; // true if >= .5
+                                             @endphp
+
+                                             {{-- Full stars --}}
+                                             @for($i = 1; $i <= $fullStars; $i++)
+                                                <li><img src="{{ asset('images/fstar.png') }}" alt="★"></li>
                                              @endfor
-                                             @if(strpos($school->avg_review,'.'))
-                                             <li><img src="{{asset('public/images/star-half.png')}}"></li>
-                                             @php $sst++; @endphp
-                                                @endif
-                                                @while ($sst<=5)
-                                                <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>
-                                             @php $sst++; @endphp
-                                             @endwhile
-                                             @else
-                                             @for($sst = 1; $sst <= 5; $sst++)
-                                             <li><img src="{{ asset('images/lstar.png') }}" alt=""></li>                              
-                                             @endfor
+
+                                             {{-- Half star --}}
+                                             @if($halfStar)
+                                                <li><img src="{{ asset('images/star-half.png') }}" alt="☆"></li>
+                                                @php $fullStars++; @endphp
                                              @endif
+
+                                             {{-- Empty stars --}}
+                                             @for($i = $fullStars + 1; $i <= 5; $i++)
+                                                <li><img src="{{ asset('images/lstar.png') }}" alt="✩"></li>
+                                             @endfor
+                                          @else
+                                             {{-- No reviews: show 5 empty stars --}}
+                                             @for($i = 1; $i <= 5; $i++)
+                                                <li><img src="{{ asset('images/lstar.png') }}" alt="✩"></li>
+                                             @endfor
+                                          @endif
                                        {{--<li> <img src="{{ url('public/images/fstar.png') }}" alt=""> </li>
                                        <li> <img src="{{ url('public/images/fstar.png') }}" alt=""> </li>
                                        <li> <img src="{{ url('public/images/fstar.png') }}" alt=""> </li>
@@ -541,7 +551,15 @@
 
                                  <div class="search_price">
                                     @auth
-                                       <h3>Fees: <span>KES{{ $school->starting_from_fees }}</span> </h3>
+                                       @if($school->fees->isNotEmpty())
+                                          @php
+                                                $minFee = $school->fees->min('min_amount');
+                                                $currency = $school->fees->first()->currency;
+                                          @endphp
+                                          <h3>Fees: <span>{{ $currency }} {{ number_format($minFee, 2) }}</span></h3>
+                                       @else
+                                          <h3>Fees: <span>Not Available</span></h3>
+                                       @endif
                                     @endauth
                                     <p><img src="{{ asset('images/map-pin.png') }}" alt="" /> {{ optional($school->country)->name ?? 'N/A' }}, {{ optional($school->county)->name ?? 'N/A' }}</p>
                                  </div>

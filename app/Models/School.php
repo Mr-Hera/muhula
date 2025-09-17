@@ -159,4 +159,9 @@ class School extends Model
     {
         return $this->morphMany(Favourite::class, 'favouritable');
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(SchoolReview::class);
+    }
 }
