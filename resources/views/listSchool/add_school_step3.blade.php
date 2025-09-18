@@ -152,9 +152,11 @@
                                        <label>School Levels <span style="color: red;">*</span></label>
                                        <select multiple name="school_level_id[]" id="school_level" class="filter-multi-select">
                                           @foreach($school_levels as $level)
+                                             @if ($level->name != "General")
                                                 <option value="{{ $level->id }}" @selected(collect(old('school_level_id'))->contains($level->id))>
                                                    {{ $level->name }}
                                                 </option>
+                                             @endif
                                           @endforeach
                                        </select>
                                     </div>

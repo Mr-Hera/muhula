@@ -174,8 +174,52 @@ class CoursesSeeder extends Seeder
                 ],
             ],
 
-            // ✅ British / IGCSE
-            'British / IGCSE' => [
+            // ✅ IGCSE
+            'IGCSE' => [
+                'Primary' => [
+                    'Mathematics',
+                    'English',
+                    'Science',
+                    'Social Studies',
+                    'Geography',
+                    'History',
+                    'Art',
+                    'Music',
+                    'PE',
+                    'Kiswahili',
+                    'French',
+                    'ICT',
+                    'PSHE',
+                ],
+                'Secondary' => [
+                    'Mathematics',
+                    'English Language',
+                    'English Literature',
+                    'Biology',
+                    'Chemistry',
+                    'Physics',
+                    'History',
+                    'Geography',
+                    'Sociology',
+                    'Global Perspectives',
+                    'Economics',
+                    'French',
+                    'Spanish',
+                    'Chinese',
+                    'Kiswahili',
+                    'Art and Design',
+                    'Business Studies',
+                    'Drama',
+                    'Music',
+                    'Computer Science',
+                    'ICT',
+                    'Design and Technology',
+                    'Physical Education',
+                ],
+            ],
+
+            // ✅ British
+            'British' => [
                 'Primary' => [
                     'Mathematics',
                     'English',
@@ -219,7 +263,7 @@ class CoursesSeeder extends Seeder
             ],
 
             // ✅ International Baccalaureate (IB) – no levels
-            'International Baccalaureate (IB)' => [
+            'IB' => [
                 'General' => [
                     'Theory of Knowledge',
                     'English Literature',

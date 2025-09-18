@@ -746,6 +746,8 @@ class SchoolController extends Controller
       'google_long'    => 'nullable|numeric',
       'email'          => 'nullable|email',
       'phone'          => 'nullable|string|max:20',
+      'school_image'     => 'nullable|array',
+      'school_image.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ], [
       'school_name.nullable'   => 'The school name is required.',
       'school_type.nullable'   => 'Please select at least one school type.',
@@ -760,6 +762,7 @@ class SchoolController extends Controller
 
     if ($hasData) {
       $schoolId = Session::get('school_creation.step2.school_id');
+      $school   = School::findOrFail($schoolId);
 
       // Save school_address
       $schoolAddress = new SchoolAddress();
@@ -778,6 +781,41 @@ class SchoolController extends Controller
       $branch->email = $validated['email'] ?? null;
       $branch->phone_no = $validated['phone'] ?? null;
       $branch->save();
+
+      // 🔹 Handle school images (multiple uploads)
+      if ($request->hasFile('school_image')) {
+        foreach ($request->file('school_image') as $uploadedImage) {
+          if ($uploadedImage->isValid()) {
+            // Sanitize school name
+            $sanitizedName = Str::slug($school->name ?? 'school', '_');
+
+            // Create a unique filename
+            $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+
+            // Destination inside storage/app/public/images/school_images
+            $destination = storage_path('app/public/images/school_images');
+            if (!file_exists($destination)) {
+              mkdir($destination, 0777, true);
+            }
+            $uploadedImage->move($destination, $imageName);
+
+            // Relative path for DB (accessible via storage:link)
+            $path = 'images/school_images/' . $imageName;
+
+            // Save to DB (assuming School has images() relation -> hasMany(SchoolImage::class))
+            $image = $school->images()->create([
+              'image_path' => $path,
+              'caption'    => $school->name ?? 'School Image',
+            ]);
+
+            // Optionally set the *first uploaded image* as branch->school_image_id
+            if (!$branch->school_image_id) {
+              $branch->school_image_id = $image->id;
+              $branch->save();
+            }
+          }
+        }
+      }
 
       // Store in session
       Session::put('school_creation.school_branch', [
