@@ -178,20 +178,22 @@
                            <ul class="category-ul agree">
                               @if($school_levels)
                                  @foreach($school_levels as $key=>$level)
-                                    <li>
-                                       <div class="radiobx">
-                                          <label for="">{{ $level->name }}
-                                             <input
-                                                type="checkbox"
-                                                value="{{ $level->id }}"
-                                                name="school_level[]"
-                                                id="{{ $level->name }}"
-                                                @if(isset($dynamic_school_level) && $level->name === $dynamic_school_level) checked @endif
-                                             />
-                                             <span class="checkbox"></span>
-                                          </label>
-                                       </div>
-                                    </li>
+                                    @if ($level->name != "General")
+                                       <li>
+                                          <div class="radiobx">
+                                             <label for="">{{ $level->name }}
+                                                <input
+                                                   type="checkbox"
+                                                   value="{{ $level->id }}"
+                                                   name="school_level[]"
+                                                   id="{{ $level->name }}"
+                                                   @if(isset($dynamic_school_level) && $level->name === $dynamic_school_level) checked @endif
+                                                />
+                                                <span class="checkbox"></span>
+                                             </label>
+                                          </div>
+                                       </li>
+                                    @endif
                                  @endforeach
                               @endif
                            </ul>
@@ -216,15 +218,22 @@
 
                            <div class="check_gender">
                               <ul>
-                                 @if($courses)
+                                 @if($courses && $courses->count())
                                     @foreach($courses as $course)
-                                       <li>
-                                          <input type="checkbox" name="school_subject[]" id="course_{{ $course->id }}" value="{{ $course->id }}" />
-                                          <label for="course_{{ $course->id }}">
-                                             <p>{{ $course->name }}</p>
-                                          </label>
-                                       </li>
+                                          <li>
+                                             <input type="checkbox" 
+                                                   name="school_subject[]" 
+                                                   id="course_{{ $course->id }}" 
+                                                   value="{{ $course->id }}" />
+                                             <label for="course_{{ $course->id }}">
+                                                <p>{{ $course->name }}</p>
+                                             </label>
+                                          </li>
                                     @endforeach
+                                 @else
+                                    <li>
+                                          <p>No courses available for this level.</p>
+                                    </li>
                                  @endif
                               </ul>
                            </div>
