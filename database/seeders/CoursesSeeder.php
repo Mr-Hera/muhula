@@ -62,8 +62,6 @@ class CoursesSeeder extends Seeder
                     'Foreign Languages (German, French, Mandarin, or Arabic)',
                     'Kenyan Sign Language',
                     'Indigenous Languages',
-                ],
-                'Secondary' => [
                     'Arts and Sports Science',
                     'Social Sciences',
                     'STEM',
