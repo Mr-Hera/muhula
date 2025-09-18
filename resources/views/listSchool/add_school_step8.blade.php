@@ -116,10 +116,12 @@
                               </div>
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
-                                    <label>School Type <span style="color: red;">*</span></label>
+                                    <label>School Level <span style="color: red;">*</span></label>
                                     <select multiple name="school_type[]" id="school_type" class="filter-multi-select">
                                        @foreach($school_levels as $level)
-                                          <option value="{{ $level->id }}" {{ in_array($level->id, old('school_type', [])) ? 'selected' : '' }}>{{ $level->name }}</option>
+                                          @if ($level->name != "General")
+                                             <option value="{{ $level->id }}" {{ in_array($level->id, old('school_type', [])) ? 'selected' : '' }}>{{ $level->name }}</option>
+                                          @endif
                                        @endforeach
                                     </select>
                                     @error('school_type')

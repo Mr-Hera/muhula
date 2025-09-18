@@ -98,7 +98,9 @@
                                        <select name="grade_level" id="">
                                           <option value="" selected disabled>Select</option>
                                           @foreach ($school_levels as $level)
-                                             <option value="{{ $level->id }}" {{ old('grade_level') == $level->id ? 'selected' : '' }}>{{ $level->name }}</option>
+                                             @if ($level->name != "General")
+                                                <option value="{{ $level->id }}" {{ old('grade_level') == $level->id ? 'selected' : '' }}>{{ $level->name }}</option>
+                                             @endif
                                           @endforeach
                                        </select>
                                        @error('grade_level')
