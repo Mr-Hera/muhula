@@ -98,23 +98,27 @@
                                     <div class="dash_input">
                                        <label>Select Subjects:</label>
                                        <ul class="category-ul subs-list agree d-flex justify-content-start align-items-center flex-wrap">
-                                          @if($courses)
+                                          @if($courses && $courses->count())
                                              @foreach($courses as $course)
-                                             <li class="mb-1">
-                                                <div class="radiobx">
-                                                   <label for="">{{ $course->name }}
-                                                      <input
-                                                         type="checkbox"
-                                                         name="courses[]"
-                                                         value="{{ $course->id }}"
-                                                         {{ in_array($course->id, old('courses', array_column($selectedCourses, 'id'))) ? 'checked' : '' }}
-                                                      />
-                                                      <span class="checkbox"></span>
-                                                   </label>
-                                                </div>
-                                             </li>
+                                                   <li class="mb-1">
+                                                      <div class="radiobx">
+                                                         <label for="course_{{ $course->id }}">
+                                                               {{ $course->name }}
+                                                               <input
+                                                                  type="checkbox"
+                                                                  id="course_{{ $course->id }}"
+                                                                  name="courses[]"
+                                                                  value="{{ $course->id }}"
+                                                                  {{ in_array($course->id, old('courses', $selectedCourses)) ? 'checked' : '' }}
+                                                               />
+                                                               <span class="checkbox"></span>
+                                                         </label>
+                                                      </div>
+                                                   </li>
                                              @endforeach
-                                          @endif                                  
+                                          @else
+                                             <li><p>No courses available for this school’s curriculum and level.</p></li>
+                                          @endif
                                        </ul>
                                        @error('courses')
                                           <label id="courses-error" class="error" for="courses[]">

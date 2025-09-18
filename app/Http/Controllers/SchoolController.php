@@ -558,17 +558,33 @@ class SchoolController extends Controller
 
 
   public function addSchoolStep6(){
-    $courses = Course::all();
-    $school_levels = SchoolLevel::all();
-    $curricula = Curriculum::all();
-    $selectedCourses = Session::get('school_creation.courses.step6.course_data', []);
-    // dd($selectedCourseNames);
+    $schoolId = Session::get('school_creation.step2.school_id');
+
+    if (!$schoolId) {
+        return redirect()->route('add.school.step2')
+            ->withErrors(['error' => 'School not found. Please restart the process.']);
+    }
+
+    $school = School::with(['curriculum', 'schoolLevel'])->findOrFail($schoolId);
+
+    // If your school has multiple levels or curricula, adjust to use whereIn
+    $courses = Course::query()
+        ->when($school->curriculum_id, function ($query) use ($school) {
+            $query->where('curriculum_id', $school->curriculum_id);
+        })
+        ->when($school->school_level_id, function ($query) use ($school) {
+            $query->where('school_level_id', $school->school_level_id);
+        })
+        ->orderBy('name')
+        ->get();
+
+    // Fetch already selected courses from session (if any were picked before)
+    $selectedCourses = Session::get('school_creation.step6.courses', []);
 
     return view('listSchool.add_school_step6')->with([
-      'courses' => $courses,
-      'school_levels' => $school_levels,
-      'curricula' => $curricula,
-      'selectedCourses' => $selectedCourses,
+        'school'          => $school,
+        'courses'         => $courses,
+        'selectedCourses' => $selectedCourses,
     ]);
   }
 
