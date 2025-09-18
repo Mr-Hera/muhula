@@ -37,6 +37,7 @@ class UsersTableSeeder extends Seeder
                 'ward_id' => $wardId,
                 'curriculum_id' => $curriculumId,
                 'password' => Hash::make('password'),
+                'is_admin' => true,
             ]);
         }
     }

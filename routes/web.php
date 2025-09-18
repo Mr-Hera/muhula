@@ -162,11 +162,11 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('create-news/{school_id?}/{news_id?}', 'School\SchoolController@createNews')->name('user.create.news');
         Route::post('create-news-save', [DashboardController::class, 'createNewsSave'])->name('user.create.news.save');
         Route::get('delete-news/{id?}', 'School\SchoolController@deleteNews')->name('user.news.delete');
-        Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news');
+        Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news')->middleware('admin');
 
         // for manage claims
-        Route::get('manage-claims', [DashboardController::class, 'getManageClaims'])->name('get.manage.claims');
-        Route::post('/claims/{id}/update-status', [DashboardController::class, 'updateClaimStatus'])->name('claims.update.status');
+        Route::get('manage-claims', [DashboardController::class, 'getManageClaims'])->name('get.manage.claims')->middleware('admin');
+        Route::post('/claims/{id}/update-status', [DashboardController::class, 'updateClaimStatus'])->name('claims.update.status')->middleware('admin');
 
         //for my reviews
         Route::get('my-reviews-for-by-me', [DashboardController::class, 'myReviewsByMe'])->name('user.my.review.by.me');

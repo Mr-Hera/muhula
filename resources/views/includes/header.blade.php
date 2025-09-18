@@ -90,9 +90,13 @@
                         <li>
                            <a href="{{ route('user.my.favourite') }}">My Favourite</a>
                         </li>
-                        <li>
-                           <a href="{{ route('user.add.news') }}">Add News</a>
-                        </li>
+                        @auth
+                           @if(auth()->user()->is_admin)
+                              <li>                          
+                                 <a href="{{ route('user.add.news') }}">Add News</a>
+                              </li>
+                           @endif
+                        @endauth
                         <li>
                            <a href="{{ route('user.my.review.by.me') }}">My Reviews</a>
                         </li>
@@ -102,9 +106,13 @@
                         <li>
                            <a href="{{ route('school.search') }}">Claim School</a>
                         </li>
-                        <li>                          
-                           <a href="{{ route('get.manage.claims') }}">Manage Claims</a>
-                        </li>
+                        @auth
+                           @if(auth()->user()->is_admin)
+                              <li>                          
+                                 <a href="{{ route('get.manage.claims') }}">Manage Claims</a>
+                              </li>
+                           @endif
+                        @endauth
                         {{-- <li><a href="{{ route('user.subscription') }}">Subscription</a></li>
                         <li><a href="{{ route('user.subscription.history') }}">Subscription History</a></li> --}}
                         <span class="list-dvdr"></span>
