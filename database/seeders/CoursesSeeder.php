@@ -264,7 +264,30 @@ class CoursesSeeder extends Seeder
 
             // ✅ International Baccalaureate (IB) – no levels
             'IB' => [
-                'General' => [
+                'Primary' => [
+                    'Theory of Knowledge',
+                    'English Literature',
+                    'English Language and Literature',
+                    'French',
+                    'Swahili',
+                    'Spanish',
+                    'Environmental Systems',
+                    'History',
+                    'Geography',
+                    'Business Management',
+                    'Economics',
+                    'ITGS',
+                    'Chemistry',
+                    'Biology',
+                    'Physics',
+                    'Environmental Systems & Societies',
+                    'Math Higher Level',
+                    'Math Standard Level',
+                    'Mathematical studies',
+                    'Visual Arts',
+                    'Theatre Art',
+                ],
+                'Secondary' => [
                     'Theory of Knowledge',
                     'English Literature',
                     'English Language and Literature',
