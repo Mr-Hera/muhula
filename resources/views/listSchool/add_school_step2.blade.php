@@ -158,12 +158,14 @@
                               <div class="dash_input">
                                  <label>Country</label>
                                  <select name="country" id="country">
-                                       <option value="">Select</option>
-                                       @foreach($countries as $country)
+                                    <option value="" disabled selected hidden>Select</option>
+                                    @foreach($countries as $country)
+                                       @if ($country->name == "Kenya")
                                           <option value="{{ $country->id }}" {{ old('country', optional($schoolDetails)->country_id) == $country->id ? 'selected' : '' }}>
                                              {{ $country->name }}
                                           </option>
-                                       @endforeach
+                                       @endif
+                                    @endforeach
                                  </select>
                                  @error('country')
                                        <small class="text-danger">{{ $message }}</small>
