@@ -71,6 +71,9 @@ class SchoolController extends Controller
   }
 
   public function addSchoolStep2(){
+    // Clear pre-existing session under "school_creation.*" just incase it still exists
+    Session::forget('school_creation');
+    
     $countries = Country::all();
     $counties = County::all();
 
