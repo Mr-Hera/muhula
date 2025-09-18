@@ -365,7 +365,7 @@ class SchoolController extends Controller
     }
 
     $uniform->delete();
-    return redirect()->route('add.school.step3',[md5(@$uniform->school_master_id)]); 
+    return redirect()->route('add.school.step3'); 
   }
 
   public function addSchoolStep4(){
@@ -994,7 +994,12 @@ class SchoolController extends Controller
     $countries = Country::all();
     $counties = County::all();
     $school_levels = SchoolLevel::all();
-    $courses = Course::all();
+    // Fetch courses filtered by school_type (school_level_id)
+    if ($school_type) {
+        $courses = Course::where('school_level_id', $school_type)->get();
+    } else {
+        $courses = Course::all();
+    }
     $school_types_day = SchoolType::where('name', 'Day')->first();
     $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
     $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
