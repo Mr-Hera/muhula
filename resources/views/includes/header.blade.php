@@ -25,11 +25,14 @@
                      @endforeach
                      @endif --}}
                      @foreach($school_levels as $level)
-                        <li class="nav-item">
-                           <a class="nav-link" href="{{ route('school.search') }}?school_type={{ $level->id }}">
+                        {{-- filter our General school level because it doesn't apply --}}
+                        @if ($level->name != "General")
+                           <li class="nav-item">
+                              <a class="nav-link" href="{{ route('school.search') }}?school_type={{ $level->id }}">
                                  {{ $level->name }}
-                           </a>
-                        </li>
+                              </a>
+                           </li>
+                        @endif
                      @endforeach
                      {{--<li class="nav-item">
                         <a class="nav-link" href="#">primary</a>
