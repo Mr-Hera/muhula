@@ -14,9 +14,13 @@
          <li>                          
             <a href="{{ route('user.my.favourite') }}" class="{{ Route::is('user.my.favourite')?'active' : '' }}"> <span><img src="{{asset('images/heart.png')}}" alt="" ></span>  My Favourite </a>
          </li>
-         <li>                          
-            <a href="{{ route('user.add.news') }}" class="{{ Route::is('user.add.news')?'active' : '' }}"> <span><img src="{{asset('images/news.PNG')}}" alt="" ></span> Add News </a>
-         </li>
+         @auth
+            @if(auth()->user()->is_admin)
+               <li>                          
+                  <a href="{{ route('user.add.news') }}" class="{{ Route::is('user.add.news')?'active' : '' }}"> <span><img src="{{asset('images/news.PNG')}}" alt="" ></span> Add News </a>
+               </li>
+            @endif
+         @endauth
          <li>                          
             <a href="{{ route('user.my.review.by.me') }}" class="{{ Route::is('user.my.review.by.me','user.my.review.by.school')?'active' : '' }}"> <span><img src="{{asset('images/dash4.png')}}" alt="" ></span>  My Reviews </a>
          </li>
@@ -26,9 +30,13 @@
          <li>                          
             <a href="{{ route('school.search') }}"> <span><img src="{{asset('images/claim-school.png')}}" alt="" ></span>Claim School </a>
          </li>
-         <li>                          
-            <a href="{{ route('get.manage.claims') }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Claims </a>
-         </li>
+         @auth
+            @if(auth()->user()->is_admin)
+               <li>                          
+                  <a href="{{ route('get.manage.claims') }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Claims </a>
+               </li>
+            @endif
+         @endauth
          {{-- <li>                          
             <a href="{{ route('user.subscription') }}" class="{{ Route::is('user.subscription')?'active' : '' }}"> <span><img src="{{asset('images/subscription.png')}}" alt="" ></span>Subscription</a>
          </li>
