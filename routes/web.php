@@ -106,6 +106,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
     Route::get('add-school-step9/{id?}/{status?}',[SchoolController::class, 'addSchoolStep9'])->name('add.school.step9');
     Route::post('add-school-step9-fees-save',[SchoolController::class, 'addSchoolStep9FeesSave'])->name('add.school.step9.fees.save');
+    Route::post('/add-school/step9/complete', [SchoolController::class, 'addSchoolStep9Complete'])->name('add.school.step9.complete');
     Route::get('school-fees-delete/{id?}',[SchoolController::class, 'schoolFeesDelete'])->name('school.fees.delete');
 
     Route::get('add-school-success',[SchoolController::class, 'addSchoolSuccessPage'])->name('add.school.success');

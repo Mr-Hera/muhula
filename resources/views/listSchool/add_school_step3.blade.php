@@ -114,7 +114,7 @@
                               </div>
 
                               {{-- 🔹 School Ownership --}}
-                              <div class="col-12">
+                              <div class="col-lg-6 col-md-6">
                                     <label><b>School Ownership <span style="color: red;">*</span></b></label>
                                     <div class="check_gender adscl-type">
                                        <ul>
@@ -146,25 +146,6 @@
                                     @enderror
                               </div>
 
-                              {{-- 🔹 School Levels --}}
-                              <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                       <label>School Levels <span style="color: red;">*</span></label>
-                                       <select multiple name="school_level_id[]" id="school_level" class="filter-multi-select">
-                                          @foreach($school_levels as $level)
-                                             @if ($level->name != "General")
-                                                <option value="{{ $level->id }}" @selected(collect(old('school_level_id'))->contains($level->id))>
-                                                   {{ $level->name }}
-                                                </option>
-                                             @endif
-                                          @endforeach
-                                       </select>
-                                    </div>
-                                    @error('school_level_id')
-                                       <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                              </div>
-
                               {{-- 🔹 Curricula --}}
                               <div class="col-12">
                                     <div class="dash_input">
@@ -184,6 +165,25 @@
                                        </ul>
                                     </div>
                                     @error('curricula')
+                                       <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                              </div>
+
+                              {{-- 🔹 School Levels --}}
+                              <div class="col-lg-6 col-md-6">
+                                    <div class="dash_input">
+                                       <label>School Levels <span style="color: red;">*</span></label>
+                                       <select multiple name="school_level_id[]" id="school_level" class="filter-multi-select">
+                                          @foreach($school_levels as $level)
+                                             @if ($level->name != "General")
+                                                <option value="{{ $level->id }}" @selected(collect(old('school_level_id'))->contains($level->id))>
+                                                   {{ $level->name }}
+                                                </option>
+                                             @endif
+                                          @endforeach
+                                       </select>
+                                    </div>
+                                    @error('school_level_id')
                                        <small class="text-danger">{{ $message }}</small>
                                     @enderror
                               </div>

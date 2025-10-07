@@ -176,17 +176,27 @@
                            <div class="col-lg-6 col-md-6">
                               <div class="dash_input">
                                  <label>Town</label>
-                                 <select name="county" id="county">
-                                       <option value="">Select</option>
-                                       @foreach($counties as $county)
-                                          <option value="{{ $county->id }}" {{ old('county', optional($schoolDetails)->county_id) == $county->id ? 'selected' : '' }}>
-                                             {{ $county->name }}
-                                          </option>
-                                       @endforeach
-                                       <option value="0" {{ old('county') == 0 ? 'selected' : '' }}>Other</option>
+                                 <select name="county" id="county" onchange="toggleNewCountyInput(this)">
+                                    <option value="" selected disabled>Select</option>
+                                    @foreach($counties as $county)
+                                       <option value="{{ $county->id }}" 
+                                          {{ old('county', optional($schoolDetails)->county_id) == $county->id ? 'selected' : '' }}>
+                                          {{ $county->name }}
+                                       </option>
+                                    @endforeach
+                                    <option value="0" {{ old('county') ? 'selected' : '' }}>Other</option>
                                  </select>
                                  @error('county')
-                                       <small class="text-danger">{{ $message }}</small>
+                                    <small class="text-danger">{{ $message }}</small>
+                                 @enderror
+                              </div>
+
+                              {{-- Hidden input that appears only if “Other” is selected --}}
+                              <div class="dash_input mt-2" id="newCountyInput" style="display: none;">
+                                 <label>Enter New Town</label>
+                                 <input type="text" name="new_county_name" placeholder="Enter town name" value="{{ old('new_county_name') }}">
+                                 @error('new_county_name')
+                                    <small class="text-danger">{{ $message }}</small>
                                  @enderror
                               </div>
                            </div>
@@ -256,3 +266,24 @@
 @section('script')
 @include('includes.scripts')
 @endsection
+
+<script>
+   function toggleNewCountyInput(select) {
+      const newCountyInput = document.getElementById('newCountyInput');
+      if (select.value == '0') {
+         newCountyInput.style.display = 'block';
+      } else {
+         newCountyInput.style.display = 'none';
+         // Clear field if user switches back
+         newCountyInput.querySelector('input').value = '';
+      }
+   }
+
+   // On page load (e.g. validation fail + old input)
+   document.addEventListener('DOMContentLoaded', function() {
+      const countySelect = document.getElementById('county');
+      if (countySelect.value == '0') {
+         document.getElementById('newCountyInput').style.display = 'block';
+      }
+   });
+</script>

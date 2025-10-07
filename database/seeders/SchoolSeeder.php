@@ -44,7 +44,7 @@ class SchoolSeeder extends Seeder
                 'religion_id' => 1,
                 'school_level_id' => 3,
                 'school_type_id' => 2,
-                'curriculum_id' => 6,
+                'curriculum_id' => 3,
                 'ownership' => 'Public',
                 'gender_admission' => 'Female',
                 'county_id' => 1,
