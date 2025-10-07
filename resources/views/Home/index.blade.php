@@ -413,6 +413,15 @@
                   @if($curricula && $curricula->count())
                      @foreach($curricula as $curriculum)
                         <div class="curriculam_box">
+                           @if ($curriculum->name == 'Undergraduate')
+                              <a href="javascript:;" class="school_board" data-school_board="{{ $curriculum->id }}">
+                                 <h2>College</h2>
+                                 <p>
+                                    {{ $curriculum->schools_count }} School{{ $curriculum->schools_count !== 1 ? 's' : '' }}
+                                    <img src="{{ asset('images/chevrone.png') }}" alt="">
+                                 </p>
+                              </a>
+                           @else
                               <a href="javascript:;" class="school_board" data-school_board="{{ $curriculum->id }}">
                                  <h2>{{ $curriculum->name }}</h2>
                                  <p>
@@ -420,6 +429,7 @@
                                     <img src="{{ asset('images/chevrone.png') }}" alt="">
                                  </p>
                               </a>
+                           @endif
                         </div>
                      @endforeach
                   @else

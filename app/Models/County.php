@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class County extends Model
 {
+    protected $fillable = [
+        'name',
+    ];
     use HasFactory;
 
     public function constituencies() 

@@ -103,7 +103,8 @@ class SchoolController extends Controller
       'contact_phone'    => 'required|array|min:1',
       'contact_phone.*'  => 'required|string|max:20',
       'country'          => 'required|integer|exists:countries,id',
-      'county'             => 'required|integer|exists:counties,id',
+      'county'           => 'nullable|integer',
+      'new_county_name'  => 'nullable|string|max:255',
       'full_address'     => 'required|string|max:500',
       'google_location'  => 'nullable|string|max:500',
     ], [], [
@@ -114,64 +115,84 @@ class SchoolController extends Controller
         'contact_phone.*'  => 'Contact phone',
         'country'          => 'Country',
         'county'           => 'Town',
+        'new_county_name'  => 'New town name',
         'full_address'     => 'Full address',
         'google_location'  => 'Google map link',
     ]);
+
+    $county_id = null;
     
+    // ✅ If user selected "Other", create a new county first
+    if ((int) $validated['county'] === 0) {
+      if (empty($validated['new_county_name'])) {
+        return back()->withErrors(['new_county_name' => 'Please enter a town name when selecting "Other".'])->withInput();
+      }
+
+      $new_county = County::create([
+        'name' => $validated['new_county_name'],
+      ]);
+      $county_id = $new_county->id;
+      
+      // $validated['county'] = $county->id;
+    } else {
+      $county_id = $validated['county'];
+    }
+
     DB::beginTransaction();
 
     try {
-        // 1. Save school_contact
-        $schoolContact = new SchoolContact();
-        $schoolContact->full_names = $validated['contact_title'][0];
-        $schoolContact->email = $validated['contact_email'][0];
-        $schoolContact->phone_no = $validated['contact_phone'][0];
-        $schoolContact->save();
 
-        // Take the full_names string (e.g., "John Mwangi" or "John")
-        $names = explode(' ', trim($schoolContact->full_names));
+      // 1. Save school_contact
+      $schoolContact = new SchoolContact();
+      $schoolContact->full_names = $validated['contact_title'][0];
+      $schoolContact->email = $validated['contact_email'][0];
+      $schoolContact->phone_no = $validated['contact_phone'][0];
+      $schoolContact->save();
 
-        // Always grab the first and second parts only
-        $firstName = $names[0] ?? '';
-        $lastName  = $names[1] ?? '';
+      // Take the full_names string (e.g., "John Mwangi" or "John")
+      $names = explode(' ', trim($schoolContact->full_names));
 
-        // Add contact as a user
-        $school_contact_user = new User();
-        $school_contact_user->first_name = $firstName;
-        $school_contact_user->last_name = $lastName;
-        $school_contact_user->email = $schoolContact->email;
-        $school_contact_user->phone = $schoolContact->phone_no;
-        $school_contact_user->password =  Hash::make(env('SECURE_APP_PASSWORD'));
-        $school_contact_user->save();
+      // Always grab the first and second parts only
+      $firstName = $names[0] ?? '';
+      $lastName  = $names[1] ?? '';
 
-        // 2. Save school_address
-        $schoolAddress = new SchoolAddress();
-        $schoolAddress->address_text = $validated['full_address'] ?? null;
-        $schoolAddress->google_maps_link = $validated['google_location'] ?? null;
-        $schoolAddress->save();
+      // Add contact as a user
+      $school_contact_user = new User();
+      $school_contact_user->first_name = $firstName;
+      $school_contact_user->last_name = $lastName;
+      $school_contact_user->email = $schoolContact->email;
+      $school_contact_user->phone = $schoolContact->phone_no;
+      $school_contact_user->password =  Hash::make(env('SECURE_APP_PASSWORD'));
+      $school_contact_user->save();
 
-        // 3. Save partial school (just what we can now)
-        $school = new School();
-        $school->name = $validated['school_name'];
-        $school->description = $validated['about_school'];
-        $school->slug = Str::slug($validated['about_school'] . '-' . Str::random(5));
-        $school->county_id = $validated['county'];
-        $school->country_id = $validated['country'];
-        $school->school_contact_id = $schoolContact->id;
-        $school->school_address_id = $schoolAddress->id;
+      // 2. Save school_address
+      $schoolAddress = new SchoolAddress();
+      $schoolAddress->address_text = $validated['full_address'] ?? null;
+      $schoolAddress->google_maps_link = $validated['google_location'] ?? null;
+      $schoolAddress->save();
 
-        $school->save();
+      // 3. Save partial school (just what we can now)
+      $school = new School();
+      $school->name = $validated['school_name'];
+      $school->description = $validated['about_school'];
+      $school->slug = Str::slug($validated['about_school'] . '-' . Str::random(5));
+      $school->county_id = $county_id;
+      $school->country_id = $validated['country'];
+      $school->school_contact_id = $schoolContact->id;
+      $school->school_address_id = $schoolAddress->id;
 
-        DB::commit();
+      $school->save();
 
-        // Save IDs to session for step tracking
-        Session::put('school_creation.step2', [
-            'school_id' => $school->id,
-            'contact_id' => $schoolContact->id,
-            'address_id' => $schoolAddress->id,
-        ]);
+      DB::commit();
 
-        return redirect()->route('add.school.step3');
+      // Save IDs to session for step tracking
+      Session::put('school_creation.step2', [
+          'school_id' => $school->id,
+          'contact_id' => $schoolContact->id,
+          'address_id' => $schoolAddress->id,
+      ]);
+
+      return redirect()->route('add.school.step3');
 
     } catch (\Exception $e) {
       // dd($e);
@@ -272,6 +293,12 @@ class SchoolController extends Controller
       // Also assuming first item from arrays is used for singular fields in the schools table
       $curriculumName = $request['curricula'][0];
       $curriculum = Curriculum::firstOrCreate(['name' => $curriculumName]);
+
+      // manually updated school level if curriculum is 'Montessori'
+      if($curriculum->name == "Montessori") {
+        $updated_montessori_school_level = SchoolLevel::where('name', 'Nursery')->first();
+        $request['school_level_id'] = $updated_montessori_school_level->id;
+      }
 
       $school->update([
           'ownership'             => $request['ownership_type'] ?? null,
@@ -869,10 +896,17 @@ class SchoolController extends Controller
   }
 
   public function addSchoolStep9(){
+    $schoolId = Session::get('school_creation.step2.school_id');
     $school_levels = SchoolLevel::all();
+
+    // Fetch all fees for the current school
+    $school_fees = SchoolFee::with('level')
+        ->where('school_id', $schoolId)
+        ->get();
 
     return view('listSchool.add_school_step9')->with([
       'school_levels' => $school_levels,
+      'school_fees' => $school_fees,
     ]);
   }
 
@@ -917,8 +951,20 @@ class SchoolController extends Controller
     ]);
     Session::put(['school_slug' => $school->slug]);
 
+    return redirect()->route('add.school.step9')->with('success', 'Fee added successfully.');
+  }
+
+  public function addSchoolStep9Complete()
+  {
+    $schoolId = Session::get('school_creation.step2.school_id');
+    $school = School::find($schoolId);
+
+    if (!$school) {
+      return redirect()->back()->with('error', 'School record not found.');
+    }
+
     return redirect()->route('add.school.success')->with('success', 'School listing added successfully.')->with([
-      'school_name' => $school?->name,
+      'school_name' => $school->name,
       'school_slug' => $school->slug,
     ]);
   }
@@ -936,18 +982,25 @@ class SchoolController extends Controller
   }
 
     
-  public function schoolFeesDelete($id=null){
+  public function schoolFeesDelete($id = null)
+  {
+    // dd($id);
+    // Try to find the record
+    $schoolFee = SchoolFee::find($id);
 
-    $schoolFees = SchoolFees::where('id',@$id)->first();
-    if(@$schoolFees == null){
-
-      return redirect()->back()->with('error','Something went wrong');
+    // If not found, return with an error message
+    if (!$schoolFee) {
+      return redirect()->back()->with('error', 'Something went wrong. Record not found.');
     }
 
-    $schoolFees->delete();
-    $school_fees = SchoolFees::where('school_master_id',@$schoolFees->school_master_id)->min('from_fees'); 
-      SchoolMaster::where('id',@$schoolFees->school_master_id)->update(['starting_from_fees'=>@$school_fees]);
-    return redirect()->route('add.school.step9',[md5(@$schoolFees->school_master_id)]); 
+    // Store the school ID before deleting
+    $schoolId = $schoolFee->school_id;
+
+    // Delete the record
+    $schoolFee->delete();
+
+    // Redirect back to step 9 (or the same page)
+    return redirect()->route('add.school.step9')->with('success', 'Fee record deleted successfully.');
   }
 
   public function getClassLevel(Request $request){

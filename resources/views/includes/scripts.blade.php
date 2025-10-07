@@ -76,3 +76,40 @@
         return activ;
     }
 </script>
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+      const curriculumCheckboxes = document.querySelectorAll('.curriculum-checkbox');
+      const schoolLevelSelect = document.getElementById('school_level');
+
+      function updateSchoolLevels() {
+         // Collect selected curricula
+         const selectedCurricula = Array.from(curriculumCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+         // Reset all options
+         Array.from(schoolLevelSelect.options).forEach(opt => {
+            opt.disabled = false;
+            opt.hidden = false;
+         });
+
+         // Apply restriction if Montessori is selected
+         if (selectedCurricula.includes("Montessori")) {
+            Array.from(schoolLevelSelect.options).forEach(opt => {
+               if (opt.dataset.levelName !== "Nursery") {
+                  opt.disabled = true;
+                  opt.hidden = true;
+                  opt.selected = false;
+               }
+            });
+         }
+      }
+
+      curriculumCheckboxes.forEach(cb => {
+         cb.addEventListener('change', updateSchoolLevels);
+      });
+
+      // Run once on page load (for old() values)
+      updateSchoolLevels();
+   });
+</script>
