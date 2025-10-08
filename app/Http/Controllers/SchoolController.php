@@ -1278,6 +1278,9 @@ class SchoolController extends Controller
 
   public function editSchool($id = null, $sub_id = null)
   {
+    // ─────────────────────────────
+    // 1. Fetch school & related data
+    // ─────────────────────────────
     $school_types_day = SchoolType::where('name', 'Day')->first();
     $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
     $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
@@ -1285,61 +1288,110 @@ class SchoolController extends Controller
     // Fetch the school
     $school = School::findOrFail($id);
 
-    // Fetch all school types
+    // Related images
+    $schoolPhotos = $school->images()->get();
+
+    // All school types
     $school_types = SchoolType::all();
 
-    // Fetch all curricula (you called them "board" in Blade)
+    // All curricula (boards)
     $curricula = Curriculum::all();
 
     // Current school curriculum (for pre-selecting checkbox)
-    $selected_school_curricula = [$school->curriculum_id]; // store as array for easy in_array() check
+    $selected_school_curricula = [$school->curriculum_id];
 
-    // Fetch related contact information
-    $contact_info = collect(); // default empty collection
-
-    // If the school has a school_contact_id, load that record
+    // ─────────────────────────────
+    // 2. School contact information
+    // ─────────────────────────────
+    $contact_info = collect();
     $school_contact = null;
-    if ($school->school_contact_id) {
-      $school_contact = SchoolContact::find($school->school_contact_id);
 
-      // If you plan to support multiple contacts later, wrap in a collection for Blade compatibility
-      $contact_info = collect([$school_contact]);
+    if ($school->school_contact_id) {
+        $school_contact = SchoolContact::find($school->school_contact_id);
+        $contact_info = collect([$school_contact]);
     }
 
-    // Fetch all available facilities
+    // ─────────────────────────────
+    // 3. Facilities
+    // ─────────────────────────────
     $facilities = Facility::all();
-
-    // Get IDs of facilities already linked to this school
     $school_facilities = $school->facilities->pluck('id')->toArray();
 
-    // Fetch all extended school services
+    // ─────────────────────────────
+    // 4. Extended School Services (School Rules)
+    // ─────────────────────────────
     $extended_school_services = ExtendedSchoolService::all();
 
-    // Get IDs of extended services already linked to this school
-    $extended_services = [
-      'extended_school_services_id' => $school->extendedSchoolServices->pluck('id')->toArray()
-    ];
+    // IDs of already-selected services for this school
+    $selected_extended_services = $school->extendedSchoolServices->pluck('id')->toArray();
 
-    // Fetch operation hours if available
+    // ─────────────────────────────
+    // 5. Operation Hours
+    // ─────────────────────────────
     $operation_hours = $school->operationHours ?? collect([
-      ['starts_at' => null, 'ends_at' => null],
+        ['starts_at' => null, 'ends_at' => null],
     ]);
 
+    // ─────────────────────────────
+    // 6. Population (Teacher-Student Ratio)
+    // ─────────────────────────────
+    $latest_population = $school->population()->orderBy('year', 'desc')->first();
+
+    $school_population = $latest_population ? [
+        'total_students'  => $latest_population->total_students,
+        'student_boys'    => $latest_population->male_students,
+        'student_girls'   => $latest_population->female_students,
+        'total_teachers'  => $latest_population->total_teachers,
+        'teacher_male'    => $latest_population->male_teachers,
+        'teacher_female'  => $latest_population->female_teachers,
+    ] : [];
+
+    // ─────────────────────────────
+    // 7. Courses & Subjects
+    // ─────────────────────────────
+    $courses = Course::all();
+    $already_selected_courses_id = $school->courses->pluck('id')->toArray();
+    $school_subject = $school->schoolCourses()->with('course')->get();
+
+    // ─────────────────────────────
+    // 8. Exam Performance
+    // ─────────────────────────────
+    $schoolResult = SchoolExamPerformance::where('school_id', $school->id)->latest()->first();
+
+    if (!$schoolResult) {
+        $schoolResult = new \stdClass();
+        $schoolResult->exam = '';
+        $schoolResult->ranking_position = '';
+        $schoolResult->region = '';
+        $schoolResult->mean_score_points = '';
+        $schoolResult->mean_grade = '';
+        $schoolResult->number_of_candidates = '';
+    }
+
+    // ─────────────────────────────
+    // 9. Return view
+    // ─────────────────────────────
     return view('dashboard.edit_school')->with([
-      'school' => $school,
-      'school_types' => $school_types,
-      'curricula' => $curricula,
-      'school_types_day' => $school_types_day,
-      'school_types_boarding' => $school_types_boarding,
-      'school_types_day_n_boarding' => $school_types_day_n_boarding,
-      'selected_school_curricula' => $selected_school_curricula,
-      'contact_info' => $contact_info,
-      'school_contact' => $school_contact,
-      'facilities' => $facilities,
-      'school_facilities' => $school_facilities,
-      'extended_school_services' => $extended_school_services,
-      'extended_services' => $extended_services,
-      'operation_hours' => $operation_hours,
+        'school' => $school,
+        'school_types' => $school_types,
+        'curricula' => $curricula,
+        'school_types_day' => $school_types_day,
+        'school_types_boarding' => $school_types_boarding,
+        'school_types_day_n_boarding' => $school_types_day_n_boarding,
+        'selected_school_curricula' => $selected_school_curricula,
+        'contact_info' => $contact_info,
+        'school_contact' => $school_contact,
+        'facilities' => $facilities,
+        'school_facilities' => $school_facilities,
+        'extended_school_services' => $extended_school_services,
+        'selected_extended_services' => $selected_extended_services,
+        'operation_hours' => $operation_hours,
+        'school_population' => $school_population,
+        'courses' => $courses,
+        'already_selected_courses_id' => $already_selected_courses_id,
+        'school_subject' => $school_subject,
+        'schoolResult' => $schoolResult,
+        'schoolPhotos' => $schoolPhotos,
     ]);
   }
 }

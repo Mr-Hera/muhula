@@ -231,36 +231,6 @@
                               @csrf
                               
                               <div class="row align-items-end">
-                                 {{-- <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="dash_input">
-                                       <label>Teacher-Student ratio</label>
-                                       <div class="ratio-counter">
-                                          <span id="minus-btn">
-                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                             </svg>                                          
-                                          </span>
-                                          <h6 id="count"></h6>
-                                          <span id="plus-btn">
-                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 5V19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                             </svg>                                          
-                                          </span>
-                                       </div>
-                                       <label for="" id="ratio_error" class="error" style="display:none;"></label>
-                                    </div>
-                                 </div>
-                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="add-grade agree mb-4">
-                                       <div class="radiobx">
-                                             <label for="">Show Frontend
-                                                <input type="checkbox" id="aboutSchoolcheck" value="Y" name="show_ratio" @if(@$schoolDetails->show_ratio == 'Y') checked @endif>
-                                                <span class="checkbox"></span>
-                                             </label>
-                                          </div>
-                                    </div>
-                                 </div> --}}
                                  <div class="col-12">
                                     <h3 class="ratio-hd">Students <span style="color: red;">*</span></h3>
                                     <div class="row">
