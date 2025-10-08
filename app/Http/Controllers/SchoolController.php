@@ -1275,4 +1275,71 @@ class SchoolController extends Controller
 
     return redirect()->back()->with('success', 'Added to favourites successfully.');
   }
+
+  public function editSchool($id = null, $sub_id = null)
+  {
+    $school_types_day = SchoolType::where('name', 'Day')->first();
+    $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
+    $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
+
+    // Fetch the school
+    $school = School::findOrFail($id);
+
+    // Fetch all school types
+    $school_types = SchoolType::all();
+
+    // Fetch all curricula (you called them "board" in Blade)
+    $curricula = Curriculum::all();
+
+    // Current school curriculum (for pre-selecting checkbox)
+    $selected_school_curricula = [$school->curriculum_id]; // store as array for easy in_array() check
+
+    // Fetch related contact information
+    $contact_info = collect(); // default empty collection
+
+    // If the school has a school_contact_id, load that record
+    $school_contact = null;
+    if ($school->school_contact_id) {
+      $school_contact = SchoolContact::find($school->school_contact_id);
+
+      // If you plan to support multiple contacts later, wrap in a collection for Blade compatibility
+      $contact_info = collect([$school_contact]);
+    }
+
+    // Fetch all available facilities
+    $facilities = Facility::all();
+
+    // Get IDs of facilities already linked to this school
+    $school_facilities = $school->facilities->pluck('id')->toArray();
+
+    // Fetch all extended school services
+    $extended_school_services = ExtendedSchoolService::all();
+
+    // Get IDs of extended services already linked to this school
+    $extended_services = [
+      'extended_school_services_id' => $school->extendedSchoolServices->pluck('id')->toArray()
+    ];
+
+    // Fetch operation hours if available
+    $operation_hours = $school->operationHours ?? collect([
+      ['starts_at' => null, 'ends_at' => null],
+    ]);
+
+    return view('dashboard.edit_school')->with([
+      'school' => $school,
+      'school_types' => $school_types,
+      'curricula' => $curricula,
+      'school_types_day' => $school_types_day,
+      'school_types_boarding' => $school_types_boarding,
+      'school_types_day_n_boarding' => $school_types_day_n_boarding,
+      'selected_school_curricula' => $selected_school_curricula,
+      'contact_info' => $contact_info,
+      'school_contact' => $school_contact,
+      'facilities' => $facilities,
+      'school_facilities' => $school_facilities,
+      'extended_school_services' => $extended_school_services,
+      'extended_services' => $extended_services,
+      'operation_hours' => $operation_hours,
+    ]);
+  }
 }

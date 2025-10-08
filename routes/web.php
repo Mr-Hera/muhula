@@ -142,7 +142,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
         //for my school
         Route::get('my-school', [DashboardController::class, 'mySchool'])->name('user.my.school');
-        Route::get('edit-school-info/{id?}/{sub_id?}', 'School\SchoolController@editSchool')->name('user.edit.school');
+        Route::get('edit-school-info/{id?}/{sub_id?}', [SchoolController::class,'editSchool'])->name('user.edit.school');
         Route::post('update-school-info', 'School\SchoolController@schoolInfoUpdate')->name('user.school.info.update');
         Route::post('update-school-image', 'School\SchoolController@updateImage')->name('user.update.school.image');
         Route::get('school-image-status-update/{id?}', 'School\SchoolController@schoolImageStatusUpdate')->name('user.school.image.status.update');
