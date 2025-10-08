@@ -60,97 +60,15 @@ class CoursesSeeder extends Seeder
                     'Home Science',
                     'Computer Science',
                     'Foreign Languages (German, French, Mandarin, or Arabic)',
-                    'Kenyan Sign Language',
-                    'Indigenous Languages',
-                    'Arts and Sports Science',
-                    'Social Sciences',
-                    'STEM',
-                    'Legal and Ethical issues in Arts',
-                    'Communication Skills',
-                    'Performing Arts',
-                    'Music',
-                    'Dance',
-                    'Theatre and Elocution',
-                    'Fine Art',
-                    'Applied Art',
-                    'Time Based Media',
-                    'Crafts',
-                    'Athletics',
-                    'Indoor Games',
-                    'Gymnastics',
-                    'Water Sports',
-                    'Boxing',
-                    'Martial Arts',
-                    'Outdoor Pursuits',
-                    'Advanced Physical Education',
                     'History and Citizenship',
                     'Geography',
                     'Christian Religious Education',
                     'Islamic Religious Education',
                     'Hindu Religious Education',
-                    'Business Studies',
-                    'Mathematics',
-                    'English Language',
-                    'Literature in English',
-                    'Lugha ya Kiswahili',
-                    'Fasihi ya Kiswahili',
-                    'Kenyan Sign Language',
-                    'Indigenous Languages',
-                    'Arabic',
-                    'French',
-                    'German',
-                    'Mandarin',
-                    'Pure sciences',
-                    'Applied sciences',
-                    'Technical and engineering',
-                    'Career in Technology Studies',
-                    'Community Service Learning',
-                    'Physical Education',
-                    'ICT',
                     'Physics',
                     'Chemistry',
                     'Biology',
                     'Agriculture',
-                    'Computer Science',
-                    'Foods and Nutrition',
-                    'Home Management',
-                    'Agricultural Technology',
-                    'Geosciences Technology',
-                    'Marine and Fisheries Technology',
-                    'Aviation Technology',
-                    'Wood Technology',
-                    'Electrical Technology',
-                    'Metal Technology',
-                    'Power Mechanics',
-                    'Clothing Technology',
-                    'Construction Technology',
-                    'Media Technology',
-                    'Electronics Technology',
-                    'Manufacturing Technology',
-                    'Mechatronic',
-                    'Garment Making and Interior Design',
-                    'Leather Work',
-                    'Culinary Arts',
-                    'Hair Dressing and Beauty Therapy',
-                    'Plumbing and Ceramics',
-                    'Welding and Fabrication',
-                    'Tourism and Travel',
-                    'Air Conditioning and Refrigeration',
-                    'Animal Keeping',
-                    'Exterior Design and Landscaping',
-                    'Building Construction',
-                    'Photography',
-                    'Graphic Designing and Animation',
-                    'Food and Beverage',
-                    'Motor Vehicle Mechanics',
-                    'Carpentry and Joinery',
-                    'Fire Fighting',
-                    'Metalwork',
-                    'Electricity',
-                    'Land Surveying',
-                    'Science Laboratory Technology',
-                    'Printing Technology',
-                    'Crop Production',
                 ],
             ],
 
@@ -174,6 +92,16 @@ class CoursesSeeder extends Seeder
 
             // ✅ IGCSE
             'IGCSE' => [
+                'Nursery' => [
+                    'Early Mathematics',
+                    'Early Literacy & Language',
+                    'Early Science & Discovery',
+                    'Creative Arts & Expression',
+                    'Music & Movement',
+                    'Physical Development (PE)',
+                    'Personal, Social & Emotional Development (PSED)',
+                    'ICT (Play-based Introduction)',
+                ],
                 'Primary' => [
                     'Mathematics',
                     'English',
@@ -218,6 +146,15 @@ class CoursesSeeder extends Seeder
 
             // ✅ British
             'British' => [
+                'Nursery' => [
+                    'Communication and Language',
+                    'Physical Development',
+                    'Personal, Social and Emotional Development (PSED)',
+                    'Literacy (Early Reading & Writing)',
+                    'Mathematics (Early Numeracy)',
+                    'Understanding the World',
+                    'Expressive Arts and Design',
+                ],
                 'Primary' => [
                     'Mathematics',
                     'English',
@@ -260,65 +197,84 @@ class CoursesSeeder extends Seeder
                 ],
             ],
 
-            // ✅ International Baccalaureate (IB) – no levels
+            // ✅ International Baccalaureate (IB)
             'IB' => [
+                'Nursery' => [
+                    'Language Development',
+                    'Mathematics (Early Numeracy)',
+                    'Social Studies',
+                    'Science (Exploration & Inquiry)',
+                    'Arts',
+                    'Physical, Social & Personal Education',
+                    'Units of Inquiry',
+                ],
                 'Primary' => [
                     'Theory of Knowledge',
                     'English Literature',
-                    'English Language and Literature',
                     'French',
                     'Swahili',
                     'Spanish',
-                    'Environmental Systems',
                     'History',
                     'Geography',
-                    'Business Management',
                     'Economics',
-                    'ITGS',
-                    'Chemistry',
                     'Biology',
+                    'Chemistry',
                     'Physics',
-                    'Environmental Systems & Societies',
-                    'Math Higher Level',
-                    'Math Standard Level',
-                    'Mathematical studies',
+                    'Math',
                     'Visual Arts',
                     'Theatre Art',
                 ],
                 'Secondary' => [
                     'Theory of Knowledge',
                     'English Literature',
-                    'English Language and Literature',
                     'French',
                     'Swahili',
                     'Spanish',
-                    'Environmental Systems',
                     'History',
                     'Geography',
-                    'Business Management',
                     'Economics',
-                    'ITGS',
-                    'Chemistry',
                     'Biology',
+                    'Chemistry',
                     'Physics',
-                    'Environmental Systems & Societies',
-                    'Math Higher Level',
-                    'Math Standard Level',
-                    'Mathematical studies',
+                    'Math',
                     'Visual Arts',
                     'Theatre Art',
+                ],
+            ],
+
+            // ✅ University Core Courses
+            'Undergraduate' => [
+                'College' => [
+                    'Business Administration',
+                    'Accounting',
+                    'Finance',
+                    'Marketing',
+                    'Computer Science',
+                    'Information Technology',
+                    'Nursing',
+                    'Public Health',
+                    'Civil Engineering',
+                    'Law',
+                    'Education',
+                    'Sociology',
+                    'Psychology',
                 ],
             ],
         ];
 
         foreach ($data as $curriculumName => $levels) {
-            $curriculum = Curriculum::firstOrCreate(['name' => $curriculumName]);
+            $curriculum = Curriculum::where('name', $curriculumName)->first();
+
+            if (! $curriculum) {
+                continue; // skip if not in CurriculumSeeder
+            }
 
             foreach ($levels as $levelName => $courses) {
-                // If curriculum has no levels, we use "General" as a placeholder
-                $level = SchoolLevel::firstOrCreate([
-                    'name' => $levelName,
-                ]);
+                $level = SchoolLevel::where('name', $levelName)->first();
+
+                if (! $level) {
+                    continue; // skip if not in SchoolLevelSeeder
+                }
 
                 foreach ($courses as $courseName) {
                     Course::firstOrCreate([

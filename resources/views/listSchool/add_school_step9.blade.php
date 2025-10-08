@@ -136,21 +136,21 @@
                                        <div class="col-12">
                                           <em class="fee-ad-ln"></em>
                                        </div>
-                                       @if(@$school_fees)
-                                       @foreach($school_fees as $data)
-                                          <div class="col-lg-6 col-sm-6">
-                                             <div class="added-fees position-relative">
-                                                <h5>{{ @$data->grade }}</h5>
-                                                <p>Fees KES {{ @$data->from_fees }} - KES {{ @$data->to_fees }}</p>
-                                                <a href="{{ route('school.fees.delete',@$data->id) }}" class="position-absolute">
-                                                   <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                      <path opacity="0.4" d="M13.914 6.72065C13.914 6.76881 13.5365 11.5435 13.3209 13.553C13.1859 14.7862 12.3909 15.5341 11.1984 15.5554C10.2822 15.5759 9.38525 15.583 8.50278 15.583C7.56589 15.583 6.64966 15.5759 5.7603 15.5554C4.60779 15.5278 3.81212 14.7649 3.68398 13.553C3.46216 11.5364 3.09154 6.76881 3.08465 6.72065C3.07776 6.57545 3.1246 6.43733 3.21967 6.32541C3.31336 6.222 3.44838 6.15967 3.59029 6.15967H13.4153C13.5565 6.15967 13.6846 6.222 13.7859 6.32541C13.8803 6.43733 13.9278 6.57545 13.914 6.72065Z" fill="black"/>
-                                                      <path d="M14.875 4.23345C14.875 3.94233 14.6456 3.71426 14.37 3.71426H12.3047C11.8845 3.71426 11.5194 3.41535 11.4257 2.99391L11.31 2.47755C11.1481 1.85353 10.5894 1.4165 9.96252 1.4165H7.03817C6.40439 1.4165 5.85121 1.85353 5.68312 2.51155L5.57497 2.99462C5.48059 3.41535 5.11548 3.71426 4.69594 3.71426H2.63065C2.3544 3.71426 2.125 3.94233 2.125 4.23345V4.5026C2.125 4.78664 2.3544 5.02179 2.63065 5.02179H14.37C14.6456 5.02179 14.875 4.78664 14.875 4.5026V4.23345Z" fill="black"/>
-                                                   </svg>
-                                                </a>
+                                       @if($school_fees->count())
+                                          @foreach($school_fees as $data)
+                                             <div class="col-lg-6 col-sm-6">
+                                                <div class="added-fees position-relative">
+                                                   <h5>{{ $data->level->name }}</h5>
+                                                   <p>Fees KES {{ number_format($data->min_amount) }} - KES {{ number_format($data->max_amount) }}</p>
+                                                   <a href="{{ route('school.fees.delete', $data->id) }}" class="position-absolute">
+                                                      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                         <path opacity="0.4" d="M13.914 6.72065C13.914 6.76881 13.5365 11.5435 13.3209 13.553C13.1859 14.7862 12.3909 15.5341 11.1984 15.5554C10.2822 15.5759 9.38525 15.583 8.50278 15.583C7.56589 15.583 6.64966 15.5759 5.7603 15.5554C4.60779 15.5278 3.81212 14.7649 3.68398 13.553C3.46216 11.5364 3.09154 6.76881 3.08465 6.72065C3.07776 6.57545 3.1246 6.43733 3.21967 6.32541C3.31336 6.222 3.44838 6.15967 3.59029 6.15967H13.4153C13.5565 6.15967 13.6846 6.222 13.7859 6.32541C13.8803 6.43733 13.9278 6.57545 13.914 6.72065Z" fill="black"/>
+                                                         <path d="M14.875 4.23345C14.875 3.94233 14.6456 3.71426 14.37 3.71426H12.3047C11.8845 3.71426 11.5194 3.41535 11.4257 2.99391L11.31 2.47755C11.1481 1.85353 10.5894 1.4165 9.96252 1.4165H7.03817C6.40439 1.4165 5.85121 1.85353 5.68312 2.51155L5.57497 2.99462C5.48059 3.41535 5.11548 3.71426 4.69594 3.71426H2.63065C2.3544 3.71426 2.125 3.94233 2.125 4.23345V4.5026C2.125 4.78664 2.3544 5.02179 2.63065 5.02179H14.37C14.6456 5.02179 14.875 4.78664 14.875 4.5026V4.23345Z" fill="black"/>
+                                                      </svg>
+                                                   </a>
+                                                </div>
                                              </div>
-                                          </div>
-                                       @endforeach
+                                          @endforeach
                                        @endif
                                     </div>
                                  </div>
@@ -158,25 +158,28 @@
                            </form>
                         </div>
                       
-                     <form action="javascript:;">
-                        <div class="ad-schl-card adscl-crd4">
-                           <div class="ad-schl-sub-go mt-0">
-                              <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
-                                 <button class="completeBtn" data-url="{{ route('add.school.step9',[md5(@$schoolDetails->id),'CO']) }}">Save and Continue <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                     </button>
-                                 <a href="{{ route('add.school.step8',[md5(@$schoolDetails->id)]) }}">
+                     <div class="ad-schl-card adscl-crd4">
+                        <div class="ad-schl-sub-go mt-0">
+                           <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
+                              <form action="{{ route('add.school.step9.complete') }}" method="post">
+                                 @csrf
+                                 <button class="completeBtn" type="submit">
+                                    Save and Continue 
                                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                       <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                       <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
-                                    Back   
-                                 </a>
-                              </div>
-                              <p>Step 9 Of 9</p>
+                                 </button>
+                              </form>
+                              <a href="{{ route('add.school.step8') }}">
+                                 <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                 </svg>
+                                 Back   
+                              </a>
                            </div>
+                           <p>Step 9 Of 9</p>
                         </div>
-                     </form>
+                     </div>
                   </div>
                </div>
                <div class="col-lg-4">
@@ -253,14 +256,5 @@
    })
 </script>
 
-<script>
-   
-        $('.completeBtn').click(function(e){
-             
-            e.preventDefault();
-             let url = $(this).data('url');
 
-             window.location.href = url;
-        })
-</script>
 @endsection  
