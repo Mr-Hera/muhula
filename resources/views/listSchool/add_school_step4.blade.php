@@ -303,12 +303,12 @@
                                  <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                  </svg>
                               </button>
-                              <a href="{{ route('add.school.step3') }}">
+                              {{-- <a href="{{ route('add.school.step3') }}">
                                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M8.99805 4L4.9118 7.97499L8.99805 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                  </svg>
                                  Back   
-                              </a>
+                              </a> --}}
                            </div>
                            <p>Step 4 Of 9</p>
                         </div>

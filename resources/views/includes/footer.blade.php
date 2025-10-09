@@ -65,7 +65,7 @@
                      {{-- Facebook --}}
                      <li> <a href="https://www.facebook.com/share/1A23qfNztD/" target="_blank"> <img src="{{ asset('images/sc1.png') }}" alt=""> </a> </li>
                      {{-- LinkedIn --}}
-                     <li> <a href="https://x.com/Muhulahub?t=xZyZyr9TfqqlYuqdWTIGoA&s=09" target="_blank"> <img src="{{ asset('images/sc2.png') }}" alt=""> </a> </li>
+                     <li> <a href="#" target="_blank"> <img src="{{ asset('images/sc2.png') }}" alt=""> </a> </li>
                      {{-- Twitter --}}
                      <li> <a href="https://x.com/Muhulahub?t=1H26wqGvec_N3Vs1ru9DYA&s=09" target="_blank"> <img src="{{ asset('images/sc3.png') }}" alt=""> </a> </li>
                      {{-- Youtube --}}
