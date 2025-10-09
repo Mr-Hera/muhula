@@ -164,4 +164,9 @@ class School extends Model
     {
         return $this->hasMany(SchoolReview::class);
     }
+
+    public function schoolCourses()
+    {
+        return $this->hasMany(SchoolCourse::class);
+    }
 }

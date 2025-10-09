@@ -92,28 +92,6 @@
                         
                         <div class="ad-schl-card adscl-crd12">
                            <div class="row">
-                              {{-- <div class="col-lg-6 col-md-6">
-                                 <div class="dash_input">
-                                    <label>Year</label>
-                                    <select name="year" id="">
-                                       <option value="0" selected disabled>Select</option>
-                                        @foreach(range(date('Y'),date('Y')-20) as $data)
-                                        <option value="{{ @$data }}" @if(@$schoolResult->year == @$data) selected @endif>{{ @$data }}</option>
-                                        @endforeach
-                                    </select>
-                                 </div>
-                              </div>
-                              <div class="col-lg-6 col-md-6">
-                                 <div class="dash_input">
-                                    <label>Curriculum</label>
-                                    <select name="board_id" id="board_id">
-                                       <option value="" selected disabled>Select</option>
-                                        @foreach($board as $data)
-                                        <option value="{{ @$data->id }}" @if(@$schoolResult->board_id == @$data->id) selected @endif>{{ @$data->board_name }}</option>
-                                        @endforeach
-                                    </select>
-                                 </div>
-                              </div> --}}
                               <div class="col-lg-6 col-md-6">
                                  <div class="dash_input">
                                     <label>Exam <span style="color: red;">*</span></label>
@@ -196,7 +174,7 @@
 
                                        @foreach($examPerformanceRecords as $data)
                                        <div class="added-subs-box position-relative">
-                                          <a href="{{ route('add.school.step7', [md5(@$schoolDetails->id), $data->id]) }}" class="edit-subs">
+                                          <a href="{{ route('add.school.step7') }}" class="edit-subs">
                                              {{-- SVG ICON --}}
                                              <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"/>
