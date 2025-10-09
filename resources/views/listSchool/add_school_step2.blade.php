@@ -231,11 +231,11 @@
                      <div class="ad-schl-sub-go mt-0">
                            <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
                               <button type="submit">Save and Continue</button>
-                              @if($schoolDetails != null)
-                                 <a href="{{ route('add.school.step1',[md5($schoolDetails->id)]) }}">Back</a>
+                              {{-- @if($schoolDetails != null)
+                                 <a href="{{ route('add.school.step1') }}">Back</a>
                               @else
                                  <a href="{{ route('add.school.step1') }}">Back</a>
-                              @endif
+                              @endif --}}
                            </div>
                            <p>Step 2 Of 9</p>
                      </div>
