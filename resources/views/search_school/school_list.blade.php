@@ -545,16 +545,10 @@
                                                 <li><img src="{{ asset('images/lstar.png') }}" alt="✩"></li>
                                              @endfor
                                           @else
-                                             {{-- No reviews: show 5 empty stars --}}
                                              @for($i = 1; $i <= 5; $i++)
                                                 <li><img src="{{ asset('images/lstar.png') }}" alt="✩"></li>
                                              @endfor
                                           @endif
-                                       {{--<li> <img src="{{ url('public/images/fstar.png') }}" alt=""> </li>
-                                       <li> <img src="{{ url('public/images/fstar.png') }}" alt=""> </li>
-                                       <li> <img src="{{ url('public/images/fstar.png') }}" alt=""> </li>
-                                       <li> <img src="{{ url('public/images/fstar.png') }}" alt=""> </li>
-                                       <li> <img src="{{ url('public/images/lstar.png') }}" alt="">--}}
                                     </ul>
                                  </div>
 
