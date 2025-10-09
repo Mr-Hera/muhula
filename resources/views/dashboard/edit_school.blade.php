@@ -42,9 +42,6 @@
                                     />
                                 </a>
                             @endif
-                           @if($school->logo)
-                            <a href="{{ route('school.details',$school->slug) }}"><img src="{{ asset('storage/'. $school->logo) }}" alt="{{ $school->name }}"></a>
-                           @endif 
                         </div>
                         <div class="serach_sc_details">
                            <div class="search_heading_box">
@@ -91,7 +88,12 @@
 
                               <div class="search_price">
                                 <h3>
-                                    Fees: <span>KES{{ $school->starting_from_fees }}</span>
+                                    Fees: 
+                                    @if($min_fee && $max_fee)
+                                        <span>{{ $currency }} {{ $min_fee }} - {{ $max_fee }}</span>
+                                    @else
+                                        <span>N/A</span>
+                                    @endif
                                 </h3>
                                 <p>
                                     <img src="{{ asset('images/map-pin.png') }}" alt="">{{ $school->country->name }}, {{ $school->county->name }}
@@ -134,7 +136,7 @@
                                     </p>
                                  </div>
                               </div>
-                              <a href="{{ route('school.details',$school->slug) }}" class="view_btns">View School <img src="{{ url('public/images/chevron-rights.png') }}" alt=""> </a>
+                              <a href="{{ route('school.details',$school->slug) }}" class="view_btns">View School <img src="{{ asset('images/chevron-rights.png') }}" alt=""> </a>
                            </div>
 
                         </div>
@@ -142,278 +144,254 @@
 
                   </div>
 
-                  <div class="dashboard_box mt-4">
-                     <form action="{{ route('user.school.info.update') }}" method="post" id="schoolInfoForm">
-                       @csrf
-                       <input type="hidden" name="school_master_id" id="" value="{{ $school->id }}"> 
-                       <div class="row">
-
-                        {{--<div class="col-12">
-                                 <div class="dash_input">
-                                    <label for="">School Logo</label>
-                                    <div class="row align-items-center">
-                                       <div class="col-lg-6 col-sm-6">
-                                          <div class="uplodimgfil2">
-                                             <input type="file" name="school_logo" id="school_logo" class="inputfile2 inputfile-1" data-multiple-caption="{count} files selected">
-                                             <label for="school_logo">                                          
-                                                <h3>Click here to upload </h3>
-                                                <img src="{{ url('public/images/upload1.png') }}" alt="">
-                                             </label>
-                                          </div>
-                                       </div>
-                                       <div class="col-lg-6 col-sm-6">
-                                          <div class="uploaded-img position-relative">
-                                              @if(@$schoolDetails->school_logo != null)
-                                              <img src="{{ URL::to('storage/app/public/images/school_logo') }}/{{ @$schoolDetails->school_logo }}" alt="">
-                                              @endif
-                                          </div>
-                                       </div>
-                                    </div>                                
-                                 </div>
-                              </div>--}}
-
-                           <div class="col-lg-6 col-md-6">
-                               <div class="dash_input mb-2">
-                                 <label>School Name:</label>
-                                 <input type="text" name="school_name" placeholder="Enter here"  value="{{ $school->name }}">
-                               </div>
-                           </div>
-                            <div class="col-12">
-                                <div class="dash_input">
-                                    <label>Curriculum:</label>
-                                    <ul class="category-ul agree d-flex justify-content-start align-items-center">
-                                        @if(!empty($curricula))
-                                            @foreach($curricula as $key => $data)
+                    <div class="dashboard_box mt-4">
+                        <form action="{{ route('user.school.info.update') }}" method="post" id="schoolInfoForm">
+                            @csrf
+                            <input type="hidden" name="school_master_id" id="" value="{{ $school->id }}"> 
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="dash_input mb-2">
+                                        <label>School Name:</label>
+                                        <input type="text" name="school_name" placeholder="Enter here"  value="{{ $school->name }}">
+                                    </div>
+                                </div>
+                                    <div class="col-12">
+                                        <div class="dash_input">
+                                            <label>Curriculum:</label>
+                                            <ul class="category-ul agree d-flex justify-content-start align-items-center">
+                                                @if(!empty($curricula))
+                                                    @foreach($curricula as $key => $data)
+                                                        <li>
+                                                            <div class="radiobx">
+                                                                <label>
+                                                                    {{ $data->name }}
+                                                                    <input 
+                                                                        type="checkbox" 
+                                                                        value="{{ $data->id }}" 
+                                                                        data-board_name="{{ $data->name }}" 
+                                                                        name="board[]"  
+                                                                        id="agree{{ $key + 1 }}"
+                                                                        class="quote-label board"
+                                                                        @if(in_array($data->id, $selected_school_curricula ?? [])) checked @endif
+                                                                    >
+                                                                    <span class="checkbox"></span>
+                                                                </label>
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                @endif
                                                 <li>
                                                     <div class="radiobx">
-                                                        <label>
-                                                            {{ $data->name }}
+                                                        <label>Others
                                                             <input 
                                                                 type="checkbox" 
-                                                                value="{{ $data->id }}" 
-                                                                data-board_name="{{ $data->name }}" 
-                                                                name="board[]"  
-                                                                id="agree{{ $key + 1 }}"
-                                                                class="quote-label board"
-                                                                @if(in_array($data->id, $selected_school_curricula ?? [])) checked @endif
-                                                            >
+                                                                name="board_id" 
+                                                                id="otherpetdrop1" 
+                                                                class="board" 
+                                                                data-board_name="Others">
                                                             <span class="checkbox"></span>
                                                         </label>
                                                     </div>
-                                                </li>
-                                            @endforeach
-                                        @endif
-                                        <li>
-                                            <div class="radiobx">
-                                                <label>Others
-                                                    <input 
-                                                        type="checkbox" 
-                                                        name="board_id" 
-                                                        id="otherpetdrop1" 
-                                                        class="board" 
-                                                        data-board_name="Others">
-                                                    <span class="checkbox"></span>
-                                                </label>
-                                            </div>
-                                        </li>                                   
-                                    </ul>
-                                    @error('board')
-                                       <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6" id="otherPet1" style="display:none;">
-                                <div class="dash_input">
-                                <label>Other:</label>
-                                <input type="text" name="other_board" id="other_board" value="" placeholder="Enter here">
-                                </div>
-                            </div>
-                            
-                            <div class="clearfix"></div>
-
-                            {{-- 🔹 Gender --}}
-                            <div class="col-lg-6 col-md-6">
-                            <div class="dash_input mb-1">
-                                <label>Gender: </label>
-                            </div>
-                            <div class="check_gender adscl-type">
-                                <ul>
-                                <li>
-                                    <input 
-                                    type="radio" 
-                                    name="gender_admission" 
-                                    value="Male" 
-                                    @checked(old('gender_admission', $school->gender_admission) == 'Male')
-                                    > 
-                                    <label><p>Male</p></label>
-                                </li>
-
-                                <li>
-                                    <input 
-                                    type="radio" 
-                                    name="gender_admission" 
-                                    value="Female" 
-                                    @checked(old('gender_admission', $school->gender_admission) == 'Female')
-                                    > 
-                                    <label><p>Female</p></label>
-                                </li>
-
-                                <li>
-                                    <input 
-                                    type="radio" 
-                                    name="gender_admission" 
-                                    value="Mixed" 
-                                    @checked(old('gender_admission', $school->gender_admission) == 'Mixed')
-                                    > 
-                                    <label><p>Both</p></label>
-                                </li>
-                                </ul>
-                            </div>
-
-                            @error('gender_admission')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                            </div>
-                              {{-- 🔹 School Type --}}
-                            <div class="col-lg-6 col-md-6">
-                            <div class="dash_input mb-1">
-                                <label>Type:</label>
-                            </div>
-                            <div class="check_gender adscl-type adscl-tp2">
-                                <ul>
-                                <li>
-                                    <input 
-                                    type="radio" 
-                                    name="school_type_id" 
-                                    value="{{ $school_types_day->id }}" 
-                                    @checked(old('school_type_id', $school->school_type_id) == $school_types_day->id)
-                                    > 
-                                    <label><p>Day</p></label>
-                                </li>
-
-                                <li>
-                                    <input 
-                                    type="radio" 
-                                    name="school_type_id" 
-                                    value="{{ $school_types_boarding->id }}" 
-                                    @checked(old('school_type_id', $school->school_type_id) == $school_types_boarding->id)
-                                    > 
-                                    <label><p>Boarding</p></label>
-                                </li>
-
-                                <li>
-                                    <input 
-                                    type="radio" 
-                                    name="school_type_id" 
-                                    value="{{ $school_types_day_n_boarding->id }}" 
-                                    @checked(old('school_type_id', $school->school_type_id) == $school_types_day_n_boarding->id)
-                                    > 
-                                    <label><p>Day & Boarding</p></label>
-                                </li>
-                                </ul>
-                            </div>
-
-                            @error('school_type_id')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                            </div>
-                       </div>
-                     <div class="row">
-                        <div class="dash_input">
-                           <label>About School</label>
-                           <textarea placeholder="Write your reply" name="about_school">{{ $school->description }}</textarea>
-                        </div>
-                     </div>
-
-                        <div class="row more-contact-info">
-                           <div class="col-sm-12 cols">
-                              <div class="dash_inner_heading mt-1 add-more-btn add-more-btn2">
-                              <a href="javascript:;" class="addMore"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add More</a>
-                                 <h3>Contact Information</h3>
-                              </div>
-                           </div>
-                           @if($contact_info->isNotEmpty())
-                                @foreach($contact_info as $key => $contact)
-                                <div class="row position-relative mr-15">
-                                    <div class="col-lg-4 col-xl-4 col-sm-6  col-md-6 col-12 cols">
-                                        <div class="dash_input mb-1">
-                                            <label>Contact Full Names</label>
-                                            <input type="text" name="contact_title[]" id="contact_title1" placeholder="Enter here..." 
-                                                value="{{ old('contact_title.0', optional($school_contact)->full_names) }}"
-                                            >
-                                            @error('contact_title.0')
-                                                <small class="text-danger">{{ $message }}</small>
+                                                </li>                                   
+                                            </ul>
+                                            @error('board')
+                                            <small class="text-danger">{{ $message }}</small>
                                             @enderror
                                         </div>
                                     </div>
-
-                                    <div class="col-lg-4 col-xl-4 col-sm-6  col-md-6 col-12 cols">
-                                        <div class="dash_input mb-1">
-                                            <label>Email</label>
-                                            <input type="text" name="contact_email[]" id="contact_email1" 
-                                                    placeholder="Enter here..." 
-                                                    value="{{ old('contact_email.0', optional($school_contact)->email) }}">
-                                            @error('contact_email.0')
-                                                <small class="text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-xl-4  col-sm-6 col-md-6 col-12 cols">
+                                    <div class="col-lg-6 col-md-6" id="otherPet1" style="display:none;">
                                         <div class="dash_input">
-                                            <label>Phone</label>
-                                            <input type="text" name="contact_phone[]" id="contact_phone1" 
-                                                placeholder="Enter here..." 
-                                                value="{{ old('contact_phone.0', optional($school_contact)->phone_no) }}">
-                                            @error('contact_phone.0')
-                                                <small class="text-danger">{{ $message }}</small>
-                                            @enderror
+                                        <label>Other:</label>
+                                        <input type="text" name="other_board" id="other_board" value="" placeholder="Enter here">
                                         </div>
                                     </div>
-                                    <a href="{{ route('delete.contact',$school_contact->id) }}" class="del-row row-delpos position-absolute"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                    
+                                    <div class="clearfix"></div>
+
+                                    {{-- 🔹 Gender --}}
+                                    <div class="col-lg-6 col-md-6">
+                                    <div class="dash_input mb-1">
+                                        <label>Gender: </label>
+                                    </div>
+                                    <div class="check_gender adscl-type">
+                                        <ul>
+                                        <li>
+                                            <input 
+                                            type="radio" 
+                                            name="gender_admission" 
+                                            value="Male" 
+                                            @checked(old('gender_admission', $school->gender_admission) == 'Male')
+                                            > 
+                                            <label><p>Male</p></label>
+                                        </li>
+
+                                        <li>
+                                            <input 
+                                            type="radio" 
+                                            name="gender_admission" 
+                                            value="Female" 
+                                            @checked(old('gender_admission', $school->gender_admission) == 'Female')
+                                            > 
+                                            <label><p>Female</p></label>
+                                        </li>
+
+                                        <li>
+                                            <input 
+                                            type="radio" 
+                                            name="gender_admission" 
+                                            value="Mixed" 
+                                            @checked(old('gender_admission', $school->gender_admission) == 'Mixed')
+                                            > 
+                                            <label><p>Both</p></label>
+                                        </li>
+                                        </ul>
+                                    </div>
+
+                                    @error('gender_admission')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                    </div>
+                                    {{-- 🔹 School Type --}}
+                                    <div class="col-lg-6 col-md-6">
+                                    <div class="dash_input mb-1">
+                                        <label>Type:</label>
+                                    </div>
+                                    <div class="check_gender adscl-type adscl-tp2">
+                                        <ul>
+                                        <li>
+                                            <input 
+                                            type="radio" 
+                                            name="school_type_id" 
+                                            value="{{ $school_types_day->id }}" 
+                                            @checked(old('school_type_id', $school->school_type_id) == $school_types_day->id)
+                                            > 
+                                            <label><p>Day</p></label>
+                                        </li>
+
+                                        <li>
+                                            <input 
+                                            type="radio" 
+                                            name="school_type_id" 
+                                            value="{{ $school_types_boarding->id }}" 
+                                            @checked(old('school_type_id', $school->school_type_id) == $school_types_boarding->id)
+                                            > 
+                                            <label><p>Boarding</p></label>
+                                        </li>
+
+                                        <li>
+                                            <input 
+                                            type="radio" 
+                                            name="school_type_id" 
+                                            value="{{ $school_types_day_n_boarding->id }}" 
+                                            @checked(old('school_type_id', $school->school_type_id) == $school_types_day_n_boarding->id)
+                                            > 
+                                            <label><p>Day & Boarding</p></label>
+                                        </li>
+                                        </ul>
+                                    </div>
+
+                                    @error('school_type_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                    </div>
+                            </div>
+                            <div class="row">
+                                <div class="dash_input">
+                                <label>About School</label>
+                                <textarea placeholder="Write your reply" name="about_school">{{ $school->description }}</textarea>
                                 </div>
-                                @endforeach
-                            @else
+                            </div>
+
+                                <div class="row more-contact-info">
                                 <div class="col-sm-12 cols">
-                                    <div class="row">
-                                        <div class="col-lg-4 col-xl-4 col-sm-6  col-md-6 col-12 cols">
-                                            <div class="dash_input mb-1">
-                                                <label>Contact Title</label>
-                                                <input type="text" name="contact_title[]" id="contact_title1" placeholder="Enter here">
-
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-4 col-xl-4 col-sm-6  col-md-6 col-12 cols">
-                                            <div class="dash_input mb-1">
-                                                <label>Email</label>
-                                                <input type="text" name="contact_email[]" id="contact_email1" placeholder="Enter here">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-4 col-xl-4  col-sm-6 col-md-6 col-12 cols">
-                                            <div class="dash_input">
-                                                <label>Phone Number</label>
-                                                <input type="text" name="contact_phone[]" id="contact_phone1" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
-                                            </div>
-                                        </div>
+                                    <div class="dash_inner_heading mt-1 add-more-btn add-more-btn2">
+                                    <a href="javascript:;" class="addMore"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add More</a>
+                                        <h3>Contact Information</h3>
                                     </div>
                                 </div>
-                            @endif
-                        </div>
+                                @if($contact_info->isNotEmpty())
+                                        @foreach($contact_info as $key => $contact)
+                                        <div class="row position-relative mr-15">
+                                            <div class="col-lg-4 col-xl-4 col-sm-6  col-md-6 col-12 cols">
+                                                <div class="dash_input mb-1">
+                                                    <label>Contact Full Names</label>
+                                                    <input type="text" name="contact_title[]" id="contact_title1" placeholder="Enter here..." 
+                                                        value="{{ old('contact_title.0', optional($school_contact)->full_names) }}"
+                                                    >
+                                                    @error('contact_title.0')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-4 col-xl-4 col-sm-6  col-md-6 col-12 cols">
+                                                <div class="dash_input mb-1">
+                                                    <label>Email</label>
+                                                    <input type="text" name="contact_email[]" id="contact_email1" 
+                                                            placeholder="Enter here..." 
+                                                            value="{{ old('contact_email.0', optional($school_contact)->email) }}">
+                                                    @error('contact_email.0')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-4 col-xl-4  col-sm-6 col-md-6 col-12 cols">
+                                                <div class="dash_input">
+                                                    <label>Phone</label>
+                                                    <input type="text" name="contact_phone[]" id="contact_phone1" 
+                                                        placeholder="Enter here..." 
+                                                        value="{{ old('contact_phone.0', optional($school_contact)->phone_no) }}">
+                                                    @error('contact_phone.0')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <a href="{{ route('delete.contact',$school_contact->id) }}" class="del-row row-delpos position-absolute"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                        </div>
+                                        @endforeach
+                                    @else
+                                        <div class="col-sm-12 cols">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-xl-4 col-sm-6  col-md-6 col-12 cols">
+                                                    <div class="dash_input mb-1">
+                                                        <label>Contact Title</label>
+                                                        <input type="text" name="contact_title[]" id="contact_title1" placeholder="Enter here">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-4 col-xl-4 col-sm-6  col-md-6 col-12 cols">
+                                                    <div class="dash_input mb-1">
+                                                        <label>Email</label>
+                                                        <input type="text" name="contact_email[]" id="contact_email1" placeholder="Enter here">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-4 col-xl-4  col-sm-6 col-md-6 col-12 cols">
+                                                    <div class="dash_input">
+                                                        <label>Phone Number</label>
+                                                        <input type="text" name="contact_phone[]" id="contact_phone1" placeholder="Enter here" oninput="this.value = this.value.replace(/[^0-9]/g,'')">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
 
 
 
-                     <div class="save_sec">
-                        <button class="save_btns mt-3" type="submit">Save </button>
-                     </div>
+                            <div class="save_sec">
+                                <button class="save_btns mt-3" type="submit">Save </button>
+                            </div>
 
-                     </form>
-                  </div>
+                        </form>
+                    </div>
 
                         <div class="ad-schl-card adscl-crd10 mt-4">
                             <form action="{{ route('user.update.school.facility') }}" method="post" id="facilityForm">
-                              <input type="hidden" name="school_master_id" id="" value="{{ $school->id }}">
+                                @csrf
+                                <input type="hidden" name="school_master_id" id="" value="{{ $school->id }}">
                                 <h2>Facilities / Amenities</h2>
                                 <div class="row">
                                     <div class="col-12">
@@ -604,8 +582,9 @@
 
                         <div class="ad-schl-card adscl-crd7">
                             <h2>Teacher-Student ratio <span style="color: red;">*</span></h2>
-                            <form action="{{ route('add.school.step4.ratio.save') }}" method="post" enctype="multipart/form-data" id="ratioForm">
+                            <form action="{{ route('add.school.step4.ratio.update') }}" method="post" enctype="multipart/form-data" id="ratioForm">
                                 @csrf
+                                <input type="hidden" name="school_master_id" value="{{ $school->id }}">
 
                                 <div class="row align-items-end">
                                     <div class="col-12">
@@ -712,7 +691,7 @@
                             <input type="hidden" name="school_master_id" id="" value="{{ $school->id }}">
 
                             <div class="row">
-                              <div class="col-12">
+                                <div class="col-12">
                                  <div class="dash_input">
                                     <label>Courses</label>
                                     <ul class="category-ul subs-list agree d-flex justify-content-start align-items-center flex-wrap">
@@ -744,10 +723,10 @@
                                  </div>
                               </div>
                               <div class="col-12">
-                                 <button class="submit-ratio mt-1" type="submit">+ &nbsp;Add</button>
+                                 <button class="submit-ratio mt-1" type="submit">+ &nbsp;Save</button>
                               </div>
                               <div class="col-12">
-                                 <div class="added-subs-div">
+                                 {{-- <div class="added-subs-div">
                                    @if($school_subject->isNotEmpty())
                                     <h2>Added Course(s)</h2>
                                     @foreach($school_subject as $data)
@@ -780,7 +759,7 @@
                                     </div>
                                     @endforeach
                                     @endif
-                                 </div>
+                                 </div> --}}
                               </div>
                            </div>
                            </form>
@@ -865,7 +844,7 @@
                                     <div class="dash_input position-relative g-map">
                                         <label>Number of candidates <span style="color: red;">*</span></label>
                                         <input type="text" name="no_of_candidate" placeholder="Enter Here"
-                                                value="{{ old('no_of_candidate', @$school->number_of_candidates) }}"
+                                                value="{{ old('no_of_candidate', $schoolResult->number_of_candidates) }}"
                                                 oninput="this.value = this.value.replace(/[^0-9]/g,'')" maxlength="5">
                                         @error('no_of_candidate')
                                             <label class="error">{{ $message }}</label>
@@ -878,12 +857,12 @@
                                 </div>
                             </div>
                            @if(!empty($schoolResult) && !empty($schoolResult->exam))
-                           <div class="col-12 mt-4">
-                                 <div class="step-5-added-loc">
+                            <div class="col-12 mt-4">
+                                <div class="step-5-added-loc">
                                     <h2>Added Results</h2>
-                                    @foreach($schoolResult as $data)
+                                    @foreach($schoolResults as $data)
                                     <div class="added-subs-box position-relative">
-                                       <a href="{{ route('user.edit.school.result',[$school->id,$data->id]) }}" class="edit-subs">
+                                       <a href="{{ route('user.edit.school.result', $school->id) }}" class="edit-subs">
                                           <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                              <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"></path>
                                              <path d="M8.16131 5.4654L12.433 8.91713C12.5361 8.99968 12.5537 9.15117 12.4732 9.25669L7.409 15.8555C7.09066 16.2631 6.62151 16.4938 6.11886 16.5023L3.35426 16.5363C3.20682 16.538 3.0778 16.4359 3.04429 16.2895L2.41597 13.5577C2.30706 13.0556 2.41597 12.5365 2.73432 12.1365L7.82369 5.50625C7.90579 5.39987 8.05743 5.38115 8.16131 5.4654Z" fill="black"></path>
@@ -924,10 +903,11 @@
 
                   <div class="dashboard_box mt-4">
                    
-                     <form action="{{ route('user.update.school.image') }}" method="post" id="imageUpdate" enctype="multipart/form-data" style="display:none;">
+                    <form action="{{ route('user.update.school.image') }}" method="post" id="imageUpdate" enctype="multipart/form-data" style="display:none;">
                         @csrf
                         <input type="hidden" name="school_master_id" id="" value="{{ $school->id }}">
                         <input type="hidden" name="image_id" id="image_id" value="">
+
                         <div class="row">
                            <div class="col-lg-6 col-xl-4 col-sm-6  col-md-6 col-12 cols">
                               <div class="dash_input mb-1">
@@ -936,19 +916,18 @@
                                        <input type="file" name="school_image" id="school_image" class="inputfile2 inputfile-1" data-multiple-caption="{count} files selected">
                                        <label for="school_image">                                          
                                           <h3>Click here to upload </h3>
-                                          <img src="{{ url('public/images/upload1.png') }}" alt="">
+                                          <img src="{{ asset('images/upload1.png') }}" alt="">
                                        </label>
                                  </div>
                               </div>
-                           </div>
-                           <div class="col-lg-3 col-xl-4 col-sm-3  col-md-6 col-12 cols">
-                           <div class="save_sec">
-                         <button class="save_btns" type="submit">Save</button>
-                         </div>
-                         </div>
-
-                    </div>
-                     </form>
+                            </div>
+                            <div class="col-lg-3 col-xl-4 col-sm-3  col-md-6 col-12 cols">
+                                <div class="save_sec">
+                                    <button class="save_btns" type="submit">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                      
 
                     <div class="col-lg-4 col-xl-3 col-sm-6  col-md-3 col-12 cols cols_img">
@@ -965,32 +944,32 @@
                            </div>
 
                             <div class="new_schhol_img">
-                              <div class="row">
-                                 @if($schoolPhotos)
-                                 @foreach($schoolPhotos as $data)
-                                 <div class="col-lg-4 col-xl-3 col-sm-6  col-md-3 col-12 cols cols_img">
-                                    
-                                    <div class="schol_show_box">
-                                       <div class="sch_show_img">
-                                          @if($data->image != null)
-                                            <img src="{{ asset('storage/' . $data->image_path) }}" alt="">
-                                          @endif
-                                       </div>
-                                       <div class="img_show_actions">
-                                          <a href="javascript:;" class="imageEdit" data-image_id="{{ $data->id }}" data-image_url="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$data->image }}"> <img src="{{ url('public/images/edit.png') }}" alt="">   Edit</a>
-                                           @if($data->status == 'I')
-                                          <a href="{{ route('user.school.image.status.update',$data->id) }}" onclick="return confirm('Do you want to unblock this image?')"> <img src="{{ url('public/images/check2.png') }}" alt=""> Unblock</a>
-                                          @endif
-                                          @if($data->status == 'A')
-                                          <a href="{{ route('user.school.image.status.update',$data->id) }}" onclick="return confirm('Do you want to block this image?')"> <img src="{{ url('public/images/lock.png') }}" alt=""> Block</a>
-                                          @endif
-                                       </div>
-                                    </div>
+                                <div class="row">
+                                    @if($schoolPhotos)
+                                        @foreach($schoolPhotos as $data)
+                                        <div class="col-lg-4 col-xl-3 col-sm-6  col-md-3 col-12 cols cols_img">
+                                            
+                                            <div class="schol_show_box">
+                                            <div class="sch_show_img">
+                                                @if($data->image_path != null)
+                                                    <img src="{{ asset('storage/' . $data->image_path) }}" alt="">
+                                                @endif
+                                            </div>
+                                            <div class="img_show_actions">
+                                                <a href="javascript:;" class="imageEdit" data-image_id="{{ $data->id }}" data-image_url="{{ asset('storage/' . $data->image_path) }}"> <img src="{{ asset('images/edit.png') }}" alt="">   Edit</a>
+                                                @if($data->status == 'I')
+                                                <a href="{{ route('user.school.image.status.update',$data->id) }}" onclick="return confirm('Do you want to unblock this image?')"> <img src="{{ asset('images/check2.png') }}" alt=""> Unblock</a>
+                                                @endif
+                                                @if($data->status == 'A')
+                                                <a href="{{ route('user.school.image.status.update',$data->id) }}" onclick="return confirm('Do you want to block this image?')"> <img src="{{ asset('images/lock.png') }}" alt=""> Block</a>
+                                                @endif
+                                            </div>
+                                            </div>
 
-                                 </div>
-                                 @endforeach
-                                 @endif
-                              </div>
+                                        </div>
+                                        @endforeach
+                                    @endif
+                                </div>
                             </div>
 
                            
@@ -1010,5 +989,48 @@
 @section('script')
 @include('includes.scripts')
 
+<script>
+    $(document).ready(function(){
+
+          $('.imageEdit').click(function(){
+               $('.uploadImages').html(''); 
+               let image = $(this).data('image_url');
+               let image_id = $(this).data('image_id');
+               $('#image_id').val(image_id);
+               $('.uploadImages').append('<img src="'+image+'" alt="">');
+               $('#imageUpdate').css('display','block');
+          })
+    })
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editButtons = document.querySelectorAll('.imageEdit');
+    const imageUpdateForm = document.getElementById('imageUpdate');
+    const imageIdInput = document.getElementById('image_id');
+    // const previewBox = imageUpdateForm.querySelector('.uplodimgfil2 label img');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const imageId = this.dataset.image_id;
+            const imageUrl = this.dataset.image_url;
+
+            // 1️⃣ Show the hidden form
+            imageUpdateForm.style.display = 'block';
+
+            // 2️⃣ Inject the image id into the hidden input
+            imageIdInput.value = imageId;
+
+            // 3️⃣ Update the preview image inside the upload form
+            // if (previewBox) {
+            //     previewBox.src = imageUrl;
+            // }
+
+            // 4️⃣ Scroll to the form for better UX (optional)
+            imageUpdateForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    });
+});
+</script>
 
 @endsection

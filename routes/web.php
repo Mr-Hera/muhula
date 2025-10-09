@@ -88,6 +88,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::get('add-school-step4',[SchoolController::class, 'addSchoolStep4'])->name('add.school.step4');
     Route::post('add-school-step4-rules-save',[SchoolController::class, 'addSchoolStep4RulesSave'])->name('add.school.step4.rules.save');
     Route::post('add-school-step4-ratio-save',[SchoolController::class, 'addSchoolStep4RatioSave'])->name('add.school.step4.ratio.save');
+    Route::post('add-school-step4-ratio-update',[SchoolController::class, 'addSchoolStep4RatioUpdate'])->name('add.school.step4.ratio.update');
 
     Route::get('add-school-step5/{id?}',[SchoolController::class, 'addSchoolStep5'])->name('add.school.step5');
     Route::post('add-school-step5-save',[SchoolController::class, 'addSchoolStep5Save'])->name('add.school.step5.save');
@@ -143,19 +144,19 @@ Route::group(['namespace' => 'Modules'], function() {
         //for my school
         Route::get('my-school', [DashboardController::class, 'mySchool'])->name('user.my.school');
         Route::get('edit-school-info/{id?}/{sub_id?}', [SchoolController::class,'editSchool'])->name('user.edit.school');
-        Route::post('update-school-info', 'School\SchoolController@schoolInfoUpdate')->name('user.school.info.update');
-        Route::post('update-school-image', 'School\SchoolController@updateImage')->name('user.update.school.image');
+        Route::post('update-school-info', [SchoolController::class, 'schoolInfoUpdate'])->name('user.school.info.update');
+        Route::post('update-school-image', [SchoolController::class, 'updateImage'])->name('user.update.school.image');
         Route::get('school-image-status-update/{id?}', 'School\SchoolController@schoolImageStatusUpdate')->name('user.school.image.status.update');
-        Route::post('update-school-facilities', 'School\SchoolController@updateFacility')->name('user.update.school.facility');
+        Route::post('update-school-facilities', [SchoolController::class, 'updateFacility'])->name('user.update.school.facility');
         Route::post('update-school-ratio', 'School\SchoolController@updateSchoolRatio')->name('user.update.school.ratio');
         Route::post('update-school-uniform', 'School\SchoolController@updateSchoolUniform')->name('user.update.school.uniform');
         Route::get('delete-school-uniform/{id?}', 'School\SchoolController@deleteSchoolUniform')->name('user.school.uniform.delete');
-        Route::post('update-school-rules', 'School\SchoolController@updateSchoolRules')->name('user.update.school.rules');
-        Route::post('update-school-subject', 'School\SchoolController@updateSchoolSubject')->name('user.update.school.subject');
+        Route::post('update-school-rules', [SchoolController::class, 'updateSchoolRules'])->name('user.update.school.rules');
+        Route::post('update-school-subject', [SchoolController::class, 'updateSchoolSubject'])->name('user.update.school.subject');
         Route::get('user-delete-school-subject/{id?}', 'School\SchoolController@schoolSubjectDelete')->name('user.school.subject.delete');
 
         Route::get('edit-school-result/{id?}/{result_id?}', 'School\SchoolController@editSchoolResult')->name('user.edit.school.result');
-        Route::post('update-school-result', 'School\SchoolController@updateSchoolResult')->name('user.update.school.result');
+        Route::post('update-school-result', [SchoolController::class, 'updateSchoolResult'])->name('user.update.school.result');
 
         Route::get('my-favourite', [DashboardController::class, 'myFavourite'])->name('user.my.favourite');
         Route::get('delete-favourite/{id?}', 'School\SchoolController@deleteFavourite')->name('user.favourite.delete');
