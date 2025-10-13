@@ -9,7 +9,9 @@ use App\Models\Conversation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\ConversationParticipant;
+use App\Mail\NewMessageNotificationMail;
 
 class MessageController extends Controller
 {
@@ -126,7 +128,11 @@ class MessageController extends Controller
                 'sent_at' => now(),
             ]);
 
-            // Mail::send(new MessageMailToUser(@$mailData));
+            // Send email notification to receiver
+            $viewMessagesUrl = route('user.message.list');
+            Mail::to($receiver->email)->send(
+                new NewMessageNotificationMail($sender, $receiver, $message, $viewMessagesUrl)
+            );
 
             // return success response
             return redirect()->back()->with('success', 'Message sent successfully!');

@@ -131,4 +131,15 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Notification Email
+    |--------------------------------------------------------------------------
+    |
+    | This is the email address that will receive notifications when a new
+    | school is added and is pending approval.
+    |
+    */
+    'admin_address' => env('MAIL_ADMIN_ADDRESS', 'muhulahub@gmail.com'),
+
 ];

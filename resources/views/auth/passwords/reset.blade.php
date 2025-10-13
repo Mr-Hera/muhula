@@ -15,7 +15,7 @@
             <div class="row">
                <div class="col-12">
                   <div class="logo_login">
-                     <a href="{{ route('home') }}"> <img src="{{ url('public/images/login-logo.png') }}" alt=""> </a>
+                     <a href="{{ route('home') }}"> <img src="{{ asset('images/login-logo.png') }}" alt=""> </a>
                   </div>
                </div>
             </div>
@@ -34,7 +34,7 @@
                         <div class="login_froms">
                            <form action="{{ route('user.password.update') }}" method="post" id="SigninForm">
                               @csrf
-                              <input type="hidden" name="id" value="{{ @$token }}">
+                              <input type="hidden" name="id" value="{{ $token }}">
                               <div class="login_input">
                                  <label class="floating__label nob" data-content="Password">Password </label>
 
@@ -56,7 +56,7 @@
                              
 
                                   <div class="login_btns">
-                                     <button type="submit">Submit <img src="{{ url('public/images/arrow-righr.png') }}" alt=""> </button>
+                                     <button type="submit">Submit <img src="{{ asset('images/arrow-righr.png') }}" alt=""> </button>
                                   </div>
 
                            </form>
@@ -74,7 +74,7 @@
                   <div class="login_statis">
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log1.png') }}" alt="">
+                           <img src="{{ asset('images/log1.png') }}" alt="">
                         </div>
                         <div class="st_info">
                         <h5>Register on Muhula.com</h5>
@@ -84,7 +84,7 @@
 
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log2.png') }}" alt="">
+                           <img src="{{ asset('images/log2.png') }}" alt="">
                         </div>
                         <div class="st_info">
                          <h5>Search & Choose School</h5>
@@ -94,7 +94,7 @@
 
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log3.png') }}" alt="">
+                           <img src="{{ asset('images/log3.png') }}" alt="">
                         </div>
                         <div class="st_info">
                         <h5>Claim School & reply to reviews</h5>

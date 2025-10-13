@@ -15,7 +15,7 @@
             <div class="row">
                <div class="col-12">
                   <div class="logo_login">
-                     <a href="{{ route('home') }}"> <img src="{{ url('public/images/login-logo.png') }}" alt=""> </a>
+                     <a href="{{ route('home') }}"> <img src="{{ asset('images/login-logo.png') }}" alt=""> </a>
                   </div>
                </div>
             </div>
@@ -39,19 +39,9 @@
                                  <input type="text" name="email" id="email" placeholder="Enter here">
                               </div>
 
-                                  <div class="login_btns">
-                                     <button type="submit">Submit<img src="{{ url('public/images/arrow-righr.png') }}" alt=""> </button>
-                                  </div>
-
-                                  {{--<div class="login_gma">
-                                     <div class="gmail_log">
-                                       <a href="#">
-                                          <div class="google_logo"> <img src="{{ url('public/images/google.png') }}" alt=""> </div>
-                                          <h3>Login with  Google account</h3>
-                                       </a> 
-                                     </div>
-                                     <p>Don't have an account? <a href="{{ route('user.register') }}">Signup</a> </p>
-                                  </div>--}}
+                              <div class="login_btns">
+                                 <button type="submit">Submit<img src="{{ asset('images/arrow-righr.png') }}" alt=""> </button>
+                              </div>
 
                            </form>
                         </div>
@@ -68,7 +58,7 @@
                   <div class="login_statis">
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log1.png') }}" alt="">
+                           <img src="{{ asset('images/log1.png') }}" alt="">
                         </div>
                         <div class="st_info">
                         <h5>Register on Muhula.com</h5>
@@ -78,7 +68,7 @@
 
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log2.png') }}" alt="">
+                           <img src="{{ asset('images/log2.png') }}" alt="">
                         </div>
                         <div class="st_info">
                          <h5>Search & Choose School</h5>
@@ -88,7 +78,7 @@
 
                      <div class="statis_ic">
                         <div class="st_imgs">
-                           <img src="{{ url('public/images/log3.png') }}" alt="">
+                           <img src="{{ asset('images/log3.png') }}" alt="">
                         </div>
                         <div class="st_info">
                         <h5>Claim School & reply to reviews</h5>
