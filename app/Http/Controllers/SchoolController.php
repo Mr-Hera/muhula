@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\User;
 use App\Models\County;
 use App\Models\Course;
@@ -24,16 +25,21 @@ use App\Models\SchoolAddress;
 use App\Models\SchoolContact;
 use App\Models\SchoolUniform;
 use App\Models\ContactPosition;
+use App\Mail\ClaimSubmittedMail;
 use Illuminate\Support\Facades\DB;
 use App\Models\SchoolOperationHour;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use App\Models\ExtendedSchoolService;
 use App\Models\SchoolExamPerformance;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\UserSchoolAddedNotification;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\AdminSchoolAddedNotification;
+use App\Mail\AdminNewClaimNotificationMail;
 use Illuminate\Validation\ValidationException;
 
 class SchoolController extends Controller
@@ -965,6 +971,21 @@ class SchoolController extends Controller
       return redirect()->back()->with('error', 'School record not found.');
     }
 
+    // Send emails
+    try {
+      // Notify Admin
+      $adminEmail = config('mail.admin_address');
+      Mail::to($adminEmail)->send(new AdminSchoolAddedNotification($school));
+
+      // Notify User
+      $user = auth()->user();
+      if ($user && $user->email) {
+        Mail::to($user->email)->send(new UserSchoolAddedNotification($school));
+      }
+    } catch (Exception $e) {
+      Log::error('Failed to send notification emails: '.$e->getMessage());
+    }
+
     return redirect()->route('add.school.success')->with('success', 'School listing added successfully.')->with([
       'school_name' => $school->name,
       'school_slug' => $school->slug,
@@ -1208,14 +1229,23 @@ class SchoolController extends Controller
     ]);
 
     // Handle file uploads
-    // $storedFiles = [];
-    // if ($request->hasFile('claim_file')) {
-    //   foreach ($request->file('claim_file') as $file) {
-    //     // Store in /storage/app/public/claims
-    //     $path = $file->store('claims', 'public');
-    //     $storedFiles[] = $path;
-    //   }
-    // }
+    if ($request->hasFile('claim_file')) {
+      foreach ($request->file('claim_file') as $file) {
+        // Sanitize school name -> lowercase, underscores, remove invalid chars
+        $school = School::find($validated['school_id']);
+        $sanitizedName = Str::slug($school->name, '_');
+
+        // Build file name
+        $fileName = $sanitizedName . '_claim_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+        // Define destination and move file
+        $destination = storage_path('app/public/claims');
+        $file->move($destination, $fileName);
+
+        // Store relative path for database
+        $storedFiles[] = 'claims/' . $fileName;
+      }
+    }
 
     // Insert into pivot table
     DB::table('school_user')->insert([
@@ -1229,14 +1259,16 @@ class SchoolController extends Controller
       'updated_at'           => now(),
     ]);
 
-    // Optionally, send email notifications later
-    /*
-    // To the user
-    Mail::to($validated['email_address'])->send(new ClaimSubmittedMail($validated));
+    // Send email notifications
+    // 1. To the user (claim received confirmation)
+    Mail::to($validated['email_address'])->send(
+      new ClaimSubmittedMail($school, $validated['user_name'])
+    );
 
-    // To admin
-    Mail::to(config('mail.admin_address'))->send(new NewClaimNotificationMail($validated));
-    */
+    // 2. To the admin (new claim alert)
+    Mail::to(config('mail.admin_address'))->send(
+      new AdminNewClaimNotificationMail($school, $validated['user_name'], $validated['email_address'])
+    );
 
     return redirect()->back()->with('success', 'Your school claim has been submitted and is pending approval.');
   }

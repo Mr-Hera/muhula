@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Review;
 use App\Models\School;
 use App\Models\Message;
@@ -11,7 +12,12 @@ use Illuminate\Support\Str;
 use App\Models\SchoolReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Mail\ClaimApprovedUserMail;
+use App\Mail\ClaimRejectedUserMail;
+use App\Mail\ClaimApprovedAdminMail;
+use App\Mail\ClaimRejectedAdminMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class DashboardController extends Controller
 {
@@ -83,12 +89,20 @@ class DashboardController extends Controller
             'claims' => $claims
         ]);
     }
+
     public function updateClaimStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:approved,rejected'
         ]);
 
+        $pivot = DB::table('school_user')->where('id', $id)->first();
+
+        if (! $pivot) {
+            return redirect()->back()->with('error', 'Claim not found.');
+        }
+
+        // Update claim status
         DB::table('school_user')
             ->where('id', $id)
             ->update([
@@ -96,7 +110,42 @@ class DashboardController extends Controller
                 'claimed_at' => now(),
             ]);
 
-        return redirect()->back()->with('success', 'Claim status updated successfully!');
+        // Fetch related user and school
+        $user = User::find($pivot->user_id);
+        $school = School::find($pivot->school_id);
+
+        if (! $user || ! $school) {
+            return redirect()->back()->with('error', 'Associated user or school not found.');
+        }
+
+        // Build URLs for mail buttons
+        $viewSchoolUrl = route('school.details', ['slug' => $school->slug]);
+        $dashboardUrl  = route('user.dashboard');
+
+        // Send appropriate mail depending on status
+        if ($request->status === 'approved') {
+            // To user
+            Mail::to($user->email)->send(
+                new ClaimApprovedUserMail($user, $school, $viewSchoolUrl, $dashboardUrl)
+            );
+
+            // To admin
+            Mail::to(config('mail.admin_address'))->send(
+                new ClaimApprovedAdminMail($user, $school, $viewSchoolUrl, $dashboardUrl)
+            );
+        } elseif ($request->status === 'rejected') {
+            // To user
+            Mail::to($user->email)->send(
+                new ClaimRejectedUserMail($user, $school, $dashboardUrl)
+            );
+
+            // To admin
+            Mail::to(config('mail.admin_address'))->send(
+                new ClaimRejectedAdminMail($user, $school, $dashboardUrl)
+            );
+        }
+
+        return redirect()->back()->with('success', 'Claim status updated and notifications sent successfully!');
     }
 
     // DASHBOARD: EDIT-PROFILE PAGE
