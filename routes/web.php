@@ -44,10 +44,10 @@ Route::post('user-mobile-check', 'Auth\RegisterController@userMobileCheck')->nam
 Route::get('user-verify-email/{vcode?}/{id?}', 'Auth\RegisterController@verifyEmail')->name('verify.user.email');
 
 // Passwords
-Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('user.password.request');
-Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('user.password.email');
-Route::get('password/reset/{token?}', 'Auth\ResetPasswordController@showResetForm')->name('user.password.reset');
-Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('user.password.update');
+Route::get('password/reset', [SocialAuthController::class, 'showLinkRequestForm'])->name('user.password.request');
+Route::post('password/email', [SocialAuthController::class, 'sendResetLinkEmail'])->name('user.password.email');
+Route::get('password/reset/{token?}', [SocialAuthController::class, 'showResetForm'])->name('user.password.reset');
+Route::post('password/reset', [SocialAuthController::class, 'reset'])->name('user.password.update');
 
 //Message Page
 Route::get('success', 'Auth\RegisterController@success')->name('user.success.msg');
@@ -73,44 +73,46 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::any('news','Content\ContentController@newsList')->name('news.list');
     Route::get('news-details/{slug?}',[ContentController::class, 'newsDetails'])->name('news.details');
 
-    //School Listing
-    Route::get('add-school-step1/{id?}',[SchoolController::class, 'addSchoolStep1'])->name('add.school.step1');
-    Route::post('add-school-step1-save',[SchoolController::class, 'addSchoolStep1Save'])->name('add.school.step1.save');
+    // School Listing (Protected by Auth Middleware)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('add-school-step1/{id?}', [SchoolController::class, 'addSchoolStep1'])->name('add.school.step1');
+        Route::post('add-school-step1-save', [SchoolController::class, 'addSchoolStep1Save'])->name('add.school.step1.save');
 
-    Route::get('add-school-step2/{id?}',[SchoolController::class, 'addSchoolStep2'])->name('add.school.step2');
-    Route::post('add-school-step2-save',[SchoolController::class, 'addSchoolStep2Save'])->name('add.school.step2.save');
-    
-    Route::get('add-school-step3/{id?}',[SchoolController::class, 'addSchoolStep3'])->name('add.school.step3');
-    Route::post('add-school-step3-save',[SchoolController::class, 'addSchoolStep3Save'])->name('add.school.step3.save');
-    Route::post('add-school-step3-uniform-save',[SchoolController::class, 'addSchoolStep3UniformSave'])->name('add.school.step3.uniform.save');
-    Route::get('school-uniform-delete/{id?}',[SchoolController::class, 'schoolUniformDelete'])->name('school.uniform.delete');
+        Route::get('add-school-step2/{id?}', [SchoolController::class, 'addSchoolStep2'])->name('add.school.step2');
+        Route::post('add-school-step2-save', [SchoolController::class, 'addSchoolStep2Save'])->name('add.school.step2.save');
+        
+        Route::get('add-school-step3/{id?}', [SchoolController::class, 'addSchoolStep3'])->name('add.school.step3');
+        Route::post('add-school-step3-save', [SchoolController::class, 'addSchoolStep3Save'])->name('add.school.step3.save');
+        Route::post('add-school-step3-uniform-save', [SchoolController::class, 'addSchoolStep3UniformSave'])->name('add.school.step3.uniform.save');
+        Route::get('school-uniform-delete/{id?}', [SchoolController::class, 'schoolUniformDelete'])->name('school.uniform.delete');
 
-    Route::get('add-school-step4',[SchoolController::class, 'addSchoolStep4'])->name('add.school.step4');
-    Route::post('add-school-step4-rules-save',[SchoolController::class, 'addSchoolStep4RulesSave'])->name('add.school.step4.rules.save');
-    Route::post('add-school-step4-ratio-save',[SchoolController::class, 'addSchoolStep4RatioSave'])->name('add.school.step4.ratio.save');
-    Route::post('add-school-step4-ratio-update',[SchoolController::class, 'addSchoolStep4RatioUpdate'])->name('add.school.step4.ratio.update');
+        Route::get('add-school-step4', [SchoolController::class, 'addSchoolStep4'])->name('add.school.step4');
+        Route::post('add-school-step4-rules-save', [SchoolController::class, 'addSchoolStep4RulesSave'])->name('add.school.step4.rules.save');
+        Route::post('add-school-step4-ratio-save', [SchoolController::class, 'addSchoolStep4RatioSave'])->name('add.school.step4.ratio.save');
+        Route::post('add-school-step4-ratio-update', [SchoolController::class, 'addSchoolStep4RatioUpdate'])->name('add.school.step4.ratio.update');
 
-    Route::get('add-school-step5/{id?}',[SchoolController::class, 'addSchoolStep5'])->name('add.school.step5');
-    Route::post('add-school-step5-save',[SchoolController::class, 'addSchoolStep5Save'])->name('add.school.step5.save');
+        Route::get('add-school-step5/{id?}', [SchoolController::class, 'addSchoolStep5'])->name('add.school.step5');
+        Route::post('add-school-step5-save', [SchoolController::class, 'addSchoolStep5Save'])->name('add.school.step5.save');
 
-    Route::get('add-school-step6/{id?}/{sub_id?}',[SchoolController::class, 'addSchoolStep6'])->name('add.school.step6');
-    Route::post('add-school-step6-subject-save',[SchoolController::class, 'addSchoolStep6SubjectSave'])->name('add.school.step6.subject.save');
-    Route::get('school-brach-image-delete/{id?}',[SchoolController::class, 'schoolBranchImageDelete'])->name('school.branch.image.delete');
-    Route::get('school-subject-delete/{id?}',[SchoolController::class, 'schoolSubjectDelete'])->name('school.subject.delete');
+        Route::get('add-school-step6/{id?}/{sub_id?}', [SchoolController::class, 'addSchoolStep6'])->name('add.school.step6');
+        Route::post('add-school-step6-subject-save', [SchoolController::class, 'addSchoolStep6SubjectSave'])->name('add.school.step6.subject.save');
+        Route::get('school-brach-image-delete/{id?}', [SchoolController::class, 'schoolBranchImageDelete'])->name('school.branch.image.delete');
+        Route::get('school-subject-delete/{id?}', [SchoolController::class, 'schoolSubjectDelete'])->name('school.subject.delete');
 
-    Route::get('add-school-step7/{id?}/{result_id?}',[SchoolController::class, 'addSchoolStep7'])->name('add.school.step7');
-    Route::post('add-school-step7-save',[SchoolController::class, 'addSchoolStep7Save'])->name('add.school.step7.save');
-    Route::get('school-image-delete/{id?}',[SchoolController::class, 'schoolImageDelete'])->name('school.image.delete');
+        Route::get('add-school-step7/{id?}/{result_id?}', [SchoolController::class, 'addSchoolStep7'])->name('add.school.step7');
+        Route::post('add-school-step7-save', [SchoolController::class, 'addSchoolStep7Save'])->name('add.school.step7.save');
+        Route::get('school-image-delete/{id?}', [SchoolController::class, 'schoolImageDelete'])->name('school.image.delete');
 
-    Route::get('add-school-step8/{id?}/{branch_id?}',[SchoolController::class, 'addSchoolStep8'])->name('add.school.step8');
-    Route::post('add-school-step8-save',[SchoolController::class, 'addSchoolStep8Save'])->name('add.school.step8.save');
+        Route::get('add-school-step8/{id?}/{branch_id?}', [SchoolController::class, 'addSchoolStep8'])->name('add.school.step8');
+        Route::post('add-school-step8-save', [SchoolController::class, 'addSchoolStep8Save'])->name('add.school.step8.save');
 
-    Route::get('add-school-step9/{id?}/{status?}',[SchoolController::class, 'addSchoolStep9'])->name('add.school.step9');
-    Route::post('add-school-step9-fees-save',[SchoolController::class, 'addSchoolStep9FeesSave'])->name('add.school.step9.fees.save');
-    Route::post('/add-school/step9/complete', [SchoolController::class, 'addSchoolStep9Complete'])->name('add.school.step9.complete');
-    Route::get('school-fees-delete/{id?}',[SchoolController::class, 'schoolFeesDelete'])->name('school.fees.delete');
+        Route::get('add-school-step9/{id?}/{status?}', [SchoolController::class, 'addSchoolStep9'])->name('add.school.step9');
+        Route::post('add-school-step9-fees-save', [SchoolController::class, 'addSchoolStep9FeesSave'])->name('add.school.step9.fees.save');
+        Route::post('/add-school/step9/complete', [SchoolController::class, 'addSchoolStep9Complete'])->name('add.school.step9.complete');
+        Route::get('school-fees-delete/{id?}', [SchoolController::class, 'schoolFeesDelete'])->name('school.fees.delete');
 
-    Route::get('add-school-success',[SchoolController::class, 'addSchoolSuccessPage'])->name('add.school.success');
+        Route::get('add-school-success', [SchoolController::class, 'addSchoolSuccessPage'])->name('add.school.success');
+    });
     
     Route::post('get-class-level','School\SchoolController@getClassLevel')->name('get.class.level');
     Route::post('get-city','School\SchoolController@getCity')->name('get.city');
@@ -119,7 +121,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
     //for search school
     Route::match(['get', 'post'], 'search-school', [SchoolController::class, 'schoolSearch'])->name('school.search');
-    Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
+    Route::any('search-school-map-view',[SchoolController::class, 'schoolSearchMap'])->name('school.search.map');
     Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
     Route::post('post-review',[ReviewController::class, 'postReview'])->name('post.review');
     Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
