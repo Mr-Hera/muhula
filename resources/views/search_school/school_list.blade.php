@@ -133,8 +133,8 @@
                   <div class="serach_panels left-bar">
                      <div class="top_toggle">
                         <ul>
-                           <li><a class="" href="{{ route('school.search.map') }}"> <img src="{{ url('public/images/location.png') }}" alt=""> Map View</a> </li>
-                           <li><a class="{{ Route::is('school.search')?'active':'' }}" href="{{ route('school.search') }}"> <img src="{{ url('public/images/list.png') }}" alt=""> Listing View</a> </li>
+                           <li><a class="" href="{{ route('school.search.map') }}"> <img src="{{ asset('images/location.png') }}" alt=""> Map View</a> </li>
+                           <li><a class="{{ Route::is('school.search')?'active':'' }}" href="{{ route('school.search') }}"> <img src="{{ asset('images/list.png') }}" alt=""> Listing View</a> </li>
                         </ul>
                      </div>
 
