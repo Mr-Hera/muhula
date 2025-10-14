@@ -121,7 +121,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
     //for search school
     Route::match(['get', 'post'], 'search-school', [SchoolController::class, 'schoolSearch'])->name('school.search');
-    Route::any('search-school-map-view','School\SearchSchoolController@schoolSearchMap')->name('school.search.map');
+    Route::any('search-school-map-view',[SchoolController::class, 'schoolSearchMap'])->name('school.search.map');
     Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
     Route::post('post-review',[ReviewController::class, 'postReview'])->name('post.review');
     Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
