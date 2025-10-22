@@ -453,27 +453,30 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                              @endphp
                                              <div class="rule-box">
                                                 <h4>Meals offered</h4>
-                                                @if($services->contains('Meals Offered'))
+                                                <p>Yes</p>
+                                                {{-- @if($services->contains('Meals Offered'))
                                                    <p>Yes</p>
                                                 @else
                                                    <p class="no">No</p>
-                                                @endif
+                                                @endif --}}
                                              </div>
                                              <div class="rule-box">
                                                 <h4>Special needs catered</h4>
-                                                @if($services->contains('Special Needs Catered'))
+                                                <p>Yes</p>
+                                                {{-- @if($services->contains('Special Needs Catered'))
                                                    <p>Yes</p>
                                                 @else
                                                    <p class="no">No</p>
-                                                @endif
+                                                @endif --}}
                                              </div>
                                              <div class="rule-box">
                                                 <h4>School transport available</h4>
-                                                @if($services->contains('School Transport Available'))
+                                                <p>Yes</p>
+                                                {{-- @if($services->contains('School Transport Available'))
                                                    <p>Yes</p>
                                                 @else
                                                    <p class="no">No</p>
-                                                @endif
+                                                @endif --}}
                                              </div>
                                           </div>
                                           <div class="rule-time d-flex flex-row flex-wrap justify-content-start align-items-stretch">

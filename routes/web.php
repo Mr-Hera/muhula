@@ -26,6 +26,29 @@ use App\Http\Controllers\SocialAuthController;
 //     return view('welcome');
 // });
 
+Route::get('/run-migrate', function () {
+    // Run fresh migrations with seed
+    \Artisan::call('migrate:fresh', [
+        '--seed' => true,
+        '--force' => true,
+    ]);
+
+    return 'Migrations and seeders created successfully!';
+});
+
+Route::get('/run-storage-link', function () {
+    // Create the storage symlink
+    \Artisan::call('storage:link');
+
+    return 'Storage link created successfully!';
+});
+Route::get('/run-key-generate', function () {
+    // Generate the application key
+    Artisan::call('key:generate');
+
+    return 'Application key generated successfully!';
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login
