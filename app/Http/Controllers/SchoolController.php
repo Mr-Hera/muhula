@@ -1929,67 +1929,113 @@ class SchoolController extends Controller
   {
     // ✅ Validate request
     $validated = $request->validate([
-        'school_master_id' => 'required|exists:schools,id',
-        'school_image'     => 'required|file|mimes:jpg,jpeg,png,webp|max:2048',
-        'image_id'         => 'nullable|exists:school_images,id',
+      'school_master_id' => 'required|exists:schools,id',
+      'school_image'     => 'required|file|mimes:jpg,jpeg,png,webp|max:2048',
+      'image_id'         => 'nullable|exists:school_images,id',
     ]);
 
     try {
-        // ✅ Find the school
-        $school = School::findOrFail($validated['school_master_id']);
+      // ✅ Find the school
+      $school = School::findOrFail($validated['school_master_id']);
 
-        // ✅ Handle image upload
-        if ($request->hasFile('school_image')) {
-            $uploadedImage = $request->file('school_image');
+      // ✅ Handle image upload
+      if ($request->hasFile('school_image')) {
+          $uploadedImage = $request->file('school_image');
 
-            if ($uploadedImage->isValid()) {
-                // Sanitize school name
-                $sanitizedName = Str::slug($school->name, '_');
+          if ($uploadedImage->isValid()) {
+              // Sanitize school name
+              $sanitizedName = Str::slug($school->name, '_');
 
-                // Generate unique filename
-                $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+              // Generate unique filename
+              $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
 
-                // Destination path inside storage/app/public/images/school_images
-                $destination = storage_path('app/public/images/school_images');
-                if (!file_exists($destination)) {
-                    mkdir($destination, 0755, true);
-                }
+              // Destination path inside storage/app/public/images/school_images
+              $destination = storage_path('app/public/images/school_images');
+              if (!file_exists($destination)) {
+                  mkdir($destination, 0755, true);
+              }
 
-                // Move uploaded file
-                $uploadedImage->move($destination, $imageName);
+              // Move uploaded file
+              $uploadedImage->move($destination, $imageName);
 
-                // Relative path for DB
-                $path = 'images/school_images/' . $imageName;
+              // Relative path for DB
+              $path = 'images/school_images/' . $imageName;
 
-                // ✅ If image_id provided → update existing record
-                if (!empty($validated['image_id'])) {
-                    $schoolImage = SchoolImage::findOrFail($validated['image_id']);
+              // ✅ If image_id provided → update existing record
+              if (!empty($validated['image_id'])) {
+                  $schoolImage = SchoolImage::findOrFail($validated['image_id']);
 
-                    // Delete old image file (optional but recommended)
-                    if ($schoolImage->image_path && Storage::disk('public')->exists($schoolImage->image_path)) {
-                        Storage::disk('public')->delete($schoolImage->image_path);
-                    }
+                  // Delete old image file (optional but recommended)
+                  if ($schoolImage->image_path && Storage::disk('public')->exists($schoolImage->image_path)) {
+                      Storage::disk('public')->delete($schoolImage->image_path);
+                  }
 
-                    $schoolImage->update([
-                        'image_path' => $path,
-                        'caption'    => $school->name,
-                    ]);
-                } else {
-                    // ✅ Otherwise → create new image record
-                    $school->images()->create([
-                        'image_path' => $path,
-                        'caption'    => $school->name,
-                    ]);
-                }
+                  $schoolImage->update([
+                      'image_path' => $path,
+                      'caption'    => $school->name,
+                  ]);
+              } else {
+                  // ✅ Otherwise → create new image record
+                  $school->images()->create([
+                      'image_path' => $path,
+                      'caption'    => $school->name,
+                  ]);
+              }
 
-                return redirect()->back()->with('success', 'School image saved successfully.');
-            }
-        }
+              return redirect()->back()->with('success', 'School image saved successfully.');
+          }
+      }
 
-        return redirect()->back()->with('error', 'Invalid image upload. Please try again.');
+      return redirect()->back()->with('error', 'Invalid image upload. Please try again.');
     } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'Failed to update school image: ' . $e->getMessage());
+      return redirect()->back()->with('error', 'Failed to update school image: ' . $e->getMessage());
     }
   }
 
+  public function uploadPhotoSave(Request $request)
+  {
+    // ✅ Validate incoming files
+    $request->validate([
+      'school_master_id' => 'required|exists:schools,id',
+      'school_image'     => 'required|array',
+      'school_image.*'   => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    ], [
+      'school_image.required'   => 'Please upload at least one image.',
+      'school_image.*.image'    => 'Each file must be a valid image.',
+      'school_image.*.mimes'    => 'Only jpeg, png, jpg, gif, and webp formats are allowed.',
+      'school_image.*.max'      => 'Each image must not exceed 2MB.',
+    ]);
+
+    // ✅ Find the school record
+    $school = School::findOrFail($request->school_master_id);
+
+    // ✅ Process and store images
+    if ($request->hasFile('school_image')) {
+      foreach ($request->file('school_image') as $uploadedImage) {
+        if ($uploadedImage->isValid()) {
+          // Sanitize school name for filename
+          $sanitizedName = Str::slug($school->name, '_');
+
+          // Create unique image filename
+          $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+
+          // Destination inside storage/app/public/images/school_images
+          $destination = storage_path('app/public/images/school_images');
+          $uploadedImage->move($destination, $imageName);
+
+          // Relative DB path
+          $path = 'images/school_images/' . $imageName;
+
+          // ✅ Save record in DB
+          $school->images()->create([
+            'image_path' => $path,
+            'caption'    => $school->name,
+          ]);
+        }
+      }
+    }
+
+    // ✅ Redirect back with success message
+    return redirect()->back()->with('success', 'School image(s) added successfully.');
+  }
 }
