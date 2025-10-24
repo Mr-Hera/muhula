@@ -30,18 +30,22 @@
                            <span class="res-tab m-0">
                              {{ $school->ownership }}
                            </span>
-                           @if($school->logo == null)
-                                <a href="{{ route('school.details',$school->slug) }}">
-                                    <img src="{{asset('public/default_images/default.jpg')}}" alt="" />
-                                </a>
-                            @else
-                                <a href="{{ route('school.details',$school->slug) }}">
-                                    <img 
-                                        src="{{ asset('storage/'. $school->logo) }}" 
-                                        alt="{{ $school->name }}" 
-                                    />
-                                </a>
-                            @endif
+                            @php
+                                // Normalize the path (prepend 'public/' since files are stored in storage/app/public)
+                                $logoPath = $school->logo ? 'public/' . ltrim($school->logo, '/') : null;
+
+                                // If logo exists in storage, use it; otherwise, fall back to default
+                                $finalPath = ($logoPath && Storage::exists($logoPath))
+                                    ? $logoPath
+                                    : 'public/default_images/default.jpg';
+
+                                // Generate the public URL
+                                $imageUrl = Storage::url($finalPath);
+                            @endphp
+
+                            <a href="{{ route('school.details', $school->slug) }}">
+                                <img src="{{ $imageUrl }}" alt="{{ $school->name ?? 'School Logo' }}">
+                            </a>
                         </div>
                         <div class="serach_sc_details">
                            <div class="search_heading_box">
@@ -951,9 +955,22 @@
                                             
                                             <div class="schol_show_box">
                                             <div class="sch_show_img">
-                                                @if($data->image_path != null)
-                                                    <img src="{{ asset('storage/' . $data->image_path) }}" alt="">
-                                                @endif
+                                                @php
+                                                    // Build full path to the image
+                                                    $imagePath = $data->image_path 
+                                                        ? 'public/' . ltrim($data->image_path, '/') 
+                                                        : 'public/default_images/default.jpg';
+
+                                                    // Check existence, fallback to default if missing
+                                                    $finalPath = Storage::exists($imagePath) 
+                                                        ? $imagePath 
+                                                        : 'public/default_images/default.jpg';
+
+                                                    // Generate the public URL
+                                                    $imageUrl = Storage::url($finalPath);
+                                                @endphp
+
+                                                <img src="{{ $imageUrl }}" alt="{{ $data->title ?? 'Default Image' }}">
                                             </div>
                                             <div class="img_show_actions">
                                                 <a href="javascript:;" class="imageEdit" data-image_id="{{ $data->id }}" data-image_url="{{ asset('storage/' . $data->image_path) }}"> <img src="{{ asset('images/edit.png') }}" alt="">   Edit</a>

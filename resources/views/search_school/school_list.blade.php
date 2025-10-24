@@ -93,7 +93,7 @@
             <div class="row">
                <div class="result_div">
                   <h3>Result: {{ $schools->count() }} Results Found {{--in <span> Kakamega </span>--}} </h3>
-                  <a  class="filter-btn click_filter"> <img src="{{ url('public/images/Icon.png') }}" alt=""> Filter</a>
+                  <a  class="filter-btn click_filter"> <img src="{{ asset('images/Icon.png') }}" alt=""> Filter</a>
                   
                      <form action="{{ route('school.search') }}" class="sorts-srch d-flex" method="post">
                         @csrf
@@ -455,20 +455,24 @@
                                  Private
                                  @endif
                                  </span>
-                                 @if($school->logo == null)
-                                    <a href="{{ route('school.details',$school->slug) }}">
-                                       {{-- <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$school->getSchoolMainImage->image }}" alt=""> --}}
-                                       <img src="{{asset('public/default_images/default.jpg')}}" alt="" />
-                                    </a>
-                                 @else
-                                    <a href="{{ route('school.details',$school->slug) }}">
-                                       {{-- <img src="{{asset('storage/default_images/default.jpg')}}" alt="" /> --}}
-                                       <img 
-                                          src="{{ asset('storage/'. $school->logo) }}" 
-                                          alt="{{ $school->name }}" 
-                                       />
-                                    </a>
-                                 @endif
+                                 @php
+                                    // Build the expected storage path
+                                    $logoPath = $school->logo 
+                                       ? 'public/' . ltrim($school->logo, '/') 
+                                       : 'public/default_images/default.jpg';
+
+                                    // Check if file exists, otherwise fallback
+                                    $finalPath = Storage::exists($logoPath) 
+                                       ? $logoPath 
+                                       : 'public/default_images/default.jpg';
+
+                                    // Generate the public URL
+                                    $logoUrl = Storage::url($finalPath);
+                                 @endphp
+
+                                 <a href="{{ route('school.details', $school->slug) }}">
+                                    <img src="{{ $logoUrl }}" alt="{{ $school->name ?? 'Default School Logo' }}" />
+                                 </a>
                            </div>
                            {{-- School Cards --}}
                            <div class="serach_sc_details">
@@ -583,7 +587,7 @@
                                     <div class="tpe_p">
                                        <span>Type: </span>
                                        <p>
-                                          {{ optional($school->schoolLevel)->name }}
+                                          {{ optional($school->schoolLevel)->name ?? 'Not specified' }}
                                        </p>
                                     </div>
                                     <div class="tpe_p">
