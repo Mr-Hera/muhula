@@ -380,27 +380,38 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function createNewsSave(Request $request){
-        // dd($request);
+    public function createNewsSave(Request $request)
+    {
         // 1️⃣ Validate request
         $validated = $request->validate([
             'news_title'   => 'required|string|max:255',
             'news_excerpt' => 'nullable|string|max:500',
             'description'  => 'required|string',
-            'news_image'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'news_image'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         // 2️⃣ Prepare slug from title
         $slug = Str::slug($validated['news_title']);
 
         // 3️⃣ Handle cover image upload
-        // $coverImagePath = null;
-        // if ($request->hasFile('news_image')) {
-        //     $file = $request->file('news_image');
-        //     $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
-        //     $coverImagePath = $file->storeAs('public/news_covers', $filename);
-        //     $coverImagePath = str_replace('public/', 'storage/', $coverImagePath); // Make it web-accessible
-        // }
+        $coverImagePath = null;
+
+        if ($request->hasFile('news_image') && $request->file('news_image')->isValid()) {
+            $file = $request->file('news_image');
+
+            // Sanitize news title for filename
+            $sanitizedTitle = Str::slug($validated['news_title'], '_');
+
+            // Create unique filename: title_timestamp_random.ext
+            $imageName = $sanitizedTitle . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            // Destination inside storage/app/public/images/news_covers
+            $destination = storage_path('app/public/images/news_covers');
+            $file->move($destination, $imageName);
+
+            // Relative path for DB (like your school images)
+            $coverImagePath = 'images/news_covers/' . $imageName;
+        }
 
         // 4️⃣ Insert into DB
         $article = NewsArticle::create([
@@ -408,12 +419,11 @@ class DashboardController extends Controller
             'slug'         => $slug,
             'excerpt'      => $validated['news_excerpt'] ?? null,
             'body'         => $validated['description'],
-            'cover_image'  => $coverImagePath ?? null,
+            'cover_image'  => $coverImagePath, // either null or path
             'author_id'    => Auth::id(), // current logged in user
             'published_at' => now(),
             'is_published' => true, // Or false if you want to draft first
         ]);
-        // dd($article);
 
         // 5️⃣ Redirect with success
         return redirect()->back()->with('success', 'News article created successfully.');

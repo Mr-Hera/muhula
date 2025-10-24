@@ -43,13 +43,22 @@
 @if(@$schoolDetails->youtube_link == null)
 <div class="position-relative">
 <a href="javascript:;" class="school-banner position-relative w-100 overflow-hidden img-trigger">
-   @if( $school_record->logo == null)
-      <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="blurred-image">
-      <img src="{{ asset('storage/default_images/default.jpg') }}" alt="" class="img-clear">
-   @else
-      <img src="{{ asset('storage/'. $school_record->logo) }}" alt="{{ $school_record->name }}"  class="blurred-image" />
-      <img src="{{ asset('storage/'. $school_record->logo) }}" alt="{{ $school_record->name }}"  class="img-clear" />
-   @endif
+   @php
+      // Compute expected storage path (relative to 'public' disk)
+      $logoPath = $school_record->logo 
+         ? 'public/' . ltrim($school_record->logo, '/') 
+         : 'public/default_images/default.jpg';
+
+      // Determine which path to display
+      $finalPath = Storage::exists($logoPath) 
+         ? $logoPath 
+         : 'public/default_images/default.jpg';
+
+      $logoUrl = Storage::url($finalPath);
+   @endphp
+
+   <img src="{{ $logoUrl }}" alt="{{ $school_record->name ?? 'Default Logo' }}" class="blurred-image">
+   <img src="{{ $logoUrl }}" alt="{{ $school_record->name ?? 'Default Logo' }}" class="img-clear">
 </a>
 @php
 $current_date = date('Y-m-d');
@@ -112,13 +121,16 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  Private
                               @endif
                           </span>
-                           @if($school_record->logo == null)
-                              <img src="{{asset('storage/default_images/default.jpg')}}" alt="" />
+                           @php
+                              $logoPath = $school_record->logo 
+                                 ? 'public/' . $school_record->logo 
+                                 : 'public/default_images/default.jpg';
+                           @endphp
+
+                           @if(Storage::exists($logoPath))
+                              <img src="{{ Storage::url($logoPath) }}" alt="{{ $school_record->name }}">
                            @else
-                              <img 
-                                 src="{{ asset('storage/'. $school_record->logo) }}" 
-                                 alt="{{ $school_record->name }}" 
-                              />
+                              <img src="{{ Storage::url('public/default_images/default.jpg') }}" alt="Default Logo">
                            @endif
                         </div>
                         <div class="school_names">
@@ -525,9 +537,24 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            <div class="galley_des">
                               <div class="owl-carousel owl-theme owl-gallery position-relative">
                                  @foreach($school_gallery as $data)
-                                    <div class="item showImage" data-image_url="{{ asset('storage/' . $data->image_path) }}">
+                                    @php
+                                       // Compute storage path
+                                       $imagePath = $data->image_path 
+                                             ? 'public/' . ltrim($data->image_path, '/') 
+                                             : 'public/default_images/default.jpg';
+
+                                       // Fallback if file missing
+                                       $finalPath = Storage::exists($imagePath) 
+                                             ? $imagePath 
+                                             : 'public/default_images/default.jpg';
+
+                                       // Public URL for use in <img> and JS data attribute
+                                       $imageUrl = Storage::url($finalPath);
+                                    @endphp
+
+                                    <div class="item showImage" data-image_url="{{ $imageUrl }}">
                                        <div class="school_gallery_img">
-                                          <img src="{{ asset('storage/' . $data->image_path) }}" alt="{{ asset('storage/' . $data->image_path) }}">
+                                             <img src="{{ $imageUrl }}" alt="{{ $data->image_path ?? 'default.jpg' }}">
                                        </div>
                                     </div>
                                  @endforeach

@@ -24,14 +24,20 @@
                               <div class="message_owner">
                                  <div class="measge_name">
                                     <a href="{{ route('school.details',$school->slug) }}"> 
-                                       @if($school->logo == null)
-                                          <img src="{{ asset('storage/default_images/default.jpg') }}" alt="">
-                                       @else
-                                          <img 
-                                             src="{{ asset('storage/'. $school->logo) }}" 
-                                             alt="{{ $school->name }}" 
-                                          />
-                                       @endif
+                                       @php
+                                          // Normalize the file path (prepend 'public/' since files are stored in storage/app/public)
+                                          $logoPath = $school->logo ? 'public/' . ltrim($school->logo, '/') : null;
+
+                                          // Check if logo exists in storage, otherwise use default image
+                                          $finalPath = ($logoPath && Storage::exists($logoPath))
+                                             ? $logoPath
+                                             : 'public/default_images/default.jpg';
+
+                                          // Generate a public URL for display
+                                          $imageUrl = Storage::url($finalPath);
+                                       @endphp
+
+                                       <img src="{{ $imageUrl }}" alt="{{ $school->name ?? 'School Logo' }}">
                                        <h3>{{ $school->name }}</h3>
                                     </a>
                                  </div>

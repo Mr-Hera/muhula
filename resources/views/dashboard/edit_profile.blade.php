@@ -70,8 +70,21 @@
                                     </div>
                                     <div class="uplodimg_pick">
                                         @if($user->profile_image != null)
-                                            <img src="{{ URL::to('storage/app/public/images/userImage') }}/{{ $user->profile_image }}" alt="">
-                                            <a href="{{ route('user.profile.image.delete') }}"> <img src="{{ asset('images/x.png') }}" alt=""> </a>
+                                            @php
+                                                // Prepare the storage path
+                                                $profileImagePath = 'public/images/userImage/' . ltrim($user->profile_image, '/');
+
+                                                // If the file exists in storage, use it; otherwise, fallback to default avatar
+                                                $imageUrl = Storage::exists($profileImagePath)
+                                                    ? Storage::url($profileImagePath)
+                                                    : asset('images/avatar.png');
+                                            @endphp
+
+                                            <img src="{{ $imageUrl }}" alt="">
+
+                                            <a href="{{ route('user.profile.image.delete') }}">
+                                                <img src="{{ asset('images/x.png') }}" alt="">
+                                            </a>
                                         @else
                                             <img src="{{ asset('images/avatar.png') }}" alt="">
                                         @endif

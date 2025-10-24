@@ -148,7 +148,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
     Route::post('post-review',[ReviewController::class, 'postReview'])->name('post.review');
     Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
-    Route::post('upload-photo-save','School\SearchSchoolController@uploadPhotoSave')->name('school.photo.save');
+    Route::post('upload-photo-save', [SchoolController::class, 'uploadPhotoSave'])->name('school.photo.save');
     Route::post('send-message-save',[MessageController::class, 'sendMessage'])->name('user.send.message');
     Route::post('add-favourite',[SchoolController::class, 'addFavourite'])->name('user.add.favourite');
     Route::post('header-image-video-save','School\SearchSchoolController@addHeaderImageVideo')->name('user.add.header.image.video');
