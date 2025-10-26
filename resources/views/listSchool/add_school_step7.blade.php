@@ -163,42 +163,40 @@
                               </div>
                            </div>
                         </div>
-                        @if(!empty($examPerformance))
-                           <div class="ad-schl-card adscl-crd13">
+                        <div class="ad-schl-card adscl-crd13">
 
-                              <div class="row">
+                           <div class="row">
 
-                                 <div class="col-12">
-                                    <div class="step-5-added-loc">
-                                       <h2>Added Results</h2>
+                              <div class="col-12">
+                                 <div class="step-5-added-loc">
+                                    <h2>Added Results</h2>
 
-                                       @foreach($examPerformanceRecords as $data)
-                                       <div class="added-subs-box position-relative">
-                                          <a href="{{ route('add.school.step7') }}" class="edit-subs">
-                                             {{-- SVG ICON --}}
-                                             <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"/>
-                                                <path d="M8.16131 5.4654L12.433 8.91713C12.5361 8.99968 12.5537 9.15117 12.4732 9.25669L7.409 15.8555C7.09066 16.2631 6.62151 16.4938 6.11886 16.5023L3.35426 16.5363C3.20682 16.538 3.0778 16.4359 3.04429 16.2895L2.41597 13.5577C2.30706 13.0556 2.41597 12.5365 2.73432 12.1365L7.82369 5.50625C7.90579 5.39987 8.05743 5.38115 8.16131 5.4654Z" fill="black"/>
-                                                <path opacity="0.4" d="M14.3455 6.86014L13.522 7.88817C13.4391 7.99285 13.2899 8.00987 13.1869 7.92647C12.1858 7.1163 9.62224 5.03725 8.91099 4.46111C8.80711 4.37601 8.79286 4.22453 8.87664 4.119L9.67083 3.13267C10.3913 2.20506 11.6479 2.11996 12.6616 2.92843L13.8261 3.85604C14.3036 4.23049 14.622 4.72408 14.7309 5.2432C14.8566 5.81423 14.7225 6.37506 14.3455 6.86014Z" fill="black"/>
-                                             </svg>
-                                          </a>
-                                          <ul class="new_rsult_d">
-                                             <li><h6>Exam</h6><p>: {{ $data['exam'] }}</p></li>
-                                             <li><h6>Ranking Position</h6><p>: {{ $data['ranking_position'] }}</p></li>
-                                             
-                                             <li><h6>Mean Score Points</h6><p>: {{ $data['mean_score_points'] }}</p></li>
-                                             <li><h6>Mean Grade</h6><p>: {{ $data['mean_grade'] }}</p></li>
-                                             <li><h6>Number of Candidates</h6><p>: {{ $data['number_of_candidates'] }}</p></li>
-                                          </ul>
-                                       </div>
-                                       @endforeach
-
+                                    @foreach($examPerformanceRecords as $data)
+                                    <div class="added-subs-box position-relative">
+                                       <a href="{{ route('add.school.step7') }}" class="edit-subs">
+                                          {{-- SVG ICON --}}
+                                          <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"/>
+                                             <path d="M8.16131 5.4654L12.433 8.91713C12.5361 8.99968 12.5537 9.15117 12.4732 9.25669L7.409 15.8555C7.09066 16.2631 6.62151 16.4938 6.11886 16.5023L3.35426 16.5363C3.20682 16.538 3.0778 16.4359 3.04429 16.2895L2.41597 13.5577C2.30706 13.0556 2.41597 12.5365 2.73432 12.1365L7.82369 5.50625C7.90579 5.39987 8.05743 5.38115 8.16131 5.4654Z" fill="black"/>
+                                             <path opacity="0.4" d="M14.3455 6.86014L13.522 7.88817C13.4391 7.99285 13.2899 8.00987 13.1869 7.92647C12.1858 7.1163 9.62224 5.03725 8.91099 4.46111C8.80711 4.37601 8.79286 4.22453 8.87664 4.119L9.67083 3.13267C10.3913 2.20506 11.6479 2.11996 12.6616 2.92843L13.8261 3.85604C14.3036 4.23049 14.622 4.72408 14.7309 5.2432C14.8566 5.81423 14.7225 6.37506 14.3455 6.86014Z" fill="black"/>
+                                          </svg>
+                                       </a>
+                                       <ul class="new_rsult_d">
+                                          <li><h6>Exam</h6><p>: {{ $data['exam'] }}</p></li>
+                                          <li><h6>Ranking Position</h6><p>: {{ $data['ranking_position'] }}</p></li>
+                                          
+                                          <li><h6>Mean Score Points</h6><p>: {{ $data['mean_score_points'] }}</p></li>
+                                          <li><h6>Mean Grade</h6><p>: {{ $data['mean_grade'] }}</p></li>
+                                          <li><h6>Number of Candidates</h6><p>: {{ $data['number_of_candidates'] }}</p></li>
+                                       </ul>
                                     </div>
+                                    @endforeach
+
                                  </div>
                               </div>
-
                            </div>
-                        @endif
+
+                        </div>
                         <div class="ad-schl-card adscl-crd4">
                            <div class="ad-schl-sub-go mt-0">
                               <div class="ad-sch-pag-sec d-flex justify-content-start align-items-center">
