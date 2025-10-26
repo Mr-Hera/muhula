@@ -78,29 +78,43 @@ class SchoolController extends Controller
     return redirect()->route('add.school.step2');
   }
 
-  public function addSchoolStep2(){
-    // Clear pre-existing session under "school_creation.*" just incase it still exists
+  public function addSchoolStep2()
+  {
+    // Keep only the school_id in the session; clear any other remnants
+    $schoolId = Session::get('school_creation.step2.school_id', null);
+
+    // Reset the session but retain only the school_id (if exists)
     Session::forget('school_creation');
-    
+    if ($schoolId) {
+        Session::put('school_creation.step2.school_id', $schoolId);
+    }
+
+    // Fetch static lists
     $countries = Country::all();
     $counties = County::all();
 
-    // Try to get school details from session if exists
+    // Fetch school details only if we have a valid ID
     $schoolDetails = null;
-    if (Session::has('school_creation.step2.school_id')) {
-      $schoolId = Session::get('school_creation.step2.school_id');
+    if ($schoolId) {
       $schoolDetails = School::with(['contact', 'address'])->find($schoolId);
     }
-    
-    return view('listSchool.add_school_step2')->with([
+
+    // Prepare data for the view
+    $data = [
       'countries' => $countries,
-      'counties' => $counties,
-      'schoolDetails'  => $schoolDetails,
-    ]);
+      'counties'  => $counties,
+    ];
+
+    // Only include 'schoolDetails' if it exists (e.g., user is returning to a previous step)
+    if ($schoolDetails) {
+        $data['schoolDetails'] = $schoolDetails;
+    }
+
+    return view('listSchool.add_school_step2', $data);
   }
 
-  public function addSchoolStep2Save(Request $request){
-    // dd($request);
+  public function addSchoolStep2Save(Request $request)
+  {
     $validated = $request->validate([
       'school_name'      => 'required|string|max:255',
       'about_school'     => 'required|string|max:5000',
@@ -116,20 +130,20 @@ class SchoolController extends Controller
       'full_address'     => 'required|string|max:500',
       'google_location'  => 'nullable|string|max:500',
     ], [], [
-        'school_name'      => 'School name',
-        'about_school'     => 'About the school',
-        'contact_title.*'  => 'Contact full name',
-        'contact_email.*'  => 'Contact email',
-        'contact_phone.*'  => 'Contact phone',
-        'country'          => 'Country',
-        'county'           => 'Town',
-        'new_county_name'  => 'New town name',
-        'full_address'     => 'Full address',
-        'google_location'  => 'Google map link',
+      'school_name'      => 'School name',
+      'about_school'     => 'About the school',
+      'contact_title.*'  => 'Contact full name',
+      'contact_email.*'  => 'Contact email',
+      'contact_phone.*'  => 'Contact phone',
+      'country'          => 'Country',
+      'county'           => 'Town',
+      'new_county_name'  => 'New town name',
+      'full_address'     => 'Full address',
+      'google_location'  => 'Google map link',
     ]);
 
     $county_id = null;
-    
+
     // ✅ If user selected "Other", create a new county first
     if ((int) $validated['county'] === 0) {
       if (empty($validated['new_county_name'])) {
@@ -140,8 +154,6 @@ class SchoolController extends Controller
         'name' => $validated['new_county_name'],
       ]);
       $county_id = $new_county->id;
-      
-      // $validated['county'] = $county->id;
     } else {
       $county_id = $validated['county'];
     }
@@ -149,7 +161,6 @@ class SchoolController extends Controller
     DB::beginTransaction();
 
     try {
-
       // 1. Save school_contact
       $schoolContact = new SchoolContact();
       $schoolContact->full_names = $validated['contact_title'][0];
@@ -157,29 +168,27 @@ class SchoolController extends Controller
       $schoolContact->phone_no = $validated['contact_phone'][0];
       $schoolContact->save();
 
-      // Take the full_names string (e.g., "John Mwangi" or "John")
+      // Split names for user creation
       $names = explode(' ', trim($schoolContact->full_names));
-
-      // Always grab the first and second parts only
       $firstName = $names[0] ?? '';
       $lastName  = $names[1] ?? '';
 
-      // Add contact as a user
+      // 2. Add contact as user
       $school_contact_user = new User();
       $school_contact_user->first_name = $firstName;
       $school_contact_user->last_name = $lastName;
       $school_contact_user->email = $schoolContact->email;
       $school_contact_user->phone = $schoolContact->phone_no;
-      $school_contact_user->password =  Hash::make(env('SECURE_APP_PASSWORD'));
+      $school_contact_user->password = Hash::make(env('SECURE_APP_PASSWORD'));
       $school_contact_user->save();
 
-      // 2. Save school_address
+      // 3. Save school_address
       $schoolAddress = new SchoolAddress();
       $schoolAddress->address_text = $validated['full_address'] ?? null;
       $schoolAddress->google_maps_link = $validated['google_location'] ?? null;
       $schoolAddress->save();
 
-      // 3. Save partial school (just what we can now)
+      // 4. Save school record
       $school = new School();
       $school->name = $validated['school_name'];
       $school->description = $validated['about_school'];
@@ -188,22 +197,17 @@ class SchoolController extends Controller
       $school->country_id = $validated['country'];
       $school->school_contact_id = $schoolContact->id;
       $school->school_address_id = $schoolAddress->id;
-
       $school->save();
 
       DB::commit();
 
-      // Save IDs to session for step tracking
-      Session::put('school_creation.step2', [
-          'school_id' => $school->id,
-          'contact_id' => $schoolContact->id,
-          'address_id' => $schoolAddress->id,
-      ]);
+      // ✅ Store only school_id in session
+      Session::forget('school_creation');
+      Session::put('school_creation.step2.school_id', $school->id);
 
       return redirect()->route('add.school.step3');
 
     } catch (\Exception $e) {
-      // dd($e);
       DB::rollBack();
       return back()->withErrors(['error' => 'Failed to save school step 2: ' . $e->getMessage()]);
     }
@@ -266,12 +270,14 @@ class SchoolController extends Controller
     $schoolId = Session::get('school_creation.step2.school_id');
     $currentSchoolInput = School::where('id', $schoolId)->first();
     // dd($currentSchoolInput->name);
-    $contactId = Session::get('school_creation.step2.contact_id');
 
     if (!$schoolId) {
       // dd('Previous school data not found');
       return back()->withErrors(['error' => 'Previous school data not found. Please restart the form.']);
     }
+
+    // ✅ Fetch contact ID directly from the school record instead of session
+    $contactId = $currentSchoolInput->school_contact_id;
 
     DB::beginTransaction();
 
@@ -282,7 +288,29 @@ class SchoolController extends Controller
       // Handle file upload
       $schoolLogoPath = "";
 
-      // RESOLVED LOGO STORAGE ISSUE
+      // ✅ Updated: Save logo directly to "public/images/school_logo"
+      if ($request->hasFile('school_logo')) {
+        $image = $request->file('school_logo');
+
+        // Sanitize school name -> lowercase, underscores instead of spaces, remove invalid chars
+        $sanitizedName = Str::slug($currentSchoolInput->name, '_');
+        $imageName = $sanitizedName . '_logo.' . $image->getClientOriginalExtension();
+
+        // Save directly to public/images/school_logo
+        $destination = public_path('images/school_logo');
+
+        // Ensure directory exists
+        if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+        }
+
+        // Move the file
+        $image->move($destination, $imageName);
+
+        $schoolLogoPath = 'images/school_logo/' . $imageName;
+      }
+
+      // save to storage also
       if ($request->hasFile('school_logo')) {
         $image = $request->file('school_logo');
 
@@ -335,21 +363,9 @@ class SchoolController extends Controller
 
       DB::commit();
 
-      // Save step 3 data in session for completeness
-      $session3 = Session::put('school_creation.step3', [
-          'ownership_type'          => $request['ownership_type'],
-          'year_of_establishment'  => $request['year_of_establishment'],
-          'school_level_id'        => $request['school_level_id'],
-          'curriculum_id'          => $curriculum->id,
-          'gender'                 => $request['gender'],
-          'school_type_id'         => $request['school_type_id'],
-          'contact_relationship_id'=> $request['contact_relationship_id'],
-          'other_relationship'     => $request['other_relationship'],
-          'religion_id'            => $request['religion_id'],
-          'facilities'             => $request['facilities'],
-          'other_facilities'       => $request['other_facilities'],
-          'school_logo_path'       => $schoolLogoPath,
-      ]);
+      // ✅ Save only school_id to session for step tracking
+      Session::forget('school_creation');
+      Session::put('school_creation.step2.school_id', $school->id);
 
       return redirect()->route('add.school.step4');
 
@@ -364,9 +380,9 @@ class SchoolController extends Controller
   public function addSchoolStep3UniformSave(Request $request){
     // dd($request);
     $validated = $request->validate([
-        'uniform_type' => 'required|in:Male,Female,Mixed',
-        'uniform_title' => 'nullable|string|max:255',
-        'uniform_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+      'uniform_type' => 'required|in:Male,Female,Mixed',
+      'uniform_title' => 'nullable|string|max:255',
+      'uniform_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
     ]);
 
     // Map uniform_type to gender shorthand
@@ -406,7 +422,8 @@ class SchoolController extends Controller
     return redirect()->route('add.school.step3'); 
   }
 
-  public function addSchoolStep4(){
+  public function addSchoolStep4()
+  {
     $extended_school_services = ExtendedSchoolService::all();
     $schoolId = Session::get('school_creation.step2.school_id');
     $school   = School::findOrFail($schoolId);
@@ -414,22 +431,33 @@ class SchoolController extends Controller
     // Prefer DB values, fallback to session
     $operationHours = $school->operationHours()->get()->toArray();
     if (empty($operationHours)) {
-        $operationHours = Session::get('school_creation.extended_services.step4.operation_hours', []);
+      $operationHours = []; // No longer fetching from session, rely only on DB
     }
 
     // Try to get school details from session if exists
     $schoolDetails = null;
-    if (Session::has('school_creation.step2.school_id')) {
-      $schoolId = Session::get('school_creation.step2.school_id');
+    if ($schoolId) {
       $schoolDetails = School::with(['contact', 'address'])->find($schoolId);
     }
 
+    // ✅ Fetch extended services directly from DB (assuming pivot relation)
+    // If your pivot table is named 'extended_school_service_school' or similar,
+    // ensure that your School model has a relationship like:
+    // public function extendedServices() { return $this->belongsToMany(ExtendedSchoolService::class); }
+    $schoolExtendedServices = [];
+    if (method_exists($school, 'extendedSchoolServices')) {
+      $schoolExtendedServices = $school->extendedServices()->pluck('extended_school_services.id')->toArray();
+    }
+
+    // ✅ Fetch school population directly from DB
+    $schoolPopulation = \App\Models\SchoolPopulation::where('school_id', $schoolId)->get();
+
     return view('listSchool.add_school_step4')->with([
-        'extended_school_services' => $extended_school_services,
-        'extended_services'        => Session::get('school_creation.extended_services.step4'),
-        'school_population'        => Session::get('school_creation.school_population.step4'),
-        'operation_hours'          => $operationHours,
-        'schoolDetails'  => $schoolDetails,
+      'extended_school_services' => $extended_school_services,
+      'extended_services'        => $schoolExtendedServices, // replaced session with DB data
+      'school_population'        => $schoolPopulation,       // replaced session with DB data
+      'operation_hours'          => $operationHours,
+      'schoolDetails'            => $schoolDetails,
     ]);
   }
 
