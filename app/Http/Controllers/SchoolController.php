@@ -87,8 +87,9 @@ class SchoolController extends Controller
 
     // Reset the session but retain only the school_id (if exists)
     Session::forget('school_creation');
+    Session::forget('school_slug');
     if ($schoolId) {
-        Session::put('school_creation.step2.school_id', $schoolId);
+      Session::put('school_creation.step2.school_id', $schoolId);
     }
 
     // Fetch static lists
@@ -779,40 +780,28 @@ class SchoolController extends Controller
       // dd($schoolId);
 
       if (!$schoolId || !School::find($schoolId)) {
-          return redirect()->back()->with('error', 'School ID is missing or invalid.');
+        return redirect()->back()->with('error', 'School ID is missing or invalid.');
       }
 
       $examPerformance = SchoolExamPerformance::create([
-          'school_id' => $schoolId,
-          'exam' => $request->input('exam'),
-          'ranking_position' => $request->input('ranking_position'),
-          'region' => $request->input('region'),
-          'mean_score_points' => $request->input('mean_score_point'),
-          'mean_grade' => $request->input('mean_grade'),
-          'number_of_candidates' => $request->input('no_of_candidate'),
+        'school_id' => $schoolId,
+        'exam' => $request->input('exam'),
+        'ranking_position' => $request->input('ranking_position'),
+        'region' => $request->input('region'),
+        'mean_score_points' => $request->input('mean_score_point'),
+        'mean_grade' => $request->input('mean_grade'),
+        'number_of_candidates' => $request->input('no_of_candidate'),
       ]);
-      // dd($examPerformance);
-
-      Session::put('school_creation.exam_performance', [
-          'id' => $examPerformance->id,
-          'exam' => $examPerformance->exam,
-          'ranking_position' => $examPerformance->ranking_position,
-          'region' => $examPerformance->region,
-          'mean_score_points' => $examPerformance->mean_score_points,
-          'mean_grade' => $examPerformance->mean_grade,
-          'number_of_candidates' => $examPerformance->number_of_candidates,
-      ]);
-      // dd(Session::get('school_creation.exam_performance'));
 
       return redirect()->back()->with('success', 'Exam performance data saved successfully.');
     } catch (\Throwable $e) {
-      dd($e);
-        Log::error('Error saving school exam performance: '.$e->getMessage(), [
-            'trace' => $e->getTraceAsString(),
-            'request' => $request->all(),
-        ]);
+      // dd($e);
+      Log::error('Error saving school exam performance: '.$e->getMessage(), [
+        'trace' => $e->getTraceAsString(),
+        'request' => $request->all(),
+      ]);
 
-        return redirect()->back()->with('error', 'An unexpected error occurred. Please try again.');
+      return redirect()->back()->with('error', 'An unexpected error occurred. Please try again.');
     }
   }
 
@@ -889,7 +878,44 @@ class SchoolController extends Controller
       $branch->phone_no = $validated['phone'] ?? null;
       $branch->save();
 
-      // 🔹 Handle school images (multiple uploads)
+      // 🔹 Handle school images (multiple uploads to public folder)
+      if ($request->hasFile('school_image')) {
+        foreach ($request->file('school_image') as $uploadedImage) {
+          if ($uploadedImage->isValid()) {
+            // Sanitize school name
+            $sanitizedName = Str::slug($school->name ?? 'school', '_');
+
+            // Create a unique filename
+            $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+
+            // ✅ Destination inside *public/images/school_images* instead of storage
+            $destination = public_path('images/school_images');
+            if (!file_exists($destination)) {
+              mkdir($destination, 0777, true);
+            }
+
+            // Move image to public folder
+            $uploadedImage->move($destination, $imageName);
+
+            // Relative path for DB (accessible publicly)
+            $path = 'images/school_images/' . $imageName;
+
+            // Save to DB (assuming School has images() relation -> hasMany(SchoolImage::class))
+            $image = $school->images()->create([
+              'image_path' => $path,
+              'caption'    => $school->name ?? 'School Image',
+            ]);
+
+            // Optionally set the *first uploaded image* as branch->school_image_id
+            if (!$branch->school_image_id) {
+              $branch->school_image_id = $image->id;
+              $branch->save();
+            }
+          }
+        }
+      }
+
+      // 🔹 Handle school images (multiple uploads to storage folder)
       if ($request->hasFile('school_image')) {
         foreach ($request->file('school_image') as $uploadedImage) {
           if ($uploadedImage->isValid()) {
@@ -923,17 +949,6 @@ class SchoolController extends Controller
           }
         }
       }
-
-      // Store in session
-      Session::put('school_creation.school_branch', [
-        'school_branch_id' => $branch->id,
-        'school_name'      => $branch->name,
-        'school_type_id'   => $branch->school_type_id,
-        'school_image_id'  => $branch->school_image_id,
-        'county_id'        => $branch->county_id,
-        'email'            => $branch->email,
-        'phone_no'         => $branch->phone_no,
-      ]);
     }
 
     // Step 3: Always redirect
@@ -988,7 +1003,6 @@ class SchoolController extends Controller
   }
 
   public function addSchoolStep9FeesSave(Request $request){
-    // dd($request);
     // Validate the input
     $validated = $request->validate([
       'grade_level' => 'required|exists:school_levels,id',
@@ -1007,24 +1021,14 @@ class SchoolController extends Controller
     // Get the school_id from session
     $schoolId = Session::get('school_creation.step2.school_id');
     $school = School::find($schoolId);
-    // dd($schoolId);
 
     // Create the school fee record
     $school_fee_record = SchoolFee::create([
-        'school_id' => $schoolId,
-        'level_id' => $validated['grade_level'],
-        'min_amount' => $validated['min_amount'],
-        'max_amount' => $validated['max_amount'],
-        'currency' => 'KES', // You can dynamically pass this if needed
-    ]);
-    // dd($school_fee_record);
-
-    // Store the moving parts in session for next steps
-    Session::put('school_creation.step8.fee_data', [
-        'grade_level' => $validated['grade_level'],
-        'min_amount' => $validated['min_amount'],
-        'max_amount' => $validated['max_amount'],
-        'currency'    => 'KES', // Again, replace with $request->currency if needed
+      'school_id' => $schoolId,
+      'level_id' => $validated['grade_level'],
+      'min_amount' => $validated['min_amount'],
+      'max_amount' => $validated['max_amount'],
+      'currency' => 'KES', // You can dynamically pass this if needed
     ]);
     Session::put(['school_slug' => $school->slug]);
 
