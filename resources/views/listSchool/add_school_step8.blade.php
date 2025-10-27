@@ -347,7 +347,7 @@
                                     No Affiliate  
                                  </a> --}}
                               </div>
-                              <p>Step 8 Of 9</p>
+                              <p>Step 7 Of 9</p>
                            </div>
                         </div>
                      </form>
