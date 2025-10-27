@@ -177,7 +177,7 @@
                                  Back   
                               </a> --}}
                            </div>
-                           <p>Step 9 Of 9</p>
+                           <p>Step 8 Of 8</p>
                         </div>
                      </div>
                   </div>

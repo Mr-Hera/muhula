@@ -310,7 +310,7 @@
                                  Back   
                               </a> --}}
                            </div>
-                           <p>Step 4 Of 9</p>
+                           <p>Step 3 Of 9</p>
                         </div>
                      </div>
             

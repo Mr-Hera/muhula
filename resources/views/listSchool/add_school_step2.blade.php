@@ -237,7 +237,7 @@
                                  <a href="{{ route('add.school.step1') }}">Back</a>
                               @endif --}}
                            </div>
-                           <p>Step 2 Of 9</p>
+                           <p>Step 1 Of 9</p>
                      </div>
                   </div>
                </form>

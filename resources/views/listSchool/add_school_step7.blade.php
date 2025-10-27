@@ -216,7 +216,7 @@
                                     <path d="M5 4L9.08625 7.97499L5 11.95" stroke="#414750" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 
                                  </a>
                               </div>
-                              <p>Step 7 Of 9</p>
+                              <p>Step 6 Of 9</p>
                            </div>
                         </div>
                      </form>
