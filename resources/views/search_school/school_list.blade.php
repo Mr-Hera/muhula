@@ -450,29 +450,44 @@
                            <div class="ser_img">
                               <span class="res-tab m-0">
                                  @if($school->ownership == 'Public')
-                                 Public
+                                    Public
                                  @elseif($school->ownership == 'Private')
-                                 Private
+                                    Private
                                  @endif
-                                 </span>
-                                 @php
-                                    // Build the expected storage path
-                                    $logoPath = $school->logo 
-                                       ? 'public/' . ltrim($school->logo, '/') 
-                                       : 'public/default_images/default.jpg';
+                              </span>
+                              {{-- @php
+                                 // Build the expected storage path
+                                 $logoPath = $school->logo 
+                                    ? 'public/' . ltrim($school->logo, '/') 
+                                    : 'public/default_images/default.jpg';
 
-                                    // Check if file exists, otherwise fallback
-                                    $finalPath = Storage::exists($logoPath) 
-                                       ? $logoPath 
-                                       : 'public/default_images/default.jpg';
+                                 // Check if file exists, otherwise fallback
+                                 $finalPath = Storage::exists($logoPath) 
+                                    ? $logoPath 
+                                    : 'public/default_images/default.jpg';
 
-                                    // Generate the public URL
-                                    $logoUrl = Storage::url($finalPath);
-                                 @endphp
+                                 // Generate the public URL
+                                 $logoUrl = Storage::url($finalPath);
+                              @endphp --}}
 
-                                 <a href="{{ route('school.details', $school->slug) }}">
-                                    <img src="{{ $logoUrl }}" alt="{{ $school->name ?? 'Default School Logo' }}" />
-                                 </a>
+                              @php
+                                 // Build the expected storage path
+                                 $logoPath = $school->logo 
+                                    ? $school->logo 
+                                    : 'default_images/default.jpg';
+
+                                 // Check if file exists, otherwise fallback
+                                 $finalPath = file_exists($logoPath) 
+                                    ? $logoPath 
+                                    : 'public/default_images/default.jpg';
+
+                                 // Generate the public URL
+                                 $logoUrl = URL::to($finalPath);
+                              @endphp
+
+                              <a href="{{ route('school.details', $school->slug) }}">
+                                 <img src="{{ $logoUrl }}" alt="{{ $school->name ?? 'Default School Logo' }}" />
+                              </a>
                            </div>
                            {{-- School Cards --}}
                            <div class="serach_sc_details">

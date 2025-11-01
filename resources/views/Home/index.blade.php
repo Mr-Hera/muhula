@@ -528,7 +528,7 @@
                            <div class="news_imgs">
                               <div class="spans"><p> {{$news_article->published_at?date('d',strtotime($news_article->published_at)):'' }} <span>{{ $news_article->published_at?date('M',strtotime($news_article->published_at)):'' }}</span></p> </div> 
                               <a href="{{ route('news.details',$news_article->slug) }}"> 
-                                 @php
+                                 {{-- @php
                                     // Normalize the path (prepend 'public/' since files are stored in storage/app/public)
                                     $coverImagePath = $news_article->cover_image ? 'public/' . ltrim($news_article->cover_image, '/') : null;
 
@@ -539,6 +539,22 @@
 
                                     // Generate the public URL
                                     $imageUrl = Storage::url($finalPath);
+                                 @endphp --}}
+
+                                 @php
+                                    // Use the stored image path or fall back to a default image
+                                    $coverImageFile = $news_article->cover_image ?? 'default_images/default.jpg';
+
+                                    // Build the full filesystem path (to check if it exists in /public)
+                                    $coverImageFullPath = public_path($coverImageFile);
+
+                                    // Fallback to default if the file is missing
+                                    if (!file_exists($coverImageFullPath)) {
+                                       $coverImageFile = 'default_images/default.jpg';
+                                    }
+
+                                    // Build the full public URL for the browser
+                                    $imageUrl = URL::to($coverImageFile);
                                  @endphp
 
                                  <img src="{{ $imageUrl }}" alt="{{ $news_article->title ?? 'News Image' }}">

@@ -191,7 +191,7 @@ class SchoolController extends Controller
       $school = new School();
       $school->name = $validated['school_name'];
       $school->description = $validated['about_school'];
-      $school->slug = Str::slug($validated['about_school'] . '-' . Str::random(5));
+      $school->slug = Str::slug($validated['school_name'] . '-' . Str::random(5));
       $school->county_id = $county_id;
       $school->country_id = $validated['country'];
       $school->school_contact_id = $schoolContact->id;
@@ -310,19 +310,19 @@ class SchoolController extends Controller
       }
 
       // save to storage also
-      if ($request->hasFile('school_logo')) {
-        $image = $request->file('school_logo');
+      // if ($request->hasFile('school_logo')) {
+      //   $image = $request->file('school_logo');
 
-        // Sanitize school name -> lowercase, underscores instead of spaces, remove invalid chars
-        $sanitizedName = Str::slug($currentSchoolInput->name, '_');
+      //   // Sanitize school name -> lowercase, underscores instead of spaces, remove invalid chars
+      //   $sanitizedName = Str::slug($currentSchoolInput->name, '_');
 
-        $imageName = $sanitizedName . '_logo.' . $image->getClientOriginalExtension();
+      //   $imageName = $sanitizedName . '_logo.' . $image->getClientOriginalExtension();
 
-        $destination = storage_path('app/public/images/school_logo');
-        $image->move($destination, $imageName);
+      //   $destination = storage_path('app/public/images/school_logo');
+      //   $image->move($destination, $imageName);
 
-        $schoolLogoPath = 'images/school_logo/' . $imageName;
-      }
+      //   $schoolLogoPath = 'images/school_logo/' . $imageName;
+      // }
 
       // Assuming one curriculum ID is picked (if not, you'll need a pivot table)
       // Also assuming first item from arrays is used for singular fields in the schools table
@@ -357,13 +357,12 @@ class SchoolController extends Controller
 
       $schoolContact = SchoolContact::firstOrCreate(['id' => $contactId]);
       $schoolContact->update([
-        'contact_position_id' => $request['contact_relationship_id'][0],
+        'contact_position_id' => $request['contact_relationship_id'],
       ]);
 
       DB::commit();
 
       // ✅ Save only school_id to session for step tracking
-      Session::forget('school_creation');
       Session::put('school_creation.step2.school_id', $school->id);
 
       return redirect()->route('add.school.step4');
@@ -426,6 +425,7 @@ class SchoolController extends Controller
     $extended_school_services = ExtendedSchoolService::all();
     $schoolId = Session::get('school_creation.step2.school_id');
     $school   = School::findOrFail($schoolId);
+    // dd($school);
 
     // Prefer DB values, fallback to session
     $operationHours = $school->operationHours()->get()->toArray();
@@ -445,11 +445,33 @@ class SchoolController extends Controller
     // public function extendedServices() { return $this->belongsToMany(ExtendedSchoolService::class); }
     $schoolExtendedServices = [];
     if (method_exists($school, 'extendedSchoolServices')) {
-      $schoolExtendedServices = $school->extendedServices()->pluck('extended_school_services.id')->toArray();
+      $schoolExtendedServices = $school->extendedSchoolServices()->pluck('extended_school_services.id')->toArray();
     }
 
     // ✅ Fetch school population directly from DB
-    $schoolPopulation = SchoolPopulation::where('school_id', $schoolId)->get();
+    $schoolPopulation = SchoolPopulation::where('school_id', $schoolId)->first();
+
+    // ✅ Provide safe defaults if no record exists
+    if (!$schoolPopulation) {
+      $schoolPopulation = [
+        'total_students'  => null,
+        'student_boys'    => null,
+        'student_girls'   => null,
+        'total_teachers'  => null,
+        'teacher_male'    => null,
+        'teacher_female'  => null,
+      ];
+    } else {
+      // Convert to array for direct Blade access
+      $schoolPopulation = [
+        'total_students'  => $schoolPopulation->total_students,
+        'student_boys'    => $schoolPopulation->male_students,
+        'student_girls'   => $schoolPopulation->female_students,
+        'total_teachers'  => $schoolPopulation->total_teachers,
+        'teacher_male'    => $schoolPopulation->male_teachers,
+        'teacher_female'  => $schoolPopulation->female_teachers,
+      ];
+    }
 
     return view('listSchool.add_school_step4')->with([
       'extended_school_services' => $extended_school_services,
@@ -509,7 +531,7 @@ class SchoolController extends Controller
     // ✅ Fetch extended services from DB (assuming belongsToMany relation)
     $extendedServices = [];
     if (method_exists($school, 'extendedSchoolServices')) {
-      $extendedServices = $school->extendedServices()->pluck('extended_school_services.id')->toArray();
+      $extendedServices = $school->extendedSchoolServices()->pluck('extended_school_services.id')->toArray();
     }
 
     return redirect()->back()->with('success', 'School population saved successfully.')->with([
@@ -598,30 +620,30 @@ class SchoolController extends Controller
     $school = School::findOrFail($schoolId);
 
     // saving to storage
-    if ($request->hasFile('school_image')) {
-      foreach ($request->file('school_image') as $uploadedImage) {
-        if ($uploadedImage->isValid()) {
-          // Sanitize school name
-          $sanitizedName = Str::slug($school->name, '_');
+    // if ($request->hasFile('school_image')) {
+    //   foreach ($request->file('school_image') as $uploadedImage) {
+    //     if ($uploadedImage->isValid()) {
+    //       // Sanitize school name
+    //       $sanitizedName = Str::slug($school->name, '_');
 
-          // Create a unique name (e.g. schoolName_timestamp_random.ext)
-          $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+    //       // Create a unique name (e.g. schoolName_timestamp_random.ext)
+    //       $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
 
-          // Destination inside storage/app/public/images/school_images
-          $destination = storage_path('app/public/images/school_images');
-          $uploadedImage->move($destination, $imageName);
+    //       // Destination inside storage/app/public/images/school_images
+    //       $destination = storage_path('app/public/images/school_images');
+    //       $uploadedImage->move($destination, $imageName);
 
-          // Relative path for DB (matches your logo method)
-          $path = 'images/school_images/' . $imageName;
+    //       // Relative path for DB (matches your logo method)
+    //       $path = 'images/school_images/' . $imageName;
 
-          // Save to DB
-          $school->images()->create([
-            'image_path' => $path,
-            'caption'    => $school->name, // Keep original name for caption
-          ]);
-        }
-      }
-    }
+    //       // Save to DB
+    //       $school->images()->create([
+    //         'image_path' => $path,
+    //         'caption'    => $school->name, // Keep original name for caption
+    //       ]);
+    //     }
+    //   }
+    // }
 
     // saving directly to public
     if ($request->hasFile('school_image')) {
@@ -2085,6 +2107,29 @@ class SchoolController extends Controller
     // ✅ Process and store images
     if ($request->hasFile('school_image')) {
       foreach ($request->file('school_image') as $uploadedImage) {
+        // saves image to storage
+        // if ($uploadedImage->isValid()) {
+        //   // Sanitize school name for filename
+        //   $sanitizedName = Str::slug($school->name, '_');
+
+        //   // Create unique image filename
+        //   $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+
+        //   // Destination inside storage/app/public/images/school_images
+        //   $destination = storage_path('app/public/images/school_images');
+        //   $uploadedImage->move($destination, $imageName);
+
+        //   // Relative DB path
+        //   $path = 'images/school_images/' . $imageName;
+
+        //   // ✅ Save record in DB
+        //   $school->images()->create([
+        //     'image_path' => $path,
+        //     'caption'    => $school->name,
+        //   ]);
+        // }
+
+        // saves images directly to public folder
         if ($uploadedImage->isValid()) {
           // Sanitize school name for filename
           $sanitizedName = Str::slug($school->name, '_');
@@ -2092,19 +2137,26 @@ class SchoolController extends Controller
           // Create unique image filename
           $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
 
-          // Destination inside storage/app/public/images/school_images
-          $destination = storage_path('app/public/images/school_images');
+          // ✅ Destination inside public/images/school_images
+          $destination = public_path('images/school_images');
+
+          // Ensure the folder exists
+          if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+          }
+
+          // Move the uploaded file to the public folder
           $uploadedImage->move($destination, $imageName);
 
-          // Relative DB path
+          // ✅ Relative DB path (relative to /public)
           $path = 'images/school_images/' . $imageName;
 
-          // ✅ Save record in DB
+          // Save record in DB
           $school->images()->create([
             'image_path' => $path,
             'caption'    => $school->name,
           ]);
-        }
+      }
       }
     }
 
