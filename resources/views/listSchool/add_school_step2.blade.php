@@ -78,6 +78,22 @@
                   </div>
                </div>
 
+               
+               @if ($errors->any())
+                  <div class="alert alert-danger mb-3">
+                     <ul>
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                     </ul>
+                  </div>
+               @endif
+               @if ($errors->has('error'))
+                  <div class="alert alert-danger">
+                     {{ $errors->first('error') }}
+                  </div>
+               @endif
+
                <form action="{{ route('add.school.step2.save') }}" method="post" enctype="multipart/form-data" id="schoolForm">
                   @csrf
                   <div class="ad-schl-card adscl-crd2">
@@ -98,11 +114,9 @@
                            <div class="col-12">
                               <div class="dash_input mb-0 mt-2">
                                  <label>About the school <span style="color: red;">*</span></label>
-                                 <textarea name="about_school" id="about_school" placeholder="Describe school here...">
-                                    {{ old('about_school', optional($schoolDetails)->about_school) }}
-                                 </textarea>
+                                 <textarea placeholder="Describe school here..." name="about_school" id="about_school">{{ old('about_school', optional($schoolDetails)->about_school) }}</textarea>
                                  @error('about_school')
-                                       <small class="text-danger">{{ $message }}</small>
+                                    <small class="text-danger">{{ $message }}</small>
                                  @enderror
                               </div>
                            </div>
@@ -116,7 +130,7 @@
                            <div class="col-lg-4 col-md-4">
                               <div class="dash_input">
                                  <label>Contact Full Names</label>
-                                 <input type="text" name="contact_title[]" id="contact_title1" placeholder="Enter here..." 
+                                 <input type="text" name="contact_title[]" id="contact_title1" placeholder="E.g. John Mwangi..." 
                                           value="{{ old('contact_title.0', optional($schoolDetails)->contact_title) }}"
                                  >
                                  @error('contact_title.0')
@@ -130,7 +144,7 @@
                                  <label>Email</label>
                                  <input type="text" name="contact_email[]" id="contact_email1" 
                                           placeholder="Enter here..." 
-                                          value="{{ old('contact_email.0', optional($schoolDetails)->contact_title) }}">
+                                          value="{{ old('contact_email.0', optional($schoolDetails)->contact_email) }}">
                                  @error('contact_email.0')
                                        <small class="text-danger">{{ $message }}</small>
                                  @enderror
@@ -141,8 +155,8 @@
                               <div class="dash_input">
                                  <label>Phone</label>
                                  <input type="text" name="contact_phone[]" id="contact_phone1" 
-                                          placeholder="Enter here..." 
-                                          value="{{ old('contact_phone.0', optional($schoolDetails)->contact_title) }}">
+                                          placeholder="E.g. 0712345678..." 
+                                          value="{{ old('contact_phone.0', optional($schoolDetails)->contact_phone) }}">
                                  @error('contact_phone.0')
                                        <small class="text-danger">{{ $message }}</small>
                                  @enderror

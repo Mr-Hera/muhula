@@ -43,7 +43,7 @@
 @if(@$schoolDetails->youtube_link == null)
 <div class="position-relative">
 <a href="javascript:;" class="school-banner position-relative w-100 overflow-hidden img-trigger">
-   @php
+   {{-- @php
       // Compute expected storage path (relative to 'public' disk)
       $logoPath = $school_record->logo 
          ? 'public/' . ltrim($school_record->logo, '/') 
@@ -55,6 +55,25 @@
          : 'public/default_images/default.jpg';
 
       $logoUrl = Storage::url($finalPath);
+   @endphp --}}
+
+   @php
+      // Define the base path relative to your public directory
+      // Maintain your "storage/app/public" structure
+      $logoFile = $school_record->logo 
+         ? $school_record->logo
+         : 'default_images/default.jpg';
+
+      // Build the full file path (for existence check)
+      $logoFullPath = public_path($logoFile);
+
+      // Fallback to default if the file doesn’t exist
+      if (!file_exists($logoFullPath)) {
+         $logoFile = 'default_images/default.jpg';
+      }
+
+      // Generate a full public URL
+      $logoUrl = URL::to($logoFile);
    @endphp
 
    <img src="{{ $logoUrl }}" alt="{{ $school_record->name ?? 'Default Logo' }}" class="blurred-image">
@@ -121,7 +140,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  Private
                               @endif
                           </span>
-                           @php
+                           {{-- @php
                               $logoPath = $school_record->logo 
                                  ? 'public/' . $school_record->logo 
                                  : 'public/default_images/default.jpg';
@@ -131,7 +150,24 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                               <img src="{{ Storage::url($logoPath) }}" alt="{{ $school_record->name }}">
                            @else
                               <img src="{{ Storage::url('public/default_images/default.jpg') }}" alt="Default Logo">
-                           @endif
+                           @endif --}}
+                           @php
+                              // Define the base public path equivalent to your storage structure
+                              $logoFile = $school_record->logo ?? 'default_images/default.jpg';
+
+                              // Build the full file path (to check existence)
+                              $logoFullPath = public_path($logoFile);
+
+                              // Fallback to default if file missing
+                              if (!file_exists($logoFullPath)) {
+                                 $logoFile = 'default_images/default.jpg';
+                              }
+
+                              // Build public URL
+                              $logoUrl = URL::to($logoFile);
+                           @endphp
+
+                           <img src="{{ $logoUrl }}" alt="{{ $school_record->name ?? 'Default Logo' }}">
                         </div>
                         <div class="school_names">
                            <h3>{{ $school_record->name }}
@@ -533,7 +569,7 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                         <div class="abot_all_headings">
                            <h3>Gallery</h3>
                         </div>
-                        @if($school_gallery->isNotEmpty())
+                        {{-- @if($school_gallery->isNotEmpty())
                            <div class="galley_des">
                               <div class="owl-carousel owl-theme owl-gallery position-relative">
                                  @foreach($school_gallery as $data)
@@ -555,6 +591,33 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                     <div class="item showImage" data-image_url="{{ $imageUrl }}">
                                        <div class="school_gallery_img">
                                              <img src="{{ $imageUrl }}" alt="{{ $data->image_path ?? 'default.jpg' }}">
+                                       </div>
+                                    </div>
+                                 @endforeach
+                              </div>
+                           </div>
+                        @endif --}}
+                        @if($school_gallery->isNotEmpty())
+                           <div class="galley_des">
+                              <div class="owl-carousel owl-theme owl-gallery position-relative">
+                                 @foreach($school_gallery as $data)
+                                    @php
+                                       // Build full public URL to the image
+                                       $imageFile = $data->image_path ?? 'default.jpg';
+                                       $imageFullPath = public_path($imageFile);
+
+                                       // Fallback if file doesn't exist
+                                       if (!file_exists($imageFullPath)) {
+                                          $imageFile = 'default.jpg';
+                                       }
+
+                                       // Generate the public URL
+                                       $imageUrl = URL::to($imageFile);
+                                    @endphp
+
+                                    <div class="item showImage" data-image_url="{{ $imageUrl }}">
+                                       <div class="school_gallery_img">
+                                          <img src="{{ $imageUrl }}" alt="{{ $imageFile }}">
                                        </div>
                                     </div>
                                  @endforeach
