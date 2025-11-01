@@ -396,6 +396,25 @@ class DashboardController extends Controller
         // 3️⃣ Handle cover image upload
         $coverImagePath = null;
 
+        // stores to storage
+        // if ($request->hasFile('news_image') && $request->file('news_image')->isValid()) {
+        //     $file = $request->file('news_image');
+
+        //     // Sanitize news title for filename
+        //     $sanitizedTitle = Str::slug($validated['news_title'], '_');
+
+        //     // Create unique filename: title_timestamp_random.ext
+        //     $imageName = $sanitizedTitle . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+        //     // Destination inside storage/app/public/images/news_covers
+        //     $destination = storage_path('app/public/images/news_covers');
+        //     $file->move($destination, $imageName);
+
+        //     // Relative path for DB (like your school images)
+        //     $coverImagePath = 'images/news_covers/' . $imageName;
+        // }
+
+        // stores to public folder
         if ($request->hasFile('news_image') && $request->file('news_image')->isValid()) {
             $file = $request->file('news_image');
 
@@ -405,11 +424,18 @@ class DashboardController extends Controller
             // Create unique filename: title_timestamp_random.ext
             $imageName = $sanitizedTitle . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
 
-            // Destination inside storage/app/public/images/news_covers
-            $destination = storage_path('app/public/images/news_covers');
+            // Destination inside public/images/news_covers
+            $destination = public_path('images/news_covers');
+
+            // Ensure the directory exists
+            if (!file_exists($destination)) {
+                mkdir($destination, 0775, true);
+            }
+
+            // Move the uploaded file to the public directory
             $file->move($destination, $imageName);
 
-            // Relative path for DB (like your school images)
+            // Relative path for DB (relative to 'public' folder)
             $coverImagePath = 'images/news_covers/' . $imageName;
         }
 
