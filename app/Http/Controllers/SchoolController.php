@@ -172,14 +172,28 @@ class SchoolController extends Controller
       $firstName = $names[0] ?? '';
       $lastName  = $names[1] ?? '';
 
-      // 2. Add contact as user
-      $school_contact_user = new User();
-      $school_contact_user->first_name = $firstName;
-      $school_contact_user->last_name = $lastName;
-      $school_contact_user->email = $schoolContact->email;
-      $school_contact_user->phone = $schoolContact->phone_no;
-      $school_contact_user->password = Hash::make(env('SECURE_APP_PASSWORD'));
-      $school_contact_user->save();
+      // 2. Add contact as user (reuse logged-in user if same email)
+      $existingUser = User::where('email', $schoolContact->email)->first();
+
+      if ($existingUser) {
+        // If the contact email matches the currently logged-in user, reuse it
+        $school_contact_user = $existingUser;
+
+        // Optionally update their phone number if missing or outdated
+        if (empty($school_contact_user->phone)) {
+          $school_contact_user->phone = $schoolContact->phone_no;
+          $school_contact_user->save();
+        }
+      } else {
+        // Otherwise, create a new user record for the school contact
+        $school_contact_user = new User();
+        $school_contact_user->first_name = $firstName;
+        $school_contact_user->last_name = $lastName;
+        $school_contact_user->email = $schoolContact->email;
+        $school_contact_user->phone = $schoolContact->phone_no;
+        $school_contact_user->password = Hash::make(env('SECURE_APP_PASSWORD'));
+        $school_contact_user->save();
+      }
 
       // 3. Save school_address
       $schoolAddress = new SchoolAddress();
