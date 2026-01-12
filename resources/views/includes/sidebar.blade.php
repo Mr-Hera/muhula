@@ -37,6 +37,13 @@
                </li>
             @endif
          @endauth
+         @auth
+            @if(auth()->user()->is_admin)
+               <li>                          
+                  <a href="{{ route('get.manage.claims') }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Adverts </a>
+               </li>
+            @endif
+         @endauth
          {{-- <li>                          
             <a href="{{ route('user.subscription') }}" class="{{ Route::is('user.subscription')?'active' : '' }}"> <span><img src="{{asset('images/subscription.png')}}" alt="" ></span>Subscription</a>
          </li>

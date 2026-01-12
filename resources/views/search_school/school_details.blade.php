@@ -152,19 +152,16 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                               <img src="{{ Storage::url('public/default_images/default.jpg') }}" alt="Default Logo">
                            @endif --}}
                            @php
-                              // Define the base public path equivalent to your storage structure
-                              $logoFile = $school_record->logo ?? 'default_images/default.jpg';
+                              // Stored path example: images/school_logo/abc_logo.jpg
+                              $logoFile = $school_record->logo ?: 'default_images/default.jpg';
 
-                              // Build the full file path (to check existence)
-                              $logoFullPath = public_path($logoFile);
-
-                              // Fallback to default if file missing
-                              if (!file_exists($logoFullPath)) {
+                              // Check file existence
+                              if (!file_exists(public_path($logoFile))) {
                                  $logoFile = 'default_images/default.jpg';
                               }
 
-                              // Build public URL
-                              $logoUrl = URL::to($logoFile);
+                              // Generate correct public URL
+                              $logoUrl = asset($logoFile);
                            @endphp
 
                            <img src="{{ $logoUrl }}" alt="{{ $school_record->name ?? 'Default Logo' }}">
@@ -184,16 +181,11 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            @endauth --}}
                            </h3>
                            <div class="nature_s">
-                              {{-- @if($school_record->type)
-                                 @foreach($school_record->type as $type)
-                                    <h6>{{ $type->name }}</h6>
-                                 @endforeach
-                              @endif --}}
-                              @if($school_record->type)
-                                    <h6>{{ $school_record->type->name }}</h6>
-                                 @else
-                                    <h6>Not Defined</h6>
-                                 @endif
+                              @if($school_record->schoolLevel)
+                                 <h6>{{ $school_record->schoolLevel->name }}</h6>
+                              @else
+                                 <h6>Not Defined</h6>
+                              @endif
                            </div>
                            {{-- <ul class="stars_sc">
                                  @if($schoolDetails->avg_review)
@@ -276,11 +268,11 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                                  @endphp
 
                                  @if($typeName === 'Day')
-                                    Day
+                                    Type: Day
                                  @elseif($typeName === 'Boarding')
-                                    Boarding
+                                    Type: Boarding
                                  @elseif($typeName === 'Day & Boarding')
-                                    Day & Boarding
+                                    Type: Day & Boarding
                                  @else
                                     {{ $typeName }} {{-- Fallback if it's a full name like "Day School" --}}
                                  @endif

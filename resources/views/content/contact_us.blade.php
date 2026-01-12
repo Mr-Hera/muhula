@@ -43,7 +43,7 @@
                            <h2>Get in touch</h2>
                            <p>Fill in the your details below and we'll reach back to you ASAP.</p>                          
                         </div>
-                        <form action="{{ route('contact.us.save') }}" method="post" id="contactform">
+                        <form action="{{ route('contact.us.email.notification') }}" method="post" id="contactform">
                            @csrf
                            <div class="row">
                               <div class="col-sm-6 col-12">
@@ -93,7 +93,7 @@
                   </div>
                   <div class="col-lg-4">
                      <div class="cont-page-rt">
-                        <ul class="cont-info-list">
+                        {{-- <ul class="cont-info-list">
                            <li>
                               <em>
                                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -126,7 +126,7 @@
                                 <b><a href="mailto:muhula-info123@gmail.com;">muhulahub@gmail.com</a></b>
                               </h5>
                            </li>
-                        </ul>
+                        </ul> --}}
                         <div class="sos-list">
                            <h4>Connect with social media</h4>
                            <ul>

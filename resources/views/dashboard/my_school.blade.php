@@ -42,7 +42,16 @@
                                     </a>
                                  </div>
                                  <div class="message_date d-blocks">
-                                    <a href="{{ route('user.edit.school',$school->id) }}">Edit</a>
+                                    <a class="mx-2" href="{{ route('user.edit.school',$school->id) }}">Edit</a>
+                                    <form action="{{ route('user.delete.school', $school->id) }}"
+                                          method="POST"
+                                          style="display:inline-block;"
+                                          onsubmit="return confirm('Are you sure you want to permanently delete this school? This action cannot be undone.');">
+                                       @csrf
+                                       @method('DELETE')
+
+                                       <button type="submit" class="py-1 btn btn-danger"><i class="fa fa-trash"></i></button>
+                                    </form>
                                     <p><img src="{{ asset('images/clock.png') }}" alt="">{{ date('jS M, Y H:i',strtotime($school->created_at)) }}</p>
                                  </div>
                               </div>

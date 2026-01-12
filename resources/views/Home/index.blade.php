@@ -118,6 +118,7 @@
         </div>
       </section>
 
+      {{-- ADVERTISEMENT --}}
       <section class="adv2 py-4">
          <div class="container">
             <div class="row justify-content-center">
@@ -595,6 +596,7 @@
       </section>
       @endif
 
+      {{-- ADVERTISEMENTS --}}
       <section class="adv2">
          <div class="container">
             <div class="row">
