@@ -18,4 +18,4 @@ yarn-error.log
 /.idea
 /.vscode
 .env_old
-.env_old.txt
+env_old.txt
