@@ -46,6 +46,919 @@ use Illuminate\Validation\ValidationException;
 
 class SchoolController extends Controller
 {
+  public function schoolListingStep1(){
+    // Keep only the school_id in the session; clear any other remnants
+    $schoolId = Session::get('school_creation.step2.school_id', null);
+
+    // Reset the session but retain only the school_id (if exists)
+    Session::forget('school_creation');
+    Session::forget('school_slug');
+    if ($schoolId) {
+      Session::put('school_creation.step1.school_id', $schoolId);
+    }
+
+    // Fetch static lists
+    $countries = Country::all();
+    $counties = County::all();
+
+    $school_levels = SchoolLevel::all();
+    $school_types_day = SchoolType::where('name', 'Day')->first();
+    $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
+    $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
+    $school_curricula = Curriculum::all();
+    $school_uniforms = SchoolUniform::all();
+    $school_contact_positions = ContactPosition::all();
+    $school_religion = Religion::all();
+    $facilities = Facility::all();
+
+    // Fetch school details only if we have a valid ID
+    $schoolDetails = null;
+    if ($schoolId) {
+      $schoolDetails = School::with(['contact', 'address'])->find($schoolId);
+    }
+
+    // Prepare data for the view
+    $data = [
+      'countries' => $countries,
+      'counties'  => $counties,
+      'schoolDetails' => $schoolDetails,
+      'school_levels' => $school_levels,
+      'school_types_day' => $school_types_day,
+      'school_types_boarding' => $school_types_boarding,
+      'school_types_day_n_boarding' => $school_types_day_n_boarding,
+      'school_curricula' => $school_curricula,
+      'school_uniform' => $school_uniforms,
+      'school_contact_positions' => $school_contact_positions,
+      'school_religion' => $school_religion,
+      'facilities' => $facilities,
+    ];
+
+    return view('listSchool.school_listing_step1', $data);
+  }
+
+  public function schoolListingStep1Save(Request $request)
+  {
+    $validated = $request->validate([
+      'school_name'      => 'required|string|max:255',
+      'about_school'     => 'required|string|max:5000',
+      'contact_title'    => 'required|array|min:1',
+      'contact_title.*'  => 'required|string|max:255',
+      'contact_email'    => 'required|array|min:1',
+      'contact_email.*'  => 'required|email|max:255',
+      'contact_phone'    => 'required|array|min:1',
+      'contact_phone.*'  => 'required|string|max:20',
+      'country'          => 'required|integer|exists:countries,id',
+      'county'           => 'nullable|integer',
+      'new_county_name'  => 'nullable|string|max:255',
+      'full_address'     => 'required|string|max:500',
+      'google_location'  => 'nullable|string|max:500',
+
+      'ownership_type'         => 'required|string|in:Private,Public',
+      'year_of_establishment'  => 'required|digits:4|integer|min:1900|max:' . now()->year,
+
+      'school_level_id'        => 'required|array|min:1',
+      'school_level_id.*'      => 'required|integer|exists:school_levels,id',
+
+      'curricula'              => 'required|array|min:1',
+      'curricula.*'            => 'required|string|max:255',
+
+      'gender'                 => 'required|string|in:Mixed,Male,Female',
+
+      'school_type_id'         => 'required|integer|exists:school_types,id',
+
+      'contact_relationship_id'=> 'required|integer|exists:contact_positions,id',
+      'other_relationship'     => 'nullable|string|max:255',
+
+      'religion_id'            => 'required|integer|exists:religions,id',
+
+      // 'facilities'             => 'required|array|min:1',
+      // 'facilities.*'           => 'required|integer|exists:facilities,id',
+
+      // 'other_facilities'       => 'nullable|string|max:255',
+
+      'school_logo'            => 'nullable|image|mimes:jpeg,png,gif,jpg|max:2048', // 2MB max
+    ], [], [
+      'school_name'      => 'School name',
+      'about_school'     => 'About the school',
+      'contact_title.*'  => 'Contact full name',
+      'contact_email.*'  => 'Contact email',
+      'contact_phone.*'  => 'Contact phone',
+      'country'          => 'Country',
+      'county'           => 'Town',
+      'new_county_name'  => 'New town name',
+      'full_address'     => 'Full address',
+      'google_location'  => 'Google map link',
+    ]);
+
+    $county_id = null;
+
+    // ✅ If user selected "Other", create a new county first
+    if ((int) $validated['county'] === 0) {
+      if (empty($validated['new_county_name'])) {
+        return back()->withErrors(['new_county_name' => 'Please enter a town name when selecting "Other".'])->withInput();
+      }
+
+      $new_county = County::create([
+        'name' => $validated['new_county_name'],
+      ]);
+      $county_id = $new_county->id;
+    } else {
+      $county_id = $validated['county'];
+    }
+
+    DB::beginTransaction();
+
+    try {
+      // 1. Save school_contact
+      $schoolContact = new SchoolContact();
+      $schoolContact->full_names = $validated['contact_title'][0];
+      $schoolContact->email = $validated['contact_email'][0];
+      $schoolContact->phone_no = $validated['contact_phone'][0];
+      $schoolContact->save();
+
+      // Split names for user creation
+      $names = explode(' ', trim($schoolContact->full_names));
+      $firstName = $names[0] ?? '';
+      $lastName  = $names[1] ?? '';
+
+      // 2. Add contact as user (reuse logged-in user if same email)
+      $existingUser = User::where('email', $schoolContact->email)->first();
+
+      if ($existingUser) {
+        // If the contact email matches the currently logged-in user, reuse it
+        $school_contact_user = $existingUser;
+
+        // Optionally update their phone number if missing or outdated
+        if (empty($school_contact_user->phone)) {
+          $school_contact_user->phone = $schoolContact->phone_no;
+          $school_contact_user->save();
+        }
+      } else {
+        // Otherwise, create a new user record for the school contact
+        $school_contact_user = new User();
+        $school_contact_user->first_name = $firstName;
+        $school_contact_user->last_name = $lastName;
+        $school_contact_user->email = $schoolContact->email;
+        $school_contact_user->phone = $schoolContact->phone_no;
+        $school_contact_user->password = Hash::make(env('SECURE_APP_PASSWORD'));
+        $school_contact_user->save();
+      }
+
+      // 3. Save school_address
+      $schoolAddress = new SchoolAddress();
+      $schoolAddress->address_text = $validated['full_address'] ?? null;
+      $schoolAddress->google_maps_link = $validated['google_location'] ?? null;
+      $schoolAddress->save();
+
+      // 4. Save school record
+      $school = new School();
+      $school->name = $validated['school_name'];
+      $school->description = $validated['about_school'];
+      $school->slug = Str::slug($validated['school_name'] . '-' . Str::random(5));
+      $school->county_id = $county_id;
+      $school->country_id = $validated['country'];
+      $school->school_contact_id = $schoolContact->id;
+      $school->school_address_id = $schoolAddress->id;
+      $school->save();
+
+      // Handle file upload
+      $schoolLogoPath = "";
+
+      // ✅ Updated: Save logo directly to "public/images/school_logo"
+      if ($request->hasFile('school_logo')) {
+        $image = $request->file('school_logo');
+
+        // Sanitize school name -> lowercase, underscores instead of spaces, remove invalid chars
+        $sanitizedName = Str::slug($school->name, '_');
+        $imageName = $sanitizedName . '_logo.' . $image->getClientOriginalExtension();
+
+        // Save directly to public/images/school_logo
+        $destination = public_path('images/school_logo');
+
+        // Ensure directory exists
+        if (!file_exists($destination)) {
+          mkdir($destination, 0755, true);
+        }
+
+        // Move the file
+        $image->move($destination, $imageName);
+
+        $schoolLogoPath = 'images/school_logo/' . $imageName;
+      }
+
+      // Assuming one curriculum ID is picked (if not, you'll need a pivot table)
+      // Also assuming first item from arrays is used for singular fields in the schools table
+      $curriculumName = $request['curricula'][0];
+      $curriculum = Curriculum::firstOrCreate(['name' => $curriculumName]);
+
+      // manually updated school level if curriculum is 'Montessori'
+      if($curriculum->name == "Montessori") {
+        $updated_montessori_school_level = SchoolLevel::where('name', 'Nursery')->first();
+        $request['school_level_id'] = $updated_montessori_school_level->id;
+      }
+
+      $school->update([
+          'ownership'             => $request['ownership_type'] ?? null,
+          'year_of_establishment' => $request['year_of_establishment'] ?? null,
+          'school_level_id'       => $request['school_level_id'][0] ?? null, // using first level
+          'curriculum_id'         => $curriculum->id ?? null,
+          'gender_admission'      => $request['gender'] ?? null,
+          'school_type_id'        => $request['school_type_id'] ?? null,
+          'religion_id'           => $request['religion_id'] ?? null,
+          'logo'                  => $schoolLogoPath ?? null,
+      ]);
+
+      DB::commit();
+
+      // ✅ Store only school_id in session
+      Session::forget('school_creation');
+      Session::put('school_creation.step1.school_id', $school->id);
+
+      return redirect()->route('school.listing.step2');
+
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return back()->withErrors(['error' => 'Failed to save school step 1: ' . $e->getMessage()]);
+    }
+  }
+
+  public function schoolListingStep2() {
+    $schoolId = Session::get('school_creation.step1.school_id');
+
+    // Try to get school details from session if exists
+    $schoolDetails = null;
+    if (Session::has('school_creation.step1.school_id')) {
+      $schoolId = Session::get('school_creation.step1.school_id');
+      $schoolDetails = School::with(['contact', 'address'])->find($schoolId);
+    }
+
+    $school_levels = SchoolLevel::all();
+    $school_types_day = SchoolType::where('name', 'Day')->first();
+    $school_types_boarding = SchoolType::where('name', 'Boarding')->first();
+    $school_types_day_n_boarding = SchoolType::where('name', 'Day & Boarding')->first();
+    $school_curricula = Curriculum::all();
+    $school_uniforms = SchoolUniform::all();
+    $school_contact_positions = ContactPosition::all();
+    $school_religion = Religion::all();
+    $facilities = Facility::all();
+
+    $school = School::with(['curriculum', 'schoolLevel'])->findOrFail(1); //instead of "1" it should be $schoolId
+
+    // If your school has multiple levels or curricula, adjust to use whereIn
+    $courses = $schoolId ? Course::query()
+      ->when($school->curriculum_id, function ($query) use ($school) {
+        $query->where('curriculum_id', $school->curriculum_id);
+      })
+      ->when($school->school_level_id, function ($query) use ($school) {
+        $query->where('school_level_id', $school->school_level_id);
+      })
+      ->orderBy('name')
+      ->get() : Course::all();
+
+    // ✅ Fetch selected courses directly from DB instead of session
+    $selectedCourses = SchoolCourse::where('school_id', $schoolId)
+        ->pluck('course_id')
+        ->toArray();
+
+    return view('listSchool.school_listing_step2')->with([
+      'schoolDetails'  => $schoolDetails,
+
+      'school_levels' => $school_levels,
+      'school_types_day' => $school_types_day,
+      'school_types_boarding' => $school_types_boarding,
+      'school_types_day_n_boarding' => $school_types_day_n_boarding,
+      'school_curricula' => $school_curricula,
+      'school_uniform' => $school_uniforms,
+      'school_contact_positions' => $school_contact_positions,
+      'school_religion' => $school_religion,
+      'facilities' => $facilities,
+
+      'courses' => $courses,
+      'selectedCourses' => $selectedCourses,
+    ]);
+  }
+
+  public function schoolListingStep2Save(Request $request) {
+    $validated = $request->validate([
+      'facilities'             => 'required|array|min:1',
+      'facilities.*'           => 'required|integer|exists:facilities,id',
+
+      'other_facilities'       => 'nullable|string|max:255',
+
+      'school_image'   => 'required|array', 
+      'school_image.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+
+      'courses' => 'required|array|min:1',
+      'courses.*' => 'string|max:255',
+    ], [
+      'school_image.required'   => 'Please upload at least one image.',
+      'school_image.*.image'    => 'Each file must be a valid image.',
+      'school_image.*.mimes'    => 'Only jpeg, png, jpg, gif, and webp formats are allowed.',
+      'school_image.*.max'      => 'Each image must not exceed 2MB.',
+    ]);
+
+    $schoolId = Session::get('school_creation.step1.school_id');
+    $currentSchoolInput = School::where('id', $schoolId)->first();
+    $school = School::findOrFail($schoolId);
+
+    if (!$schoolId) {
+      // dd('Previous school data not found');
+      return back()->withErrors(['error' => 'Previous school data not found. Please restart the form.']);
+    }
+
+    // HANDLE IMAGES
+    // saving image(s) directly to public
+    if ($request->hasFile('school_image')) {
+      foreach ($request->file('school_image') as $uploadedImage) {
+        if ($uploadedImage->isValid()) {
+          // Sanitize school name
+          $sanitizedName = Str::slug($school->name, '_');
+
+          // Create a unique name (e.g. schoolName_timestamp_random.ext)
+          $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+
+          // ✅ Destination inside public/images/school_images
+          $destination = public_path('images/school_images');
+
+          // ✅ Create directory if it doesn’t exist
+          if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+          }
+
+          // ✅ Move the uploaded file to the public folder
+          $uploadedImage->move($destination, $imageName);
+
+          // ✅ Relative path for DB (still matches how you display it)
+          $path = 'images/school_images/' . $imageName;
+
+          // Save to DB
+          $school->images()->create([
+            'image_path' => $path,
+            'caption'    => $school->name, // Keep original name for caption
+          ]);
+        }
+      }
+    }
+
+    // HANDLE FACILITIES
+    if ($request->filled('facilities') && method_exists($school, 'facilities')) {
+      $school->facilities()->sync($request['facilities']); // sync accepts array of IDs
+    }
+
+    // HANDLE COURSES
+    $courseNames = $request->input('courses', []);
+    $courseIds = [];
+    $courseDataList = [];
+
+    foreach ($courseNames as $courseId) {
+      $course = Course::firstOrCreate(['id' => $courseId]);
+      $courseIds[] = $course->id;
+      $courseDataList[] = [
+        'id' => $course->id,
+        'name' => $course->name,
+      ];
+    }
+    
+    // Attach or sync courses to the pivot table
+    $school->courses()->sync($courseIds);
+
+    // ✅ Save only school_id to session for step tracking
+    Session::put('school_creation.step1.school_id', $school->id);
+
+    return redirect()->route('school.listing.step3');
+  }
+
+  public function schoolListingStep3($branchId = null){
+    $extended_school_services = ExtendedSchoolService::all();
+    $school_levels = SchoolLevel::all();
+    $schoolId = Session::get('school_creation.step1.school_id');
+    $school = School::findOrFail(1);
+
+    // Fetch all fees for the current school
+    $school_fees = SchoolFee::with('level')
+        ->where('school_id', $schoolId)
+        ->get();
+
+    // Prefer DB values, fallback to session
+    $operationHours = $school->operationHours()->get()->toArray();
+    if (empty($operationHours)) {
+      $operationHours = []; // No longer fetching from session, rely only on DB
+    }
+
+    // Try to get school details from session if exists
+    $schoolDetails = null;
+    if ($schoolId) {
+      $schoolDetails = School::with(['contact', 'address'])->find($schoolId);
+    }
+
+    // ✅ Fetch extended services directly from DB (assuming pivot relation)
+    // If your pivot table is named 'extended_school_service_school' or similar,
+    // ensure that your School model has a relationship like:
+    // public function extendedServices() { return $this->belongsToMany(ExtendedSchoolService::class); }
+    $schoolExtendedServices = [];
+    if (method_exists($school, 'extendedSchoolServices')) {
+      $schoolExtendedServices = $school->extendedSchoolServices()->pluck('extended_school_services.id')->toArray();
+    }
+
+    // ✅ Fetch school population directly from DB
+    $schoolPopulation = SchoolPopulation::where('school_id', $schoolId)->first();
+
+    // ✅ Provide safe defaults if no record exists
+    if (!$schoolPopulation) {
+      $schoolPopulation = [
+        'total_students'  => null,
+        'student_boys'    => null,
+        'student_girls'   => null,
+        'total_teachers'  => null,
+        'teacher_male'    => null,
+        'teacher_female'  => null,
+      ];
+    } else {
+      // Convert to array for direct Blade access
+      $schoolPopulation = [
+        'total_students'  => $schoolPopulation->total_students,
+        'student_boys'    => $schoolPopulation->male_students,
+        'student_girls'   => $schoolPopulation->female_students,
+        'total_teachers'  => $schoolPopulation->total_teachers,
+        'teacher_male'    => $schoolPopulation->male_teachers,
+        'teacher_female'  => $schoolPopulation->female_teachers,
+      ];
+    }
+
+    $school_branches = SchoolBranch::where('school_id', $schoolId)->get();
+    $countries = Country::all();
+    $counties = County::all();
+    $school_levels = SchoolLevel::all();
+
+    // If editing, load branch details, else null
+    $schoolBranchDetails = null;
+    if ($branchId) {
+        $schoolBranchDetails = SchoolBranch::find($branchId);
+    }
+
+    $examPerformanceRecords = SchoolExamPerformance::where('school_id', $schoolId)
+        ->latest()
+        ->get();
+
+    return view('listSchool.school_listing_step3')->with([
+      'extended_school_services' => $extended_school_services,
+      'extended_services'        => $schoolExtendedServices, // replaced session with DB data
+      'school_population'        => $schoolPopulation,       // replaced session with DB data
+      'operation_hours'          => $operationHours,
+      'schoolDetails'            => $schoolDetails,
+      'school_levels' => $school_levels,
+      'school_fees' => $school_fees,
+
+      'school_branches' => $school_branches,
+      'countries' => $countries,
+      'counties' => $counties,
+      'school_levels' => $school_levels,
+      'schoolBranchDetails' => $schoolBranchDetails,
+
+      'examPerformanceRecords' => $examPerformanceRecords,
+    ]);
+  }
+
+  public function schoolListingStep3Save(Request $request) {
+    $validated = $request->validate([
+      // teacher-student ratio
+      'total_students'   => 'required|integer|min:0',
+      'student_boys'     => 'required|integer|min:0',
+      'student_girls'    => 'required|integer|min:0',
+      'total_teachers'   => 'required|integer|min:0',
+      'teacher_male'     => 'required|integer|min:0',
+      'teacher_female'   => 'required|integer|min:0',
+
+      // fees
+      'grade_level' => 'required|exists:school_levels,id',
+      'min_amount' => 'required|numeric|min:0',
+      'max_amount' => 'required|numeric|gte:min_amount',
+    ], [
+      'grade_level.required' => 'Please select a grade level.',
+      'grade_level.exists'   => 'The selected grade level is invalid.',
+      'min_amount.required'  => 'Please enter a minimum fee.',
+      'min_amount.numeric'   => 'Minimum fee must be a number.',
+      'max_amount.required'  => 'Please enter a maximum fee.',
+      'max_amount.numeric'   => 'Maximum fee must be a number.',
+      'max_amount.gte'       => 'Maximum fee must be greater than or equal to minimum fee.',
+    ]);
+
+    $schoolId = Session::get('school_creation.step1.school_id');
+    $school = School::findOrFail($schoolId);
+
+    // SCHOOL SERVICES OFFERED PROCESSING
+    // ---------------------------
+
+    // 1. Attach extended services to pivot table via many-to-many
+    $extendedServiceIds = $request->input('extended_school_services_id', []);
+    if (!empty($extendedServiceIds)) {
+      $school->extendedSchoolServices()->sync($extendedServiceIds);
+    }
+
+    // LEARNING PERIOD PROCESSING
+    // ---------------------------
+
+
+    // 2. Insert operation hours via hasMany
+    $operationHours = [
+      [
+        'period_of_day' => 'Day',
+        'starts_at'     => $request->input('day_learn_period_from'),
+        'ends_at'       => $request->input('day_learn_period_until'),
+      ],
+      [
+        'period_of_day' => 'Evening',
+        'starts_at'     => $request->input('evening_studies_from'),
+        'ends_at'       => $request->input('evening_studies_until'),
+      ],
+    ];
+
+    foreach ($operationHours as $data) {
+      $school->operationHours()->updateOrCreate(
+        ['period_of_day' => $data['period_of_day']], // match by period
+        $data // update values
+      );
+    }
+
+    // FEES PROCESSING
+    // ---------------------------
+    $school_fee_record = SchoolFee::create([
+      'school_id' => $schoolId,
+      'level_id' => $validated['grade_level'],
+      'min_amount' => $validated['min_amount'],
+      'max_amount' => $validated['max_amount'],
+      'currency' => 'KES', // You can dynamically pass this if needed
+    ]);
+
+    // TEACHER-STUDENT RATIO PROCESSING
+    // ---------------------------
+    // Optional: You can check consistency like so
+    if ($validated['total_students'] != ($validated['student_boys'] + $validated['student_girls'])) {
+      return back()->withErrors(['total_students' => 'Sum of boys and girls must equal total students']);
+    }
+
+    if ($validated['total_teachers'] != ($validated['teacher_male'] + $validated['teacher_female'])) {
+      return back()->withErrors(['total_teachers' => 'Sum of male and female teachers must equal total teachers']);
+    }
+
+    // Create or update the school population
+    $school->population()->updateOrCreate(
+      ['year' => now()->year], // Assuming you want one record per year
+      [
+        'total_students'  => $validated['total_students'],
+        'total_teachers'  => $validated['total_teachers'],
+        'male_students'   => $validated['student_boys'],
+        'female_students' => $validated['student_girls'],
+        'male_teachers'   => $validated['teacher_male'],
+        'female_teachers' => $validated['teacher_female'],
+      ]
+    );
+
+    return redirect()->route('add.school.success')->with('success', 'School listing added successfully.')->with([
+      'school_name' => $school->name,
+      'school_slug' => $school->slug,
+    ]);
+  }
+
+  public function processSchoolServices(Request $request)
+  {
+    // dd($request);
+    $schoolId = Session::get('school_creation.step1.school_id');
+    $school = School::findOrFail($schoolId);
+    
+    // 1. Attach extended services to pivot table via many-to-many
+    $extendedServiceIds = $request->input('extended_school_services_id', []);
+    if (!empty($extendedServiceIds)) {
+      $school->extendedSchoolServices()->sync($extendedServiceIds);
+    }
+
+    // 2. Insert operation hours via hasMany
+    $operationHours = [
+      [
+        'period_of_day' => 'Day',
+        'starts_at'     => $request->input('day_learn_period_from'),
+        'ends_at'       => $request->input('day_learn_period_until'),
+      ],
+      [
+        'period_of_day' => 'Evening',
+        'starts_at'     => $request->input('evening_studies_from'),
+        'ends_at'       => $request->input('evening_studies_until'),
+      ],
+    ];
+
+    foreach ($operationHours as $data) {
+      $school->operationHours()->updateOrCreate(
+        ['period_of_day' => $data['period_of_day']], // match by period
+        $data // update values
+      );
+    }
+    // dd("operation hours added!");
+
+    // ✅ We no longer store extended services or operation hours in session.
+    // Only the school_id remains in session.
+
+    // Flash success and redirect
+    session()->flash('success', 'School services updated successfully');
+
+    // ✅ Fetch data directly from DB instead of session
+    $extendedServices = [];
+    if (method_exists($school, 'extendedSchoolServices')) {
+      $extendedServices = $school->extendedSchoolServices()->pluck('extended_school_services.id')->toArray();
+    }
+
+    return redirect()->back()->with([
+      'extended_services' => $extendedServices, // pulled fresh from DB
+    ]);
+  }
+
+  public function processSchoolFees(Request $request){
+    // Validate the input
+    $validated = $request->validate([
+      'grade_level' => 'required|exists:school_levels,id',
+      'min_amount' => 'required|numeric|min:0',
+      'max_amount' => 'required|numeric|gte:min_amount',
+    ], [
+        'grade_level.required' => 'Please select a grade level.',
+        'grade_level.exists'   => 'The selected grade level is invalid.',
+        'min_amount.required'  => 'Please enter a minimum fee.',
+        'min_amount.numeric'   => 'Minimum fee must be a number.',
+        'max_amount.required'  => 'Please enter a maximum fee.',
+        'max_amount.numeric'   => 'Maximum fee must be a number.',
+        'max_amount.gte'       => 'Maximum fee must be greater than or equal to minimum fee.',
+    ]);
+    
+    // Get the school_id from session
+    $schoolId = Session::get('school_creation.step1.school_id');
+    $school = School::find($schoolId);
+
+    // Create the school fee record
+    $school_fee_record = SchoolFee::create([
+      'school_id' => $schoolId,
+      'level_id' => $validated['grade_level'],
+      'min_amount' => $validated['min_amount'],
+      'max_amount' => $validated['max_amount'],
+      'currency' => 'KES', // You can dynamically pass this if needed
+    ]);
+    Session::put(['school_slug' => $school->slug]);
+
+    return redirect()->back()->with('success', 'Fee record added successfully.');
+  }
+
+  public function processRatio(Request $request)
+  {
+    // dd($request);
+    // Validate the request
+    $validated = $request->validate([
+      'total_students'   => 'required|integer|min:0',
+      'student_boys'     => 'required|integer|min:0',
+      'student_girls'    => 'required|integer|min:0',
+      'total_teachers'   => 'required|integer|min:0',
+      'teacher_male'     => 'required|integer|min:0',
+      'teacher_female'   => 'required|integer|min:0',
+    ]);
+
+    $schoolId = Session::get('school_creation.step1.school_id');
+    $school = School::findOrFail($schoolId);
+
+    // Optional: You can check consistency like so
+    if ($validated['total_students'] != ($validated['student_boys'] + $validated['student_girls'])) {
+      return back()->withErrors(['total_students' => 'Sum of boys and girls must equal total students']);
+    }
+
+    if ($validated['total_teachers'] != ($validated['teacher_male'] + $validated['teacher_female'])) {
+      return back()->withErrors(['total_teachers' => 'Sum of male and female teachers must equal total teachers']);
+    }
+
+    // Create or update the school population
+    $school->population()->updateOrCreate(
+      ['year' => now()->year], // Assuming you want one record per year
+      [
+        'total_students'  => $validated['total_students'],
+        'total_teachers'  => $validated['total_teachers'],
+        'male_students'   => $validated['student_boys'],
+        'female_students' => $validated['student_girls'],
+        'male_teachers'   => $validated['teacher_male'],
+        'female_teachers' => $validated['teacher_female'],
+      ]
+    );
+
+    // ✅ We no longer store population or extended services in session.
+    // Only school_id remains in session.
+
+    session()->flash('success', 'School population data added successfully.');
+
+    // ✅ Fetch latest data directly from DB
+    $schoolPopulation = SchoolPopulation::where('school_id', $schoolId)->get();
+
+    // ✅ Fetch extended services from DB (assuming belongsToMany relation)
+    $extendedServices = [];
+    if (method_exists($school, 'extendedSchoolServices')) {
+      $extendedServices = $school->extendedSchoolServices()->pluck('extended_school_services.id')->toArray();
+    }
+
+    return redirect()->back()->with('success', 'School population added successfully.')->with([
+      'school_population' => $schoolPopulation,
+      'extended_services' => $extendedServices,
+    ]);
+  }
+
+  public function processSchoolBranch(Request $request)
+  {
+    // Step 1: Validate request
+    $validated = $request->validate([
+      'school_name'    => 'nullable|string|max:255',
+      'school_type'    => 'nullable|array',
+      'school_type.*'  => 'exists:school_types,id',
+      'country'        => 'nullable|exists:countries,id',
+      'town'           => 'nullable|exists:counties,id',
+      'full_address'   => 'nullable|string|max:255',
+      'google_location'=> 'nullable|string',
+      'google_lat'     => 'nullable|numeric',
+      'google_long'    => 'nullable|numeric',
+      'email'          => 'nullable|email',
+      'phone'          => 'nullable|string|max:20',
+      'school_image'     => 'nullable|array',
+      'school_image.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ], [
+      'school_name.nullable'   => 'The school name is required.',
+      'school_type.nullable'   => 'Please select at least one school type.',
+      'country.nullable'       => 'Please select a country.',
+      'town.nullable'          => 'Please select a town.',
+    ]);
+
+    // Step 2: Check if *any* relevant data has been passed
+    $hasData = collect($validated)->filter(function ($value) {
+      return !is_null($value) && $value !== '' && $value !== [];
+    })->isNotEmpty();
+
+    if ($hasData) {
+      $schoolId = Session::get('school_creation.step2.school_id');
+      $school   = School::findOrFail($schoolId);
+
+      // Save school_address
+      $schoolAddress = new SchoolAddress();
+      $schoolAddress->address_text = $validated['full_address'] ?? null;
+      $schoolAddress->google_maps_link = $validated['google_location'] ?? null;
+      $schoolAddress->save();
+
+      // Create branch
+      $branch = new SchoolBranch();
+      $branch->name = $validated['school_name'] ?? null;
+      $branch->school_id = $schoolId;
+      $branch->school_type_id = $validated['school_type'][0] ?? null;
+      $branch->county_id = $validated['town'] ?? null;
+      $branch->school_address_id = $schoolAddress->id;
+      $branch->school_image_id = 1;
+      $branch->email = $validated['email'] ?? null;
+      $branch->phone_no = $validated['phone'] ?? null;
+      $branch->save();
+
+      // 🔹 Handle school images (multiple uploads to public folder)
+      if ($request->hasFile('school_image')) {
+        foreach ($request->file('school_image') as $uploadedImage) {
+          if ($uploadedImage->isValid()) {
+            // Sanitize school name
+            $sanitizedName = Str::slug($school->name ?? 'school', '_');
+
+            // Create a unique filename
+            $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+
+            // ✅ Destination inside *public/images/school_images* instead of storage
+            $destination = public_path('images/school_images');
+            if (!file_exists($destination)) {
+              mkdir($destination, 0777, true);
+            }
+
+            // Move image to public folder
+            $uploadedImage->move($destination, $imageName);
+
+            // Relative path for DB (accessible publicly)
+            $path = 'images/school_images/' . $imageName;
+
+            // Save to DB (assuming School has images() relation -> hasMany(SchoolImage::class))
+            $image = $school->images()->create([
+              'image_path' => $path,
+              'caption'    => $school->name ?? 'School Image',
+            ]);
+
+            // Optionally set the *first uploaded image* as branch->school_image_id
+            if (!$branch->school_image_id) {
+              $branch->school_image_id = $image->id;
+              $branch->save();
+            }
+          }
+        }
+      }
+
+      // 🔹 Handle school images (multiple uploads to storage folder)
+      if ($request->hasFile('school_image')) {
+        foreach ($request->file('school_image') as $uploadedImage) {
+          if ($uploadedImage->isValid()) {
+            // Sanitize school name
+            $sanitizedName = Str::slug($school->name ?? 'school', '_');
+
+            // Create a unique filename
+            $imageName = $sanitizedName . '_' . time() . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+
+            // Destination inside storage/app/public/images/school_images
+            $destination = storage_path('app/public/images/school_images');
+            if (!file_exists($destination)) {
+              mkdir($destination, 0777, true);
+            }
+            $uploadedImage->move($destination, $imageName);
+
+            // Relative path for DB (accessible via storage:link)
+            $path = 'images/school_images/' . $imageName;
+
+            // Save to DB (assuming School has images() relation -> hasMany(SchoolImage::class))
+            $image = $school->images()->create([
+              'image_path' => $path,
+              'caption'    => $school->name ?? 'School Image',
+            ]);
+
+            // Optionally set the *first uploaded image* as branch->school_image_id
+            if (!$branch->school_image_id) {
+              $branch->school_image_id = $image->id;
+              $branch->save();
+            }
+          }
+        }
+      }
+    }
+
+    // Step 3: Always redirect
+    return redirect()->back()->with('success', 'School branch created successfully.');
+  }
+
+  public function processSchoolResults(Request $request){
+    // dd($request);
+    $request->validate([
+      'exam' => 'required|string|max:255',
+      'ranking_position' => 'nullable|integer',
+      'region' => 'nullable|string|max:255',
+      'mean_score_point' => 'nullable|numeric',
+      'mean_grade' => 'nullable|string|max:10',
+      'no_of_candidate' => 'nullable|integer',
+    ]);
+    try {
+      // dd("Here");
+
+      $schoolId = Session::get('school_creation.step2.school_id');
+      // dd($schoolId);
+
+      if (!$schoolId || !School::find($schoolId)) {
+        return redirect()->back()->with('error', 'School ID is missing or invalid.');
+      }
+
+      $examPerformance = SchoolExamPerformance::create([
+        'school_id' => $schoolId,
+        'exam' => $request->input('exam'),
+        'ranking_position' => $request->input('ranking_position'),
+        'region' => $request->input('region'),
+        'mean_score_points' => $request->input('mean_score_point'),
+        'mean_grade' => $request->input('mean_grade'),
+        'number_of_candidates' => $request->input('no_of_candidate'),
+      ]);
+
+      return redirect()->back()->with('success', 'Exam performance data saved successfully.');
+    } catch (\Throwable $e) {
+      // dd($e);
+      Log::error('Error saving school exam performance: '.$e->getMessage(), [
+        'trace' => $e->getTraceAsString(),
+        'request' => $request->all(),
+      ]);
+
+      return redirect()->back()->with('error', 'An unexpected error occurred. Please try again.');
+    }
+  }
+
+  public function schoolListingSuccessPage()
+  {
+    $schoolId = Session::get('school_creation.step1.school_id');
+    $school = School::find($schoolId);
+
+    // Send emails
+    try {
+      // Notify Admin
+      $adminEmail = config('mail.admin_address');
+      Mail::to($adminEmail)->send(new AdminSchoolAddedNotification($school));
+
+      // Notify User
+      $user = auth()->user();
+      if ($user && $user->email) {
+        Mail::to($user->email)->send(new UserSchoolAddedNotification($school));
+      }
+    } catch (Exception $e) {
+      Log::error('Failed to send notification emails: '.$e->getMessage());
+    }
+
+    Session::put('school_slug', $school->slug);
+
+    return view('listSchool.add_school_success_page')->with([
+      'school_slug' => $school->slug,
+    ]);
+  }
+
   public function addSchoolStep1($id=null){
     $schoolDetails = School::where(DB::raw('id'),$id)->first();
     
@@ -699,14 +1612,14 @@ class SchoolController extends Controller
 
   public function addSchoolStep6()
   {
-    $schoolId = Session::get('school_creation.step2.school_id');
+    // $schoolId = Session::get('school_creation.step2.school_id');
 
-    if (!$schoolId) {
-      return redirect()->route('add.school.step2')
-        ->withErrors(['error' => 'School not found. Please restart the process.']);
-    }
+    // if (!$schoolId) {
+    //   return redirect()->route('add.school.step2')
+    //     ->withErrors(['error' => 'School not found. Please restart the process.']);
+    // }
 
-    $school = School::with(['curriculum', 'schoolLevel'])->findOrFail($schoolId);
+    $school = School::with(['curriculum', 'schoolLevel'])->findOrFail(1);
 
     // If your school has multiple levels or curricula, adjust to use whereIn
     $courses = Course::query()
@@ -720,7 +1633,7 @@ class SchoolController extends Controller
       ->get();
 
     // ✅ Fetch selected courses directly from DB instead of session
-    $selectedCourses = SchoolCourse::where('school_id', $schoolId)
+    $selectedCourses = SchoolCourse::where('school_id', 1)
         ->pluck('course_id')
         ->toArray();
 
@@ -1371,6 +2284,7 @@ class SchoolController extends Controller
       'curriculum',       // Curriculum relation
       'operationHours',    // Operation hours relation
       'type',
+      'schoolLevel',
       'religion', // eager load religion
       'population',
       'extendedSchoolServices',
@@ -1649,6 +2563,42 @@ class SchoolController extends Controller
       'max_fee' => $max_fee,
       'currency' => $currency,
     ]);
+  }
+
+  public function deleteSchool(School $school)
+  {
+    // Optional: authorize ownership
+    // abort_unless(auth()->id() === $school->created_by, 403);
+
+    DB::beginTransaction();
+
+    try {
+        // Delete related data if needed (optional but safe)
+        $school->images()->delete();
+        $school->operationHours()->delete();
+        $school->extendedSchoolServices()->detach();
+        $school->facilities()->detach();
+        $school->courses()->detach();
+        $school->branches()->delete();
+        $school->fees()->delete();
+        $school->reviews()->delete();
+
+        // Finally delete the school
+        $school->delete();
+
+        DB::commit();
+
+        return redirect()
+            ->back()
+            ->with('success', 'School deleted successfully.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return back()->withErrors([
+            'error' => 'Failed to delete school: ' . $e->getMessage()
+        ]);
+    }
   }
 
   public function schoolInfoUpdate(Request $request)

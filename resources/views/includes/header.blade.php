@@ -48,7 +48,7 @@
                      </li>
                    
                      <li class="nav-item">
-                        <a class="nav-link" href="{{ route('add.school.step2') }}">List your School</a>
+                        <a class="nav-link" href="{{ route('school.listing.step1') }}">List your School</a>
                      </li>                
                      
                   </ul>

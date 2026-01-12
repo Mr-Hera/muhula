@@ -39,7 +39,7 @@
 
                         <div class="ad-schl-sub-go mt-4">
                             <div class="ad-sch-pag-sec d-flex justify-content-center align-items-center">
-                                <button type="button" class="completeBtn" data-url="{{ route('add.school.step2') }}">
+                                <button type="button" class="completeBtn" data-url="{{ route('school.listing.step1') }}">
                                     Add New School
                                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M5 4L9.08625 7.97499L5 11.95" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>

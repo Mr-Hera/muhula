@@ -52,38 +52,6 @@
                                  </div>
                                  
                               </li>
-                              <li class=""><em></em>
-                                 <div>
-                                    <small>Step 4</small>
-                                 <h6>School Gallery</h6>
-                                 </div>
-                                 
-                              </li>
-                              <li class=""><em></em>
-                                 <div>
-                                    <small>Step 5</small>
-                                 <h6>Subject/ Courses</h6>
-                                 </div>
-                                 
-                              </li>
-                              <li class=""><em></em>
-                                 <div>
-                                    <small>Step 6</small>
-                                    <h6>Result</h6>
-                                 </div>                                 
-                              </li>
-                              <li class=""><em></em>
-                                 <div>
-                                    <small>Step 7</small>
-                                    <h6>Branches</h6>
-                                 </div>                                 
-                              </li>
-                              <li class=""><em></em>
-                                 <div>
-                                    <small>Step 8</small>
-                                    <h6>School Fees</h6>
-                                 </div>                                 
-                              </li>
                            </ul>
                         </div>
                      </div>
@@ -94,23 +62,23 @@
                            <div class="row">
                               {{-- 🔹 School Logo --}}
                               <div class="col-12">
-                                    <div class="dash_input">
-                                       <label for="school_logo">School Logo (Optional)</label>
-                                       <div class="row align-items-center">
-                                          <div class="col-lg-6 col-sm-6">
-                                                <div class="uplodimgfil2">
-                                                   <input type="file" name="school_logo" id="school_logo" class="inputfile2 inputfile-1">
-                                                   <label for="school_logo">
-                                                      <h3>Click here to upload</h3>
-                                                      <img src="{{ asset('images/upload1.png') }}" alt="">
-                                                   </label>
-                                                </div>
-                                                @error('school_logo')
-                                                   <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                          </div>
+                                 <div class="dash_input">
+                                    <label for="school_logo">School Logo (Optional)</label>
+                                    <div class="row align-items-center">
+                                       <div class="col-lg-6 col-sm-6">
+                                             <div class="uplodimgfil2">
+                                                <input type="file" name="school_logo" id="school_logo" class="inputfile2 inputfile-1">
+                                                <label for="school_logo">
+                                                   <h3>Click here to upload</h3>
+                                                   <img src="{{ asset('images/upload1.png') }}" alt="">
+                                                </label>
+                                             </div>
+                                             @error('school_logo')
+                                                <small class="text-danger">{{ $message }}</small>
+                                             @enderror
                                        </div>
                                     </div>
+                                 </div>
                               </div>
 
                               {{-- 🔹 School Ownership --}}

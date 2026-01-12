@@ -88,7 +88,7 @@ Route::group(['namespace' => 'Modules'], function() {
     //for static page
     Route::get('about-us', [ContentController::class, 'aboutUs'])->name('about.us');
     Route::get('contact-us',[ContentController::class, 'contactUs'])->name('contact.us');
-    Route::post('contact-us-save','Content\ContentController@contactUsSave')->name('contact.us.save');
+    Route::post('contact-us-save',[ContentController::class, 'contactUsEmailNotification'])->name('contact.us.email.notification');
     Route::get('faq',[ContentController::class, 'faq'])->name('faq');
     Route::get('privacy-policy',[ContentController::class, 'privacyPolicy'])->name('privacy.policy');
     //Route::get('terms-conditions','Content\ContentController@termCondition')->name('term.condition');
@@ -96,22 +96,41 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::any('news','Content\ContentController@newsList')->name('news.list');
     Route::get('news-details/{slug?}',[ContentController::class, 'newsDetails'])->name('news.details');
 
+    Route::middleware(['auth'])->group(function() {
+        Route::get('add-school-step1', [SchoolController::class, 'schoolListingStep1'])->name('school.listing.step1');
+        Route::post('add-school-step1-save', [SchoolController::class, 'schoolListingStep1Save'])->name('school.listing.step1.save');
+
+        Route::get('add-school-step2', [SchoolController::class, 'schoolListingStep2'])->name('school.listing.step2');
+        Route::post('add-school-step2-save', [SchoolController::class, 'schoolListingStep2Save'])->name('school.listing.step2.save');
+
+        Route::get('add-school-step3', [SchoolController::class, 'schoolListingStep3'])->name('school.listing.step3');
+        // Route::post('add-school-step3-save', [SchoolController::class, 'schoolListingStep3Save'])->name('school.listing.step3.save');
+
+        Route::post('add-school-fees-processing', [SchoolController::class, 'processSchoolFees'])->name('school.listing.fees.processing');
+        Route::post('add-school-services-processing', [SchoolController::class, 'processSchoolServices'])->name('school.listing.services.processing');
+        Route::post('add-school-ratio-processing', [SchoolController::class, 'processRatio'])->name('school.listing.step4.ratio.processing');
+        Route::post('add-school-branch-processing', [SchoolController::class, 'processSchoolBranch'])->name('school.listing.branch.processing');
+        Route::post('add-school-results-processing', [SchoolController::class, 'processSchoolResults'])->name('school.listing.results.save');
+
+        Route::get('add-school-success', [SchoolController::class, 'schoolListingSuccessPage'])->name('school.listing.success');
+    });
+
     // School Listing (Protected by Auth Middleware)
     Route::middleware(['auth'])->group(function () {
-        Route::get('add-school-step1/{id?}', [SchoolController::class, 'addSchoolStep1'])->name('add.school.step1');
-        Route::post('add-school-step1-save', [SchoolController::class, 'addSchoolStep1Save'])->name('add.school.step1.save');
+        // Route::get('add-school-step1/{id?}', [SchoolController::class, 'addSchoolStep1'])->name('add.school.step1');
+        // Route::post('add-school-step1-save', [SchoolController::class, 'addSchoolStep1Save'])->name('add.school.step1.save');
 
-        Route::get('add-school-step2/{id?}', [SchoolController::class, 'addSchoolStep2'])->name('add.school.step2');
-        Route::post('add-school-step2-save', [SchoolController::class, 'addSchoolStep2Save'])->name('add.school.step2.save');
+        // Route::get('add-school-step2/{id?}', [SchoolController::class, 'addSchoolStep2'])->name('add.school.step2');
+        // Route::post('add-school-step2-save', [SchoolController::class, 'addSchoolStep2Save'])->name('add.school.step2.save');
         
-        Route::get('add-school-step3/{id?}', [SchoolController::class, 'addSchoolStep3'])->name('add.school.step3');
-        Route::post('add-school-step3-save', [SchoolController::class, 'addSchoolStep3Save'])->name('add.school.step3.save');
+        // Route::get('add-school-step3/{id?}', [SchoolController::class, 'addSchoolStep3'])->name('add.school.step3');
+        // Route::post('add-school-step3-save', [SchoolController::class, 'addSchoolStep3Save'])->name('add.school.step3.save');
         Route::post('add-school-step3-uniform-save', [SchoolController::class, 'addSchoolStep3UniformSave'])->name('add.school.step3.uniform.save');
         Route::get('school-uniform-delete/{id?}', [SchoolController::class, 'schoolUniformDelete'])->name('school.uniform.delete');
 
         Route::get('add-school-step4', [SchoolController::class, 'addSchoolStep4'])->name('add.school.step4');
-        Route::post('add-school-step4-rules-save', [SchoolController::class, 'addSchoolStep4RulesSave'])->name('add.school.step4.rules.save');
-        Route::post('add-school-step4-ratio-save', [SchoolController::class, 'addSchoolStep4RatioSave'])->name('add.school.step4.ratio.save');
+        // Route::post('add-school-step4-rules-save', [SchoolController::class, 'addSchoolStep4RulesSave'])->name('add.school.step4.rules.save');
+        // Route::post('add-school-step4-ratio-save', [SchoolController::class, 'addSchoolStep4RatioSave'])->name('add.school.step4.ratio.save');
         Route::post('add-school-step4-ratio-update', [SchoolController::class, 'addSchoolStep4RatioUpdate'])->name('add.school.step4.ratio.update');
 
         Route::get('add-school-step5/{id?}', [SchoolController::class, 'addSchoolStep5'])->name('add.school.step5');
@@ -134,7 +153,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::post('/add-school/step9/complete', [SchoolController::class, 'addSchoolStep9Complete'])->name('add.school.step9.complete');
         Route::get('school-fees-delete/{id?}', [SchoolController::class, 'schoolFeesDelete'])->name('school.fees.delete');
 
-        Route::get('add-school-success', [SchoolController::class, 'addSchoolSuccessPage'])->name('add.school.success');
+        // Route::get('add-school-success', [SchoolController::class, 'addSchoolSuccessPage'])->name('add.school.success');
     });
     
     Route::post('get-class-level','School\SchoolController@getClassLevel')->name('get.class.level');
@@ -169,6 +188,7 @@ Route::group(['namespace' => 'Modules'], function() {
         //for my school
         Route::get('my-school', [DashboardController::class, 'mySchool'])->name('user.my.school');
         Route::get('edit-school-info/{id?}/{sub_id?}', [SchoolController::class,'editSchool'])->name('user.edit.school');
+        Route::delete('user/schools/{school}', [SchoolController::class, 'deleteSchool'])->name('user.delete.school');
         Route::post('update-school-info', [SchoolController::class, 'schoolInfoUpdate'])->name('user.school.info.update');
         Route::post('update-school-image', [SchoolController::class, 'updateImage'])->name('user.update.school.image');
         Route::get('school-image-status-update/{id?}', 'School\SchoolController@schoolImageStatusUpdate')->name('user.school.image.status.update');
