@@ -44,36 +44,6 @@
                               <h6>Extra Info</h6>
                            </div>
                         </li>
-                        <li><em></em>
-                           <div>
-                              <small>Step 4</small>
-                              <h6>School Gallery</h6>
-                           </div>
-                        </li>
-                        <li><em></em>
-                           <div>
-                              <small>Step 5</small>
-                              <h6>Subject/ Courses</h6>
-                           </div>
-                        </li>
-                        <li><em></em>
-                           <div>
-                              <small>Step 6</small>
-                              <h6>Result</h6>
-                           </div>                                 
-                        </li>
-                        <li><em></em>
-                           <div>
-                              <small>Step 7</small>
-                              <h6>Branches</h6>
-                           </div>                                 
-                        </li>
-                        <li><em></em>
-                           <div>
-                              <small>Step 8</small>
-                              <h6>School Fees</h6>
-                           </div>                                 
-                        </li>
                      </ul>
                   </div>
                </div>

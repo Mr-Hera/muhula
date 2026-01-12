@@ -90,7 +90,6 @@ class SocialAuthController extends Controller
 
     public function registerSave(Request $request)
     {
-        // dd($request);
         // Validate request
         $validator = Validator::make($request->all(), [
             'first_name'      => ['required', 'string', 'max:255'],
