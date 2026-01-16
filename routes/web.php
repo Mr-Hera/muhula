@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdvertController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ContentController;
@@ -122,7 +123,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
         // Route::get('add-school-step2/{id?}', [SchoolController::class, 'addSchoolStep2'])->name('add.school.step2');
         // Route::post('add-school-step2-save', [SchoolController::class, 'addSchoolStep2Save'])->name('add.school.step2.save');
-        
+
         // Route::get('add-school-step3/{id?}', [SchoolController::class, 'addSchoolStep3'])->name('add.school.step3');
         // Route::post('add-school-step3-save', [SchoolController::class, 'addSchoolStep3Save'])->name('add.school.step3.save');
         Route::post('add-school-step3-uniform-save', [SchoolController::class, 'addSchoolStep3UniformSave'])->name('add.school.step3.uniform.save');
@@ -155,7 +156,7 @@ Route::group(['namespace' => 'Modules'], function() {
 
         // Route::get('add-school-success', [SchoolController::class, 'addSchoolSuccessPage'])->name('add.school.success');
     });
-    
+
     Route::post('get-class-level','School\SchoolController@getClassLevel')->name('get.class.level');
     Route::post('get-city','School\SchoolController@getCity')->name('get.city');
     Route::get('delete-contact/{id?}','School\SchoolController@deleteContact')->name('delete.contact');
@@ -171,7 +172,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::post('send-message-save',[MessageController::class, 'sendMessage'])->name('user.send.message');
     Route::post('add-favourite',[SchoolController::class, 'addFavourite'])->name('user.add.favourite');
     Route::post('header-image-video-save','School\SearchSchoolController@addHeaderImageVideo')->name('user.add.header.image.video');
-     
+
 
     Route::group(['namespace' => 'User','middleware' => 'auth'], function(){
 
@@ -236,11 +237,20 @@ Route::group(['namespace' => 'Modules'], function() {
 
     });
 
-    
-        //payment related
-        Route::get('checkout','Payment\PaymentController@checkout')->name('payment.checkout');
-        Route::post('payment','Payment\PaymentController@payment')->name('payment.payment');
-        Route::any('notification-url','User\Subscription\SubscriptionController@notification')->name('payment.notification');
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/dashboard/add-adverts', [AdvertController::class, 'index'])->name('dashboard.adverts.index');
+        Route::get('/dashboard/manage-adverts', [AdvertController::class, 'manageAdverts'])->name('dashboard.manage.adverts');
+
+        Route::post('/dashboard/adverts', [AdvertController::class, 'store'])->name('admin.adverts.store');
+
+        Route::delete('/dashboard/adverts/{advert}', [AdvertController::class, 'destroy'])->name('admin.adverts.destroy');
+    });
+
+
+    //payment related
+    Route::get('checkout','Payment\PaymentController@checkout')->name('payment.checkout');
+    Route::post('payment','Payment\PaymentController@payment')->name('payment.payment');
+    Route::any('notification-url','User\Subscription\SubscriptionController@notification')->name('payment.notification');
 
 });
 

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','My School')
+@section('title','Manage School(s)')
 @section('links')
 @include('includes.links')
 @endsection
@@ -23,7 +23,7 @@
                            <div class="message-list-box school-list">
                               <div class="message_owner">
                                  <div class="measge_name">
-                                    <a href="{{ route('school.details',$school->slug) }}"> 
+                                    <a href="{{ route('school.details',$school->slug) }}">
                                        @php
                                           // Normalize the file path (prepend 'public/' since files are stored in storage/app/public)
                                           $logoPath = $school->logo ? 'public/' . ltrim($school->logo, '/') : null;
@@ -68,7 +68,7 @@
                                     <span class="no-marmin">|</span>
                                     @endif
                                     <p>
-                                       Education System: 
+                                       Education System:
                                        {{-- @if($school->school_boards)
                                           @foreach($school->school_boards as $key=>$schoolboard)
                                              {{ @$key > 0?',':'' }} {{ $schoolboard->board_name }}
@@ -96,7 +96,7 @@
                         <h3><center>No Data Found</center></h3>
                      @endif
 
-                  
+
                   {{-- <div class="dashboard_pagination">
                      <div class="pagination_box">
                         {{$claimedSchools->appends(request()->except(['page', '_token']))->links('pagination')}}
@@ -114,4 +114,4 @@
 @endsection
 @section('script')
 @include('includes.scripts')
-@endsection    
+@endsection

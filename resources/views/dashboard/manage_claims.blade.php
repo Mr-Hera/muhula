@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Profile')
+@section('title','Manage Claims')
 @section('links')
 @include('includes.links')
 <link href="{{ URL::asset('public/croppie/croppie.css') }}" rel="stylesheet" />
@@ -44,9 +44,9 @@
                                         <td>{{ $claim->position_name ?? 'N/A' }}</td>
                                         <td>{{ $claim->school_name }}</td>
                                         <td>
-                                            <span class="badge 
-                                                @if($claim->claim_status == 'pending') bg-warning 
-                                                @elseif($claim->claim_status == 'approved') bg-success 
+                                            <span class="badge
+                                                @if($claim->claim_status == 'pending') bg-warning
+                                                @elseif($claim->claim_status == 'approved') bg-success
                                                 @else bg-danger @endif">
                                                 {{ ucfirst($claim->claim_status) }}
                                             </span>
