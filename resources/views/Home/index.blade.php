@@ -134,12 +134,12 @@
                      <div class="adv_n text-center">
                         @php
                            // Resolve media path with fallback
-                           $mediaFile = $single->media_path ?? 'default.jpg';
+                           $mediaFile = $single->media_path ?? 'default_images/default.jpg';
                            $mediaFullPath = public_path($mediaFile);
 
                            // Fallback if file does not exist
                            if (!file_exists($mediaFullPath)) {
-                              $mediaFile = 'default.jpg';
+                              $mediaFile = 'default_images/default.jpg';
                            }
 
                            // Generate public URL
@@ -636,11 +636,11 @@
                         @if($advert)
                            @php
                               // Resolve media path with fallback
-                              $mediaFile = $advert->media_path ?? 'default.jpg';
+                              $mediaFile = $advert->media_path ?? 'default_images/default.jpg';
                               $mediaFullPath = public_path($mediaFile);
 
                               if (!file_exists($mediaFullPath)) {
-                                 $mediaFile = 'default.jpg';
+                                 $mediaFile = 'default_images/default.jpg';
                               }
 
                               $mediaUrl = URL::to($mediaFile);
