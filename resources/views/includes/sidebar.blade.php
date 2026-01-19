@@ -24,7 +24,7 @@
          @auth
             @if(auth()->user()->is_admin)
                <li>
-                  <a href="{{ route('dashboard.adverts.index') }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Adverts </a>
+                  <a href="{{ route('dashboard.adverts.index') }}" class="{{ Route::is('dashboard.adverts.index','dashboard.manage.adverts')?'active' : '' }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Adverts </a>
                </li>
             @endif
          @endauth
@@ -40,7 +40,7 @@
          @auth
             @if(auth()->user()->is_admin)
                <li>
-                  <a href="{{ route('get.manage.claims') }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Claims </a>
+                  <a href="{{ route('get.manage.claims') }}"class="{{ Route::is('get.manage.claims')?'active' : '' }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Claims </a>
                </li>
             @endif
          @endauth

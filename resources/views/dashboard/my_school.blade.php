@@ -28,7 +28,7 @@
                                     <th>School Name</th>
                                     <th>Curriculum</th>
                                     <th>Type</th>
-                                    <th>Year / Curriculum / Boarding</th>
+                                    <th>Year / Gender / Location</th>
                                     <th>Actions</th>
                                  </tr>
                            </thead>
@@ -65,24 +65,22 @@
                                        {{ optional($school->type)->name ?? 'Not Defined' }}
                                     </td>
 
-                                    {{-- Year / Curriculum / Boarding --}}
+                                    {{-- Year / Gender / Type --}}
                                     <td>
+                                       
                                        @if($school->year_of_establishment)
-                                             Year: {{ $school->year_of_establishment }} <br>
+                                          Year: {{ $school->year_of_establishment }} <br>
                                        @endif
 
-                                       Curriculum: {{ optional($school->curriculum)->name ?? 'Not Defined' }} <br>
-
-                                       Boarding: 
-                                       @if($school->boarding_type == 'D')
-                                             Day
-                                       @elseif($school->boarding_type == 'B')
-                                             Boarding
-                                       @elseif($school->boarding_type == 'DB')
-                                             Day & Boarding
+                                       Gender: 
+                                       @if( $school->gender_admission )
+                                          {{ $school->gender_admission }}
                                        @else
-                                             Not Defined
+                                          Not Defined
                                        @endif
+                                       <br>
+
+                                       Location: {{ optional($school->county)->name ?? 'Not Defined' }} 
                                     </td>
 
                                     {{-- Actions --}}

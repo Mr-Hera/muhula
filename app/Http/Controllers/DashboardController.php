@@ -316,6 +316,7 @@ class DashboardController extends Controller
                 'country',
                 'county',
                 'address',
+                'population',
                 'contact.position',
                 'curriculum',       // Curriculum relation
                 'operationHours',    // Operation hours relation
