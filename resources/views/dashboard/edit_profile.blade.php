@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Profile')
+@section('title','Edit Profile')
 @section('links')
 @include('includes.links')
 <link href="{{ URL::asset('public/croppie/croppie.css') }}" rel="stylesheet" />

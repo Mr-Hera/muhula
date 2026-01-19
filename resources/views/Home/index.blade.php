@@ -7,6 +7,13 @@
 @include('includes.header')
 @endsection
 @section('content')
+@php
+   // $twoLeft  = \App\Models\Advert::where('slot','two_left')->where('is_active',1)->first();
+   // $twoRight = \App\Models\Advert::where('slot','two_right')->where('is_active',1)->first();
+   // $single   = \App\Models\Advert::where('slot','single')->where('is_active',1)->first();
+   // dd(asset($single->media_path));
+@endphp
+
 <section class="banner-home d-block position-relative w-100">
          <div class="banner-inr">
                <div class="owl-carousel owl-theme owl-banner position-relative">
@@ -49,9 +56,9 @@
                         </div>
                         <div class="bnr-inpt2 bnr-frm-ins" id="location2">
                             <label for="location" class="form-label">Schools by Location</label>
-                            <input type="text" class="form-control" placeholder="Enter here" name="location">                            
+                            <input type="text" class="form-control" placeholder="Enter here" name="location">
                         </div>
-                        <button type="submit" class="bnr-btn">Search</button>                        
+                        <button type="submit" class="bnr-btn">Search</button>
                     </form>
                 </div>
             </div>
@@ -107,7 +114,7 @@
                      <p>Want to explore more Popular School </p>
                      <a href="{{ route('user.register') }}">Join for Free! </a>
                   </div>
-               </div>          
+               </div>
               </div>
             </div>
           </div>
@@ -119,19 +126,42 @@
       </section>
 
       {{-- ADVERTISEMENT --}}
+      @if($single)
       <section class="adv2 py-4">
          <div class="container">
             <div class="row justify-content-center">
-               <div class="col-lg-10 col-md-12">
-                  <div class="adv_n text-center">
-                     <a href="#">
-                        <img src="{{ asset('images/adv1.png') }}" alt="" class="img-fluid w-100 rounded">
-                     </a>
+                  <div class="col-lg-10 col-md-12">
+                     <div class="adv_n text-center">
+                        @php
+                           // Resolve media path with fallback
+                           $mediaFile = $single->media_path ?? 'default_images/default.jpg';
+                           $mediaFullPath = public_path($mediaFile);
+
+                           // Fallback if file does not exist
+                           if (!file_exists($mediaFullPath)) {
+                              $mediaFile = 'default_images/default.jpg';
+                           }
+
+                           // Generate public URL
+                           $mediaUrl = URL::to($mediaFile);
+                        @endphp
+
+                        @if($single->type === 'image')
+                           <a href="{{ $single->link ?? '#' }}">
+                              <img src="{{ $mediaUrl }}" class="img-fluid w-100 rounded" alt="Advert Image">
+                           </a>
+                        @else
+                           <video autoplay muted loop playsinline class="w-100 rounded">
+                              <source src="{{ $mediaUrl }}" type="video/mp4">
+                              Your browser does not support the video tag.
+                           </video>
+                        @endif
+                     </div>
                   </div>
-               </div>
             </div>
          </div>
       </section>
+      @endif
 
       {{-- <section class="featured-school">
          <div class="shpa_gr">
@@ -188,7 +218,7 @@
                                  @endwhile
                                  @else
                                  @for($sst = 1; $sst <= 5; $sst++)
-                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>                              
+                                 <li><img src="{{ url('public/images/lstar.png') }}" alt=""></li>
                                  @endfor
                                  @endif
                                  </ul>
@@ -212,12 +242,12 @@
                                     @foreach(@$data->school_boards as $key=>$schoolboard)
                                     {{ @$key > 0?',':'' }} {{ @$schoolboard->board_name }}
                                     @endforeach
-                                    @endif 
+                                    @endif
                                     </p>
                                  </div>
                                  <div>
                                     <span>Gender: </span>
-                                    <p> 
+                                    <p>
                                     @if(@$data->gender == 'M')
                                     Male
                                     @elseif(@$data->gender == 'F')
@@ -249,7 +279,7 @@
                   </div>
                </div>
 
-               
+
             </div>
          </div>
          <div class="shpa_wh">
@@ -270,7 +300,7 @@
                                 @endif
                                 </div>
                                 <div class="ad_text">
-                                    <h2>{{ @$advertise->heading }}</h2> 
+                                    <h2>{{ @$advertise->heading }}</h2>
                                 <p>{{ @$advertise->description }}</p>
                                 </div>
                             </a>
@@ -387,7 +417,7 @@
                            @endif
                         </div>
                         <div class="ad_text">
-                            <h2>{{ @$advertise->heading }}</h2> 
+                            <h2>{{ @$advertise->heading }}</h2>
                            <p>{{ @$advertise->description }}</p>
                         </div>
                      </a>
@@ -499,7 +529,7 @@
                            @endif
                         </div>
                         <div class="ad_text">
-                            <h2>{{ @$advertise->heading }}</h2> 
+                            <h2>{{ @$advertise->heading }}</h2>
                            <p>{{ @$advertise->description }}</p>
                         </div>
                      </a>
@@ -523,12 +553,12 @@
 
                <div class="featured-news-inr">
                   <div class="owl-carousel owl_produs owl-theme owl_produs owl-news position-relative">
-                     @foreach($news_articles as $news_article) 
+                     @foreach($news_articles as $news_article)
                      <div class="item">
                         <div class="news_box">
                            <div class="news_imgs">
-                              <div class="spans"><p> {{$news_article->published_at?date('d',strtotime($news_article->published_at)):'' }} <span>{{ $news_article->published_at?date('M',strtotime($news_article->published_at)):'' }}</span></p> </div> 
-                              <a href="{{ route('news.details',$news_article->slug) }}"> 
+                              <div class="spans"><p> {{$news_article->published_at?date('d',strtotime($news_article->published_at)):'' }} <span>{{ $news_article->published_at?date('M',strtotime($news_article->published_at)):'' }}</span></p> </div>
+                              <a href="{{ route('news.details',$news_article->slug) }}">
                                  {{-- @php
                                     // Normalize the path (prepend 'public/' since files are stored in storage/app/public)
                                     $coverImagePath = $news_article->cover_image ? 'public/' . ltrim($news_article->cover_image, '/') : null;
@@ -600,16 +630,36 @@
       <section class="adv2">
          <div class="container">
             <div class="row">
-               <div class="col-sm-6">
-                  <div class="adv_n">
-                     <a href="#"> <img src="{{ asset('images/adv1.png') }}" alt=""> </a>
+               @foreach([$twoLeft, $twoRight] as $advert)
+                  <div class="col-sm-6">
+                     <div class="adv_n">
+                        @if($advert)
+                           @php
+                              // Resolve media path with fallback
+                              $mediaFile = $advert->media_path ?? 'default_images/default.jpg';
+                              $mediaFullPath = public_path($mediaFile);
+
+                              if (!file_exists($mediaFullPath)) {
+                                 $mediaFile = 'default_images/default.jpg';
+                              }
+
+                              $mediaUrl = URL::to($mediaFile);
+                           @endphp
+
+                           @if($advert->type === 'image')
+                              <a href="{{ $advert->link ?? '#' }}">
+                                 <img src="{{ $mediaUrl }}" class="img-fluid w-100 rounded" alt="Advert">
+                              </a>
+                           @else
+                              <video autoplay muted loop playsinline class="w-100 rounded">
+                                 <source src="{{ $mediaUrl }}" type="video/mp4">
+                                 Your browser does not support the video tag.
+                              </video>
+                           @endif
+                        @endif
+                     </div>
                   </div>
-               </div>
-               <div class="col-sm-6">
-                  <div class="adv_n">
-                     <a href="#"> <img src="{{ asset('images/adv2.png') }}" alt=""> </a>
-                  </div>
-               </div>
+               @endforeach
             </div>
          </div>
       </section>
