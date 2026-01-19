@@ -242,6 +242,7 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::get('/dashboard/manage-adverts', [AdvertController::class, 'manageAdverts'])->name('dashboard.manage.adverts');
 
         Route::post('/dashboard/adverts', [AdvertController::class, 'store'])->name('admin.adverts.store');
+        Route::post('/dashboard/adverts/update', [AdvertController::class, 'updateAdvert'])->name('dashboard.adverts.update');
 
         Route::delete('/dashboard/adverts/{advert}', [AdvertController::class, 'destroy'])->name('admin.adverts.destroy');
     });
