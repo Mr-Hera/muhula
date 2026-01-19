@@ -19,82 +19,98 @@
                   <div class="dashboard_box">
                   @include('includes.message')
                      @if($claimedSchools->isNotEmpty())
-                        @foreach($claimedSchools as $school)
-                           <div class="message-list-box school-list">
-                              <div class="message_owner">
-                                 <div class="measge_name">
-                                    <a href="{{ route('school.details',$school->slug) }}">
+                     <div class="table-responsive">
+                        <table id="schoolsTable" class="table table-bordered table-striped align-middle">
+                           <thead>
+                                 <tr>
+                                    <th>#</th>
+                                    <th>Logo</th>
+                                    <th>School Name</th>
+                                    <th>Curriculum</th>
+                                    <th>Type</th>
+                                    <th>Year / Curriculum / Boarding</th>
+                                    <th>Actions</th>
+                                 </tr>
+                           </thead>
+                           <tbody>
+                                 @foreach($claimedSchools as $school)
+                                 <tr>
+                                    <td>{{ $loop->iteration }}</td>
+
+                                    {{-- Logo --}}
+                                    <td>
                                        @php
-                                          // Normalize the file path (prepend 'public/' since files are stored in storage/app/public)
-                                          $logoPath = $school->logo ? 'public/' . ltrim($school->logo, '/') : null;
-
-                                          // Check if logo exists in storage, otherwise use default image
-                                          $finalPath = ($logoPath && Storage::exists($logoPath))
-                                             ? $logoPath
-                                             : 'public/default_images/default.jpg';
-
-                                          // Generate a public URL for display
-                                          $imageUrl = Storage::url($finalPath);
+                                          $imageUrl = $school->logo && file_exists(public_path($school->logo))
+                                                ? asset($school->logo)
+                                                : asset('default_images/default.jpg');
                                        @endphp
 
-                                       <img src="{{ $imageUrl }}" alt="{{ $school->name ?? 'School Logo' }}">
-                                       <h3>{{ $school->name }}</h3>
-                                    </a>
-                                 </div>
-                                 <div class="message_date d-blocks">
-                                    <a class="mx-2" href="{{ route('user.edit.school',$school->id) }}">Edit</a>
-                                    <form action="{{ route('user.delete.school', $school->id) }}"
-                                          method="POST"
-                                          style="display:inline-block;"
-                                          onsubmit="return confirm('Are you sure you want to permanently delete this school? This action cannot be undone.');">
-                                       @csrf
-                                       @method('DELETE')
+                                       <img src="{{ $imageUrl }}"
+                                             alt="{{ $school->name ?? 'School Logo' }}"
+                                             style="max-width:100px; border-radius:4px;">
+                                    </td>
 
-                                       <button type="submit" class="py-1 btn btn-danger"><i class="fa fa-trash"></i></button>
-                                    </form>
-                                    <p><img src="{{ asset('images/clock.png') }}" alt="">{{ date('jS M, Y H:i',strtotime($school->created_at)) }}</p>
-                                 </div>
-                              </div>
-                              <div class="nature_s">
-                                 @if($school->type)
-                                    <h6>{{ $school->type->name }}</h6>
-                                 @else
-                                    <h6>Not Defined</h6>
-                                 @endif
-                              </div>
-                              <div class="sc_thub_ab">
-                                    @if($school->year_of_establishment != null)
-                                    <p class="text-capital">Year of establishment @if($school->year_of_establishment != null) ({{ $school->year_of_establishment }}) @endif</p>
-                                    <span class="no-marmin">|</span>
-                                    @endif
-                                    <p>
-                                       Education System:
-                                       {{-- @if($school->school_boards)
-                                          @foreach($school->school_boards as $key=>$schoolboard)
-                                             {{ @$key > 0?',':'' }} {{ $schoolboard->board_name }}
-                                          @endforeach
-                                       @endif --}}
-                                       {{ optional($school->curriculum)->name ?? 'Not Defined' }}
-                                    </p>
-                                    <span class="no-marmin">|</span>
-                                    <p>
-                                       @if($school->boarding_type == 'D')
-                                       Day
-                                       @elseif($school->boarding_type == 'B')
-                                       Boading
-                                       @elseif($school->boarding_type == 'DB')
-                                       Day & Boading
+                                    {{-- Name --}}
+                                    <td>
+                                       <a href="{{ route('school.details', $school->slug) }}">
+                                             {{ $school->name }}
+                                       </a>
+                                    </td>
+
+                                    {{-- Curriculum --}}
+                                    <td>{{ $school->curriculum->name }}</td>
+
+                                    {{-- Type --}}
+                                    <td>
+                                       {{ optional($school->type)->name ?? 'Not Defined' }}
+                                    </td>
+
+                                    {{-- Year / Curriculum / Boarding --}}
+                                    <td>
+                                       @if($school->year_of_establishment)
+                                             Year: {{ $school->year_of_establishment }} <br>
                                        @endif
-                                    </p>
-                                 </div>
-                                 <div class="message_body">
-                                    <p>{{ $school->description }}</p>
-                                 </div>
-                           </div>
-                        @endforeach
+
+                                       Curriculum: {{ optional($school->curriculum)->name ?? 'Not Defined' }} <br>
+
+                                       Boarding: 
+                                       @if($school->boarding_type == 'D')
+                                             Day
+                                       @elseif($school->boarding_type == 'B')
+                                             Boarding
+                                       @elseif($school->boarding_type == 'DB')
+                                             Day & Boarding
+                                       @else
+                                             Not Defined
+                                       @endif
+                                    </td>
+
+                                    {{-- Actions --}}
+                                    <td class="d-flex gap-2">
+                                       <a class="btn btn-sm btn-warning" href="{{ route('user.edit.school', $school->id) }}">
+                                             <i class="fa fa-edit"></i> Edit
+                                       </a>
+
+                                       <form action="{{ route('user.delete.school', $school->id) }}"
+                                             method="POST"
+                                             style="display:inline-block;"
+                                             onsubmit="return confirm('Are you sure you want to permanently delete this school? This action cannot be undone.');">
+                                             @csrf
+                                             @method('DELETE')
+                                             <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fa fa-trash"></i> Delete
+                                             </button>
+                                       </form>
+                                    </td>
+                                 </tr>
+                                 @endforeach
+                           </tbody>
+                        </table>
+                     </div>
                      @else
-                        <h3><center>No Data Found</center></h3>
+                        <h3 class="text-center">No Data Found</h3>
                      @endif
+
 
 
                   {{-- <div class="dashboard_pagination">
@@ -114,4 +130,15 @@
 @endsection
 @section('script')
 @include('includes.scripts')
+
+{{-- Datatable script --}}
+@parent
+<script>
+    $(document).ready(function () {
+        $('#schoolsTable').DataTable({
+            pageLength: 10,
+            order: [[0, 'asc']]
+        });
+    });
+</script>
 @endsection
