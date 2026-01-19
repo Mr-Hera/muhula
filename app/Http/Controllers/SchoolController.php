@@ -2339,7 +2339,6 @@ class SchoolController extends Controller
   }
 
   public function shoolClaimSave(Request $request){
-    // dd($request);
     // Validate the request
     $validated = $request->validate([
       'school_id'            => 'required|exists:schools,id',
