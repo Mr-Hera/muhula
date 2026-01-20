@@ -181,6 +181,8 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::group(['namespace' => 'User','middleware' => 'auth'], function(){
 
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('user.dashboard');
+        Route::get('/dashboard/report/download', [DashboardController::class, 'downloadReport'])->name('dashboard.report.download');
+        
         Route::get('edit-profile', [DashboardController::class, 'profile'])->name('user.profile');
         Route::get('profile-image-delete', 'Profile\ProfileController@profileImageDelete')->name('user.profile.image.delete');
         Route::post('update-profile', [SocialAuthController::class, 'updateProfile'])->name('user.update.profile');

@@ -12,9 +12,34 @@
             <div class="row">
                @include('includes.sidebar')
                <div class="dashboard_right_panel">
-                  <div class="dashboard_right_heading">
-                     <h3>Dashboard</h3>
-                     <p>Welcome to your muhula dashboard.</p>
+                  <div class="dashboard_right_heading d-flex justify-content-between align-items-center">
+                     <div>
+                        <h3>Dashboard</h3>
+                        <p>Welcome to your muhula dashboard.</p>
+                     </div>
+
+                     <div class="dropdown">
+                        <button class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                           <i class="fa fa-download me-1"></i> Download Report
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                           <li>
+                                 <a class="dropdown-item" href="{{ route('dashboard.report.download', ['type' => 'csv']) }}">
+                                    CSV
+                                 </a>
+                           </li>
+                           <li>
+                                 <a class="dropdown-item" href="{{ route('dashboard.report.download', ['type' => 'pdf']) }}">
+                                    PDF
+                                 </a>
+                           </li>
+                           <li>
+                                 <a class="dropdown-item" href="{{ route('dashboard.report.download', ['type' => 'excel']) }}">
+                                    Excel
+                                 </a>
+                           </li>
+                        </ul>
+                     </div>
                   </div>
                   <div class="dashboard_box">
                      <div class="dashbord_fild">
@@ -110,6 +135,27 @@
                             @endforeach
                         </div>
                     @endif --}}
+
+                    {{-- DASHBOARD DATA VISUALIZATION --}}
+                     <div class="dashboard_charts mt-4">
+                        <div class="row">
+                           {{-- BAR CHART --}}
+                           <div class="col-md-6">
+                                 <div class="card p-3">
+                                    <h5 class="mb-3">Platform Overview</h5>
+                                    <canvas id="overviewChart"></canvas>
+                                 </div>
+                           </div>
+
+                           {{-- LINE CHART --}}
+                           <div class="col-md-6">
+                                 <div class="card p-3">
+                                    <h5 class="mb-3">Unread Messages</h5>
+                                    <canvas id="messagesChart"></canvas>
+                                 </div>
+                           </div>
+                        </div>
+                     </div>
                   </div>
                </div>
             </div>
@@ -121,4 +167,60 @@
 @endsection
 @section('script')
 @include('includes.scripts')
+
+{{-- Chart.js CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // BAR CHART: Schools vs Reviews
+    const overviewCtx = document.getElementById('overviewChart').getContext('2d');
+    new Chart(overviewCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Schools', 'Reviews'],
+            datasets: [{
+                label: 'Total Count',
+                data: [
+                    {{ $total_school }},
+                    {{ $total_reviews }}
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(75, 192, 192, 0.7)'
+                ],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // LINE CHART: Unread Messages (static example)
+    const messagesCtx = document.getElementById('messagesChart').getContext('2d');
+    new Chart(messagesCtx, {
+        type: 'line',
+        data: {
+            labels: ['Now'],
+            datasets: [{
+                label: 'Unread Messages',
+                data: [{{ $unread_messages }}],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                tension: 0.3,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+});
+</script>
+
 @endsection      

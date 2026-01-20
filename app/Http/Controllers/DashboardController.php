@@ -12,6 +12,7 @@ use App\Models\NewsArticle;
 use Illuminate\Support\Str;
 use App\Models\SchoolReview;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Mail\ClaimApprovedUserMail;
 use App\Mail\ClaimRejectedUserMail;
@@ -19,23 +20,93 @@ use App\Mail\ClaimApprovedAdminMail;
 use App\Mail\ClaimRejectedAdminMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DashboardReportExport;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DashboardController extends Controller
 {
     // DASHBOARD: LANDING PAGE
     public function dashboard(){
         $total_school = School::count();
+        $total_users = User::count();
         $total_reviews = SchoolReview::count();
         $unread_messages = Message::whereDoesntHave('reads', function ($query) {
             $query->where('user_id', Auth::id());
-        })
-        ->count();
+        })->count();
+
+        // USERS REGISTERED OVER TIME (MONTHLY)
+        $usersByMonth = User::selectRaw('COUNT(*) as total, DATE_FORMAT(created_at, "%Y-%m") as month')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        $userChartLabels = $usersByMonth->pluck('month');
+        $userChartData   = $usersByMonth->pluck('total');
 
         return view('dashboard.index')->with([
             'total_school' => $total_school,
+            'total_users' => $total_users,
             'total_reviews' => $total_reviews,
             'unread_messages' => $unread_messages,
+
+            'userChartLabels' => $userChartLabels,
+            'userChartData' => $userChartData,
         ]);
+    }
+
+    public function downloadReport(Request $request)
+    {
+        $type = $request->get('type', 'csv');
+
+        return match ($type) {
+            'csv'   => $this->downloadCsv(),
+            'pdf'   => $this->downloadPdf(),
+            'excel' => $this->downloadExcel(),
+            default => abort(400, 'Invalid report type'),
+        };
+    }
+
+    protected function downloadCsv(): StreamedResponse
+    {
+        $fileName = 'dashboard_report_' . now()->format('Y_m_d') . '.csv';
+
+        return response()->streamDownload(function () {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Metric', 'Value']);
+            fputcsv($handle, ['Total Schools', School::count()]);
+            fputcsv($handle, ['Total Reviews', SchoolReview::count()]);
+            fputcsv($handle, [
+                'Unread Messages',
+                Message::whereDoesntHave('reads', function ($q) {
+                    $q->where('user_id', auth()->id());
+                })->count()
+            ]);
+
+            fclose($handle);
+        }, $fileName, ['Content-Type' => 'text/csv']);
+    }
+
+    protected function downloadPdf()
+    {
+        $pdf = Pdf::loadView('reports.dashboard_pdf', [
+            'totalSchools'   => School::count(),
+            'totalReviews'   => SchoolReview::count(),
+            'unreadMessages' => Message::whereDoesntHave('reads', function ($q) {
+                $q->where('user_id', auth()->id());
+            })->count(),
+        ]);
+
+        return $pdf->download('dashboard_report_' . now()->format('Y_m_d') . '.pdf');
+    }
+
+    protected function downloadExcel()
+    {
+        return Excel::download(
+            new DashboardReportExport,
+            'dashboard_report_' . now()->format('Y_m_d') . '.xlsx'
+        );
     }
 
     public function changePassword(){
