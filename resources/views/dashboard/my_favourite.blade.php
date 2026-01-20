@@ -23,13 +23,19 @@
                         <div class="message-list-box school-list">
                            <div class="message_owner">
                               <div class="measge_name">
-                                 <a href="{{ route('school.details',$favourite->favouritable->slug) }}"> 
-                                    @if($favourite->favouritable->logo != null)
-                                       <img src="{{ asset('storage/' . $favourite->favouritable->logo) }}" alt="">
-                                    @else
-                                       {{-- <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ $favourite->favouritable->getSchoolMainImage->image }}" alt=""> --}}
-                                       <img src="{{ asset('storage/default_images/default.jpg') }}" alt="">
-                                    @endif
+                                 <a href="{{ route('school.details', $favourite->favouritable->slug) }}">
+                                    @php
+                                          $logoPath = $favourite->favouritable->logo;
+
+                                          $imageUrl = $logoPath && file_exists(public_path($logoPath))
+                                             ? asset($logoPath)
+                                             : asset('default_images/default.jpg');
+                                    @endphp
+
+                                    <img src="{{ $imageUrl }}"
+                                          alt="{{ $favourite->favouritable->name ?? 'School Logo' }}"
+                                          style="max-width:60px; border-radius:4px;">
+
                                     <h3>{{ $favourite->favouritable->name }}</h3>
                                  </a>
                               </div>
