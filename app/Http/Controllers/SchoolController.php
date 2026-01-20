@@ -13,8 +13,10 @@ use App\Models\Facility;
 use App\Models\Religion;
 use App\Models\Favourite;
 use App\Models\SchoolFee;
+use App\Enums\ClaimStatus;
 use App\Models\Curriculum;
 use App\Models\SchoolType;
+use App\Models\SchoolUser;
 use App\Models\SchoolImage;
 use App\Models\SchoolLevel;
 use Illuminate\Support\Str;
@@ -2338,52 +2340,53 @@ class SchoolController extends Controller
     ]);
   }
 
-  public function shoolClaimSave(Request $request){
+  public function shoolClaimSave(Request $request)
+  {
     // Validate the request
     $validated = $request->validate([
-      'school_id'            => 'required|exists:schools,id',
-      'user_name'            => 'required|string|max:255',
-      'contact_position_id'  => 'required|exists:contact_positions,id',
-      'email_address'        => 'required|email|max:255',
-      'claim_file'           => 'required|array',
-      'claim_file.*'         => 'file|mimes:jpg,jpeg,png,pdf|max:5120', // 5MB limit per file
+        'school_id'           => 'required|exists:schools,id',
+        'user_name'           => 'required|string|max:255',
+        'contact_position_id' => 'required|exists:contact_positions,id',
+        'email_address'       => 'required|email',
+        'claim_file'          => 'required|array',
+        'claim_file.*'        => 'required|file|mimes:pdf|max:5120',
     ]);
 
-    // Handle file uploads
-    if ($request->hasFile('claim_file')) {
-      foreach ($request->file('claim_file') as $file) {
-        // Sanitize school name -> lowercase, underscores, remove invalid chars
-        $school = School::find($validated['school_id']);
-        $sanitizedName = Str::slug($school->name, '_');
+    $school = School::findOrFail($validated['school_id']);
 
-        // Build file name
-        $fileName = $sanitizedName . '_claim_' . uniqid() . '.' . $file->getClientOriginalExtension();
+    $storedFiles = [];
+    $destination = storage_path('app/public/claims');
 
-        // Define destination and move file
-        $destination = storage_path('app/public/claims');
-        $file->move($destination, $fileName);
-
-        // Store relative path for database
-        $storedFiles[] = 'claims/' . $fileName;
-      }
+    if (!is_dir($destination)) {
+        mkdir($destination, 0755, true);
     }
 
-    // Insert into pivot table
-    DB::table('school_user')->insert([
-      'user_id'              => Auth::id(),
-      'school_id'            => $validated['school_id'],
-      'contact_position_id'  => $validated['contact_position_id'],
-      'proof_of_association' => !empty($storedFiles) ? json_encode($storedFiles) : null,
-      'claim_status'         => 'pending',
-      'claimed_at'           => now(),
-      'created_at'           => now(),
-      'updated_at'           => now(),
+    foreach ($request->file('claim_file') as $file) {
+        $fileName = Str::slug($school->name, '_') . '_claim_' . uniqid() . '.pdf';
+        $file->move($destination, $fileName);
+        $storedFiles[] = 'claims/' . $fileName;
+    }
+
+    $emailDomain = substr(strrchr($validated['email_address'], '@'), 1);
+    $verificationToken = Str::uuid();
+
+    $claimId = SchoolUser::create([
+        'user_id'              => Auth::id(),
+        'school_id'            => $school->id,
+        'contact_position_id'  => $validated['contact_position_id'],
+        'proof_of_association' => $storedFiles,
+        'email_domain'         => $emailDomain,
+        'verification_token'   => $verificationToken,
+        'claim_status'         => ClaimStatus::Pending->value,
+        'claimed_at'           => now(),
+        'created_at'           => now(),
+        'updated_at'           => now(),
     ]);
 
     // Send email notifications
     // 1. To the user (claim received confirmation)
     Mail::to($validated['email_address'])->send(
-      new ClaimSubmittedMail($school, $validated['user_name'])
+      new ClaimSubmittedMail($school, $validated['user_name'], $verificationToken)
     );
 
     // 2. To the admin (new claim alert)
@@ -2391,7 +2394,7 @@ class SchoolController extends Controller
       new AdminNewClaimNotificationMail($school, $validated['user_name'], $validated['email_address'])
     );
 
-    return redirect()->back()->with('success', 'Your school claim has been submitted and is pending approval.');
+    return back()->with('success', 'Claim submitted. Please check your email.');
   }
 
   public function addFavourite(Request $request) {
