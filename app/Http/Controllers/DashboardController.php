@@ -7,6 +7,7 @@ use App\Models\Review;
 use App\Models\School;
 use App\Models\Message;
 use App\Models\Favourite;
+use App\Models\SchoolUser;
 use App\Models\NewsArticle;
 use Illuminate\Support\Str;
 use App\Models\SchoolReview;
@@ -146,6 +147,27 @@ class DashboardController extends Controller
         }
 
         return redirect()->back()->with('success', 'Claim status updated and notifications sent successfully!');
+    }
+
+    // DELETE CLAIM
+    public function deleteClaim($claimId)
+    {
+        $claim = SchoolUser::findOrFail($claimId);
+
+        // Optional: Delete the proof_of_association files from storage
+        if (!empty($claim->proof_of_association)) {
+            foreach ($claim->proof_of_association as $filePath) {
+                $fullPath = storage_path('app/public/' . $filePath);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
+            }
+        }
+
+        // Delete the claim record
+        $claim->delete();
+
+        return redirect()->back()->with('success', 'Claim deleted successfully.');
     }
 
     // DASHBOARD: EDIT-PROFILE PAGE

@@ -46,12 +46,17 @@
                                         <td>
                                             <span class="badge
                                                 @if($claim->claim_status == 'pending') bg-warning
-                                                @elseif($claim->claim_status == 'approved') bg-success
-                                                @else bg-danger @endif">
-                                                {{ ucfirst($claim->claim_status) }}
+                                                @elseif($claim->claim_status == 'email_verified') bg-info
+                                                @elseif($claim->claim_status == 'documents_verified') bg-primary
+                                                @elseif($claim->claim_status == 'auto_approved') bg-success
+                                                @elseif($claim->claim_status == 'manual_review') bg-secondary
+                                                @elseif($claim->claim_status == 'rejected') bg-danger
+                                                @else bg-light text-dark @endif">
+                                                {{ ucfirst(str_replace('_', ' ', $claim->claim_status)) }}
                                             </span>
                                         </td>
                                         <td>
+                                            <!-- Approve Button -->
                                             <form action="{{ route('claims.update.status', $claim->claim_id) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 <input type="hidden" name="status" value="approved">
@@ -61,12 +66,21 @@
                                                 </button>
                                             </form>
 
+                                            <!-- Reject Button -->
                                             <form action="{{ route('claims.update.status', $claim->claim_id) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 <input type="hidden" name="status" value="rejected">
                                                 <button type="submit" class="btn btn-sm btn-danger"
                                                     @if($claim->claim_status == 'rejected') disabled @endif>
                                                     Reject
+                                                </button>
+                                            </form>
+
+                                            <!-- Delete Button -->
+                                            <form action="{{ route('claims.delete', $claim->claim_id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this claim?');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    Delete
                                                 </button>
                                             </form>
                                         </td>
