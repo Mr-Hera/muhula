@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\School;
+use App\Models\SchoolUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -10,22 +10,16 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ClaimSubmittedMail extends Mailable
+class ClaimManualReviewMail extends Mailable
 {
     use Queueable, SerializesModels;
-
-    public School $school;
-    public string $userName;
-    public string $verificationToken;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(School $school, string $userName, string $verificationToken)
+    public function __construct(public SchoolUser $claim)
     {
-        $this->school = $school;
-        $this->userName = $userName;
-        $this->verificationToken = $verificationToken;
+        //
     }
 
     /**
@@ -34,7 +28,7 @@ class ClaimSubmittedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Claim for ' . $this->school->name . ' Has Been Received',
+            subject: 'Your School Claim Requires Manual Review',
         );
     }
 
@@ -44,12 +38,7 @@ class ClaimSubmittedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.claims.submitted_claim',
-            with: [
-                'userName' => $this->userName,
-                'schoolName' => $this->school->name,
-                'verificationUrl' => route('school.claim.verify', $this->verificationToken)
-            ],
+            markdown: 'emails.claim_manual_review',
         );
     }
 

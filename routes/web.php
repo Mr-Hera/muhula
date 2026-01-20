@@ -10,6 +10,7 @@ use App\Http\Controllers\ContentController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\SchoolClaimController;
 
 /*
 |--------------------------------------------------------------------------
@@ -168,6 +169,9 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
     Route::post('post-review',[ReviewController::class, 'postReview'])->name('post.review');
     Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
+
+    Route::get('/school-claim/verify/{token}', [SchoolClaimController::class, 'verifyEmail'])->name('school.claim.verify');
+
     Route::post('upload-photo-save', [SchoolController::class, 'uploadPhotoSave'])->name('school.photo.save');
     Route::post('send-message-save',[MessageController::class, 'sendMessage'])->name('user.send.message');
     Route::post('add-favourite',[SchoolController::class, 'addFavourite'])->name('user.add.favourite');
@@ -215,6 +219,8 @@ Route::group(['namespace' => 'Modules'], function() {
         // for manage claims
         Route::get('manage-claims', [DashboardController::class, 'getManageClaims'])->name('get.manage.claims')->middleware('admin');
         Route::post('/claims/{id}/update-status', [DashboardController::class, 'updateClaimStatus'])->name('claims.update.status')->middleware('admin');
+        // Delete a claim
+        Route::post('/claims/{claim}/delete', [DashboardController::class, 'deleteClaim'])->name('claims.delete');
 
         //for my reviews
         Route::get('my-reviews-for-by-me', [DashboardController::class, 'myReviewsByMe'])->name('user.my.review.by.me');

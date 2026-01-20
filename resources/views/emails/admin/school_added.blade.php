@@ -1,13 +1,13 @@
 @component('mail::message')
 # New School Listing Pending Approval
 
-A new school has been added to the platform and is pending review.
+A new school has been added to the platform.
 
 **School Name:** {{ $school->name }}
 
-@component('mail::button', ['url' => route('get.manage.claims')])
+{{-- @component('mail::button', ['url' => route('get.manage.claims')])
 Review School Listings
-@endcomponent
+@endcomponent --}}
 
 Thanks,  
 **{{ config('app.name') }} System**

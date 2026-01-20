@@ -15,7 +15,7 @@ class CurriculumSeeder extends Seeder
     {
         $curricula = [
             'CBC' => 'Competency-Based Curriculum focusing on skills and learner outcomes.',
-            'IGSCE' => 'International General Certificate of Secondary Education with global recognition.',
+            'IGCSE' => 'International General Certificate of Secondary Education with global recognition.',
             'IB' => 'International Baccalaureate fostering critical thinking and global awareness.',
             'Montessori' => 'Child-centered learning emphasizing independence and hands-on activities.',
             'British' => 'Structured UK curriculum with defined key stages and assessments.',
