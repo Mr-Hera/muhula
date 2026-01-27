@@ -186,4 +186,6 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'public_path_prefix' => env('PUBLIC_PATH_PREFIX', ''),
+
 ];

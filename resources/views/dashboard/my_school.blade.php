@@ -40,9 +40,24 @@
                                     {{-- Logo --}}
                                     <td>
                                        @php
-                                          $imageUrl = $school->logo && file_exists(public_path($school->logo))
-                                                ? asset($school->logo)
-                                                : asset('default_images/default.jpg');
+                                          // Stored path example: images/school_logo/abc_logo.jpg
+                                          $logoFile = $school->logo ?: 'default_images/default.jpg';
+
+                                          // Absolute filesystem path for existence check
+                                          $logoFullPath = public_path($logoFile);
+
+                                          // Fallback if file does not exist
+                                          if (!file_exists($logoFullPath)) {
+                                                $logoFile = 'default_images/default.jpg';
+                                          }
+
+                                          // Prefix from .env ('' locally, '/public' on production)
+                                          $prefix = trim(config('app.public_path_prefix'), '/');
+
+                                          // Build final public URL
+                                          $imageUrl = $prefix
+                                                ? url($prefix . '/' . $logoFile)
+                                                : url($logoFile);
                                        @endphp
 
                                        <img src="{{ $imageUrl }}"

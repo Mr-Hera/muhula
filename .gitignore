@@ -19,4 +19,5 @@ yarn-error.log
 /.vscode
 .env_old
 .env_old.txt
+env_old.txt
 /public/images

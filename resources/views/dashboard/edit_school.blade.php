@@ -31,16 +31,24 @@
                              {{ $school->ownership }}
                            </span>
                             @php
-                                // Normalize the path (prepend 'public/' since files are stored in storage/app/public)
-                                $logoPath = $school->logo ? 'public/' . ltrim($school->logo, '/') : null;
+                                // Stored path example: images/school_logo/abc_logo.jpg
+                                $logoFile = $school->logo ?: 'default_images/default.jpg';
 
-                                // If logo exists in storage, use it; otherwise, fall back to default
-                                $finalPath = ($logoPath && Storage::exists($logoPath))
-                                    ? $logoPath
-                                    : 'public/default_images/default.jpg';
+                                // Absolute filesystem path for existence check
+                                $logoFullPath = public_path($logoFile);
 
-                                // Generate the public URL
-                                $imageUrl = Storage::url($finalPath);
+                                // Fallback if file does not exist
+                                if (!file_exists($logoFullPath)) {
+                                    $logoFile = 'default_images/default.jpg';
+                                }
+
+                                // Prefix from .env ('' locally, '/public' on production)
+                                $prefix = trim(config('app.public_path_prefix'), '/');
+
+                                // Build final public URL
+                                $imageUrl = $prefix
+                                    ? url($prefix . '/' . $logoFile)
+                                    : url($logoFile);
                             @endphp
 
                             <a href="{{ route('school.details', $school->slug) }}">
@@ -951,39 +959,59 @@
                                 <div class="row">
                                     @if($schoolPhotos)
                                         @foreach($schoolPhotos as $data)
-                                        <div class="col-lg-4 col-xl-3 col-sm-6  col-md-3 col-12 cols cols_img">
-                                            
-                                            <div class="schol_show_box">
-                                            <div class="sch_show_img">
-                                                @php
-                                                    // Build full path to the image
-                                                    $imagePath = $data->image_path 
-                                                        ? 'public/' . ltrim($data->image_path, '/') 
-                                                        : 'public/default_images/default.jpg';
+                                            <div class="col-lg-4 col-xl-3 col-sm-6  col-md-3 col-12 cols cols_img">
+                                                
+                                                <div class="schol_show_box">
+                                                    <div class="sch_show_img">
+                                                        @php
+                                                            // Image path stored in DB (relative to public/)
+                                                            $imageFile = $data->image_path ?? 'default_images/default.jpg';
 
-                                                    // Check existence, fallback to default if missing
-                                                    $finalPath = Storage::exists($imagePath) 
-                                                        ? $imagePath 
-                                                        : 'public/default_images/default.jpg';
+                                                            // Absolute filesystem path for existence check
+                                                            $imageFullPath = public_path($imageFile);
 
-                                                    // Generate the public URL
-                                                    $imageUrl = Storage::url($finalPath);
-                                                @endphp
+                                                            // Fallback if missing
+                                                            if (!file_exists($imageFullPath)) {
+                                                                $imageFile = 'default_images/default.jpg';
+                                                            }
 
-                                                <img src="{{ $imageUrl }}" alt="{{ $data->title ?? 'Default Image' }}">
+                                                            // Prefix from config ('' locally, '/public' on production)
+                                                            $prefix = trim(config('app.public_path_prefix'), '/');
+
+                                                            // Build final public URL
+                                                            $imageUrl = $prefix
+                                                                ? url($prefix . '/' . $imageFile)
+                                                                : url($imageFile);
+                                                        @endphp
+
+                                                        <img src="{{ $imageUrl }}" alt="{{ $data->title ?? 'Default Image' }}">
+                                                    </div>
+
+                                                    <div class="img_show_actions">
+                                                        <a href="javascript:;" 
+                                                        class="imageEdit"
+                                                        data-image_id="{{ $data->id }}"
+                                                        data-image_url="{{ $imageUrl }}">
+                                                            <img src="{{ asset('images/edit.png') }}" alt=""> Edit
+                                                        </a>
+
+                                                        @if($data->status == 'I')
+                                                            <a href="{{ route('user.school.image.status.update',$data->id) }}"
+                                                            onclick="return confirm('Do you want to unblock this image?')">
+                                                                <img src="{{ asset('images/check2.png') }}" alt=""> Unblock
+                                                            </a>
+                                                        @endif
+
+                                                        @if($data->status == 'A')
+                                                            <a href="{{ route('user.school.image.status.update',$data->id) }}"
+                                                            onclick="return confirm('Do you want to block this image?')">
+                                                                <img src="{{ asset('images/lock.png') }}" alt=""> Block
+                                                            </a>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
                                             </div>
-                                            <div class="img_show_actions">
-                                                <a href="javascript:;" class="imageEdit" data-image_id="{{ $data->id }}" data-image_url="{{ asset('storage/' . $data->image_path) }}"> <img src="{{ asset('images/edit.png') }}" alt="">   Edit</a>
-                                                @if($data->status == 'I')
-                                                <a href="{{ route('user.school.image.status.update',$data->id) }}" onclick="return confirm('Do you want to unblock this image?')"> <img src="{{ asset('images/check2.png') }}" alt=""> Unblock</a>
-                                                @endif
-                                                @if($data->status == 'A')
-                                                <a href="{{ route('user.school.image.status.update',$data->id) }}" onclick="return confirm('Do you want to block this image?')"> <img src="{{ asset('images/lock.png') }}" alt=""> Block</a>
-                                                @endif
-                                            </div>
-                                            </div>
-
-                                        </div>
                                         @endforeach
                                     @endif
                                 </div>
