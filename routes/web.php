@@ -51,6 +51,23 @@ Route::get('/run-key-generate', function () {
     return 'Application key generated successfully!';
 });
 
+Route::get('/optimize-app', function () {
+
+    Artisan::call('config:clear');
+    Artisan::call('config:cache');
+    Artisan::call('route:cache');
+    Artisan::call('view:cache');
+    Artisan::call('optimize');
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Application optimized successfully',
+        'output' => [
+            'config:clear' => Artisan::output(),
+        ],
+    ]);
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login
