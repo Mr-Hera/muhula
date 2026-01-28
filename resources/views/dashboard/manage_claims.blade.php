@@ -60,7 +60,11 @@
                                             <form action="{{ route('claims.update.status', $claim->claim_id) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 <input type="hidden" name="status" value="approved">
-                                                <button type="submit" class="btn btn-sm btn-success"
+                                                <button type="submit" class="btn btn-sm text-white"
+                                                    style="
+                                                        background-image: linear-gradient(89.66deg, rgb(146, 208, 80) -12.49%, rgb(50, 205, 50) 113.27%);
+                                                        border: none;
+                                                    "
                                                     @if($claim->claim_status == 'approved') disabled @endif>
                                                     Approve
                                                 </button>
