@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\AdvertController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SchoolController;
@@ -112,7 +113,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::get('privacy-policy',[ContentController::class, 'privacyPolicy'])->name('privacy.policy');
     //Route::get('terms-conditions','Content\ContentController@termCondition')->name('term.condition');
     Route::get('disclaimer',[ContentController::class, 'disclaimer'])->name('disclaimer');
-    Route::any('news','Content\ContentController@newsList')->name('news.list');
+    Route::any('news',[ContentController::class, 'newsList'])->name('news.list');
     Route::get('news-details/{slug?}',[ContentController::class, 'newsDetails'])->name('news.details');
 
     Route::middleware(['auth'])->group(function() {

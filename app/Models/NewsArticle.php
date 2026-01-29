@@ -29,5 +29,5 @@ class NewsArticle extends Model
     
     public function categories() 
     { 
-        return $this->belongsToMany(NewsCategory::class, 'article_category', 'article_id', 'category_id'); }
+        return $this->belongsToMany(NewsCategory::class, 'article_categories', 'article_id', 'category_id'); }
 }
