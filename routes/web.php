@@ -69,10 +69,26 @@ Route::get('/optimize-app', function () {
     ]);
 });
 
+// Admin Login
+Route::prefix('admin')->group(function () {
+
+    // Admin login form
+    Route::get('/login', [SocialAuthController::class, 'showAdminLoginForm'])
+        ->middleware('guest')
+        ->name('adminLogin');
+
+    // Admin login submit
+    Route::post('/login', [SocialAuthController::class, 'adminLogin'])->middleware('guest')->name('admin.login.submit');
+
+    
+
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login
 Route::get('/login', [SocialAuthController::class, 'showUserLoginForm'])->name('login')->middleware('guest');
+
 // Handle login submission
 Route::post('/login', [SocialAuthController::class, 'login'])->name('login.post')->middleware('guest');
 

@@ -55,6 +55,35 @@ class SocialAuthController extends Controller
         return view('auth.login');
     }
 
+    public function showAdminLoginForm()
+    {
+        return view('admin.login');
+    }
+
+    public function adminLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => ['required','email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+
+            if (!auth()->user()->is_admin) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'You are not authorized to access the admin panel.',
+                ]);
+            }
+
+            return redirect()->route('user.dashboard');
+        }
+
+        return back()->withErrors([
+            'email' => 'Invalid login credentials.',
+        ]);
+    }
+
     // Handle login
     public function login(Request $request)
     {
