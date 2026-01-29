@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\AdvertController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SchoolController;
@@ -68,10 +69,26 @@ Route::get('/optimize-app', function () {
     ]);
 });
 
+// Admin Login
+Route::prefix('admin')->group(function () {
+
+    // Admin login form
+    Route::get('/login', [SocialAuthController::class, 'showAdminLoginForm'])
+        ->middleware('guest')
+        ->name('adminLogin');
+
+    // Admin login submit
+    Route::post('/login', [SocialAuthController::class, 'adminLogin'])->middleware('guest')->name('admin.login.submit');
+
+    
+
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login
 Route::get('/login', [SocialAuthController::class, 'showUserLoginForm'])->name('login')->middleware('guest');
+
 // Handle login submission
 Route::post('/login', [SocialAuthController::class, 'login'])->name('login.post')->middleware('guest');
 
@@ -112,7 +129,7 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::get('privacy-policy',[ContentController::class, 'privacyPolicy'])->name('privacy.policy');
     //Route::get('terms-conditions','Content\ContentController@termCondition')->name('term.condition');
     Route::get('disclaimer',[ContentController::class, 'disclaimer'])->name('disclaimer');
-    Route::any('news','Content\ContentController@newsList')->name('news.list');
+    Route::any('news',[ContentController::class, 'newsList'])->name('news.list');
     Route::get('news-details/{slug?}',[ContentController::class, 'newsDetails'])->name('news.details');
 
     Route::middleware(['auth'])->group(function() {
@@ -195,9 +212,9 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::post('header-image-video-save','School\SearchSchoolController@addHeaderImageVideo')->name('user.add.header.image.video');
 
 
-    Route::group(['namespace' => 'User','middleware' => 'auth'], function(){
+    Route::group(['namespace' => 'User','middleware' => 'auth', 'prefix' => 'dashboard'], function(){
 
-        Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('user.dashboard');
+        Route::get('', [DashboardController::class, 'dashboard'])->name('user.dashboard');
         Route::get('edit-profile', [DashboardController::class, 'profile'])->name('user.profile');
         Route::get('profile-image-delete', 'Profile\ProfileController@profileImageDelete')->name('user.profile.image.delete');
         Route::post('update-profile', [SocialAuthController::class, 'updateProfile'])->name('user.update.profile');
@@ -260,15 +277,34 @@ Route::group(['namespace' => 'Modules'], function() {
 
     });
 
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/dashboard/add-adverts', [AdvertController::class, 'index'])->name('dashboard.adverts.index');
-        Route::get('/dashboard/manage-adverts', [AdvertController::class, 'manageAdverts'])->name('dashboard.manage.adverts');
+    Route::group(['middleware' => 'auth', 'prefix' => 'dashboard'], function () {
+        Route::get('add-adverts', [AdvertController::class, 'index'])->name('dashboard.adverts.index');
+        Route::get('manage-adverts', [AdvertController::class, 'manageAdverts'])->name('dashboard.manage.adverts');
 
-        Route::post('/dashboard/adverts', [AdvertController::class, 'store'])->name('admin.adverts.store');
-        Route::post('/dashboard/adverts/update', [AdvertController::class, 'updateAdvert'])->name('dashboard.adverts.update');
+        Route::post('adverts', [AdvertController::class, 'store'])->name('admin.adverts.store');
+        Route::post('adverts/update', [AdvertController::class, 'updateAdvert'])->name('dashboard.adverts.update');
 
-        Route::delete('/dashboard/adverts/{advert}', [AdvertController::class, 'destroy'])->name('admin.adverts.destroy');
+        Route::delete('adverts/{advert}', [AdvertController::class, 'destroy'])->name('admin.adverts.destroy');
     });
+
+    Route::middleware(['auth', 'admin'])->prefix('dashboard/admin')->group(function () {
+
+        Route::get('/users', [DashboardController::class, 'manageUsersIndex'])->name('admin.users.index');
+
+        Route::get('/users/{user}/edit', [DashboardController::class, 'manageUsersEdit'])->name('admin.users.edit');
+
+        Route::delete('/users/{user}', [DashboardController::class, 'manageUsersDestroy'])->name('admin.users.destroy');
+
+        Route::put('users/{user}', [SocialAuthController::class, 'updateUser'])->name('admin.users.update');
+
+        Route::get('users/{user}/verify', [SocialAuthController::class, 'verifyUser'])->name('admin.users.verify');
+
+        Route::get('users/{user}/resend-verification', [SocialAuthController::class, 'resendUserVerification'])->name('admin.users.resend.verification');
+
+    });
+
+    // routes/web.php
+    Route::get('/email/verify/{id}', [SocialAuthController::class, 'verifyEmail'])->name('verification.verify');
 
 
     //payment related

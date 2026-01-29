@@ -7,11 +7,13 @@ use App\Models\User;
 use App\Mail\SignupUserMail;
 use Illuminate\Http\Request;
 use App\Mail\ResetPasswordMail;
+use App\Mail\UserVerificationMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailVerifiedNotification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
@@ -51,6 +53,35 @@ class SocialAuthController extends Controller
         //     $data['remember'] = Cookie::get('remember');
         // }
         return view('auth.login');
+    }
+
+    public function showAdminLoginForm()
+    {
+        return view('admin.login');
+    }
+
+    public function adminLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => ['required','email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+
+            if (!auth()->user()->is_admin) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'You are not authorized to access the admin panel.',
+                ]);
+            }
+
+            return redirect()->route('user.dashboard');
+        }
+
+        return back()->withErrors([
+            'email' => 'Invalid login credentials.',
+        ]);
     }
 
     // Handle login
@@ -259,6 +290,65 @@ class SocialAuthController extends Controller
         DB::table('password_reset_tokens')->where('email', $record->email)->delete();
 
         return redirect()->route('login')->with('success', 'Your password has been reset successfully. Please login.');
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        // Validate input
+        $request->validate([
+            'is_admin' => 'required|boolean',
+        ]);
+
+        // Update account type
+        $user->is_admin = $user->is_admin ? false : true;
+        $user->updated_at = null;
+        $user->save();
+
+        return redirect()->back()->with('success', 'User updated successfully.');
+    }
+
+    public function verifyUser(User $user)
+    {
+        if ($user->email_verified_at) {
+            return redirect()->back()->with('info', 'User is already verified.');
+        }
+
+        $user->email_verified_at = now();
+        $user->save();
+
+        return redirect()->back()->with('success', 'User email has been verified.');
+    }
+
+    public function resendUserVerification(User $user)
+    {
+        if ($user->email_verified_at) {
+            return redirect()->back()->with('info', 'User is already verified.');
+        }
+
+        // Send email verification
+        Mail::to($user->email)->send(new UserVerificationMail($user));
+
+        return redirect()->back()->with('success', 'Verification email has been resent.');
+    }
+
+    public function verifyEmail($id)
+    {
+        $user = User::findOrFail($id);
+
+        // If already verified
+        if ($user->email_verified_at) {
+            return redirect('/')->with('info', 'Your email is already verified.');
+        }
+
+        // Mark as verified
+        $user->email_verified_at = now();
+        $user->save();
+
+        // Send email notification
+        Mail::to($user->email)->send(new EmailVerifiedNotification($user));
+
+        // Optionally, you can flash a success message
+        return redirect('/')->with('success', 'Your email has been successfully verified!');
     }
 
     // Handle logout

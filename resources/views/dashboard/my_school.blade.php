@@ -100,7 +100,11 @@
 
                                     {{-- Actions --}}
                                     <td class="d-flex gap-2">
-                                       <a class="btn btn-sm btn-warning" href="{{ route('user.edit.school', $school->id) }}">
+                                       <a class="btn btn-sm text-white" href="{{ route('user.edit.school', $school->id) }}"
+                                          style="
+                                                background-image: linear-gradient(89.66deg, rgb(146, 208, 80) -12.49%, rgb(50, 205, 50) 113.27%);
+                                                border: none;
+                                             ">
                                              <i class="fa fa-edit"></i> Edit
                                        </a>
 
