@@ -58,22 +58,24 @@
    @endphp --}}
 
    @php
-      // Define the base path relative to your public directory
-      // Maintain your "storage/app/public" structure
-      $logoFile = $school_record->logo 
-         ? $school_record->logo
-         : 'default_images/default.jpg';
+      // Stored path example: images/school_logo/abc_logo.jpg
+      $logoFile = $school_record->logo ?: 'default_images/default.jpg';
 
-      // Build the full file path (for existence check)
+      // Absolute filesystem path for existence check
       $logoFullPath = public_path($logoFile);
 
-      // Fallback to default if the file doesn’t exist
+      // Fallback if file does not exist
       if (!file_exists($logoFullPath)) {
          $logoFile = 'default_images/default.jpg';
       }
 
-      // Generate a full public URL
-      $logoUrl = URL::to($logoFile);
+      // Prefix from .env ('' locally, '/public' on production)
+      $prefix = trim(config('app.public_path_prefix'), '/');
+
+      // Build final public URL
+      $logoUrl = $prefix
+         ? url($prefix . '/' . $logoFile)
+         : url($logoFile);
    @endphp
 
    <img src="{{ $logoUrl }}" alt="{{ $school_record->name ?? 'Default Logo' }}" class="blurred-image">
@@ -154,16 +156,24 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                            @php
                               // Stored path example: images/school_logo/abc_logo.jpg
                               $logoFile = $school_record->logo ?: 'default_images/default.jpg';
-
-                              // Check file existence
-                              if (!file_exists(public_path($logoFile))) {
+                           
+                              // Absolute filesystem path for existence check
+                              $logoFullPath = public_path($logoFile);
+                           
+                              // Fallback if file does not exist
+                              if (!file_exists($logoFullPath)) {
                                  $logoFile = 'default_images/default.jpg';
                               }
-
-                              // Generate correct public URL
-                              $logoUrl = asset($logoFile);
+                           
+                              // Prefix from .env ('' locally, '/public' on production)
+                              $prefix = trim(config('app.public_path_prefix'), '/');
+                           
+                              // Build final public URL
+                              $logoUrl = $prefix
+                                 ? url($prefix . '/' . $logoFile)
+                                 : url($logoFile);
                            @endphp
-
+                            
                            <img src="{{ $logoUrl }}" alt="{{ $school_record->name ?? 'Default Logo' }}">
                         </div>
                         <div class="school_names">
@@ -594,22 +604,29 @@ $expire_date = date('Y-m-d',strtotime(@Auth::user()->subscription_expire_date));
                               <div class="owl-carousel owl-theme owl-gallery position-relative">
                                  @foreach($school_gallery as $data)
                                     @php
-                                       // Build full public URL to the image
+                                       // Image path stored in DB (relative to public/)
                                        $imageFile = $data->image_path ?? 'default.jpg';
+
+                                       // Absolute filesystem path for existence check
                                        $imageFullPath = public_path($imageFile);
 
-                                       // Fallback if file doesn't exist
+                                       // Fallback if missing
                                        if (!file_exists($imageFullPath)) {
-                                          $imageFile = 'default.jpg';
+                                             $imageFile = 'default.jpg';
                                        }
 
-                                       // Generate the public URL
-                                       $imageUrl = URL::to($imageFile);
+                                       // Prefix from config ('' locally, '/public' on production)
+                                       $prefix = trim(config('app.public_path_prefix'), '/');
+
+                                       // Build final URL
+                                       $imageUrl = $prefix
+                                             ? url($prefix . '/' . $imageFile)
+                                             : url($imageFile);
                                     @endphp
 
                                     <div class="item showImage" data-image_url="{{ $imageUrl }}">
                                        <div class="school_gallery_img">
-                                          <img src="{{ $imageUrl }}" alt="{{ $imageFile }}">
+                                             <img src="{{ $imageUrl }}" alt="{{ $imageFile }}">
                                        </div>
                                     </div>
                                  @endforeach

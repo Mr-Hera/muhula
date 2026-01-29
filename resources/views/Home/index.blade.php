@@ -133,8 +133,10 @@
                   <div class="col-lg-10 col-md-12">
                      <div class="adv_n text-center">
                         @php
-                           // Resolve media path with fallback
-                           $mediaFile = $single->media_path ?? 'default_images/default.jpg';
+                           // Stored path example: images/adverts/single_123456789.jpg
+                           $mediaFile = $single->media_path ?: 'default_images/default.jpg';
+
+                           // Absolute filesystem path for existence check
                            $mediaFullPath = public_path($mediaFile);
 
                            // Fallback if file does not exist
@@ -142,13 +144,20 @@
                               $mediaFile = 'default_images/default.jpg';
                            }
 
-                           // Generate public URL
-                           $mediaUrl = URL::to($mediaFile);
+                           // Prefix from .env ('' locally, '/public' on production)
+                           $prefix = trim(config('app.public_path_prefix'), '/');
+
+                           // Build final public URL
+                           $mediaUrl = $prefix
+                              ? url($prefix . '/' . $mediaFile)
+                              : url($mediaFile);
                         @endphp
 
                         @if($single->type === 'image')
                            <a href="{{ $single->link ?? '#' }}">
-                              <img src="{{ $mediaUrl }}" class="img-fluid w-100 rounded" alt="Advert Image">
+                              <img src="{{ $mediaUrl }}"
+                                    class="img-fluid w-100 rounded"
+                                    alt="Advert Image">
                            </a>
                         @else
                            <video autoplay muted loop playsinline class="w-100 rounded">

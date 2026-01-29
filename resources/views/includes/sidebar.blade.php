@@ -21,15 +21,8 @@
                </li>
             @endif
          @endauth
-         @auth
-            @if(auth()->user()->is_admin)
-               <li>
-                  <a href="{{ route('dashboard.adverts.index') }}" class="{{ Route::is('dashboard.adverts.index','dashboard.manage.adverts')?'active' : '' }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Adverts </a>
-               </li>
-            @endif
-         @endauth
          <li>
-            <a href="{{ route('user.my.review.by.me') }}" class="{{ Route::is('user.my.review.by.me','user.my.review.by.school')?'active' : '' }}"> <span><img src="{{asset('images/dash4.png')}}" alt="" ></span>  My Reviews </a>
+            <a href="{{ route('user.my.review.by.me') }}" class="{{ Route::is('user.my.review.by.me','user.my.review.by.school')?'active' : '' }}"> <span><img src="{{asset('images/dash3.png')}}" alt="" ></span>  My Reviews </a>
          </li>
          <li>
             <a href="{{ route('user.message.list') }}" class="{{ Route::is('user.message.list','user.message.detail')?'active' : '' }}"> <span><img src="{{ asset('images/dash5.png') }}" alt=""></span>  Messages </a>
@@ -37,6 +30,16 @@
          <li>
             <a href="{{ route('school.search') }}"> <span><img src="{{asset('images/claim-school.png')}}" alt="" ></span>Claim School </a>
          </li>
+         <li>
+            <a href="{{ route('admin.users.index') }}" class="{{ Route::is('admin.users.index', 'admin.users.edit')?'active' : '' }}"> <span><img src="{{asset('images/dash4.png')}}" alt="" ></span>  Manage Users</a>
+         </li>
+         @auth
+            @if(auth()->user()->is_admin)
+               <li>
+                  <a href="{{ route('dashboard.adverts.index') }}" class="{{ Route::is('dashboard.adverts.index','dashboard.manage.adverts')?'active' : '' }}"> <span><img src="{{ asset('images/dash3.png') }}" alt=""></span>Manage Adverts </a>
+               </li>
+            @endif
+         @endauth
          @auth
             @if(auth()->user()->is_admin)
                <li>

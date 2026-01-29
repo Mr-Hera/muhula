@@ -471,18 +471,24 @@
                               @endphp --}}
 
                               @php
-                                 // Build the expected storage path
-                                 $logoPath = $school->logo 
-                                    ? $school->logo 
-                                    : 'default_images/default.jpg';
+                                 // Stored path example: images/school_logo/abc_logo.jpg
+                                 $logoFile = $school->logo ?: 'default_images/default.jpg';
 
-                                 // Check if file exists, otherwise fallback
-                                 $finalPath = file_exists($logoPath) 
-                                    ? $logoPath 
-                                    : 'public/default_images/default.jpg';
+                                 // Absolute filesystem path for existence check
+                                 $logoFullPath = public_path($logoFile);
 
-                                 // Generate the public URL
-                                 $logoUrl = URL::to($finalPath);
+                                 // Fallback if file does not exist
+                                 if (!file_exists($logoFullPath)) {
+                                    $logoFile = 'default_images/default.jpg';
+                                 }
+
+                                 // Prefix from .env ('' locally, '/public' on production)
+                                 $prefix = trim(config('app.public_path_prefix'), '/');
+
+                                 // Build final public URL
+                                 $logoUrl = $prefix
+                                    ? url($prefix . '/' . $logoFile)
+                                    : url($logoFile);
                               @endphp
 
                               <a href="{{ route('school.details', $school->slug) }}">

@@ -8,7 +8,7 @@
 @endsection
 @section('content')
 <section class="inner_banner">
-         <img src="{{ url('public/images/news_banne.png') }}" alt="" class="innr-bnnr-img ">
+         <img src="{{ url('images/news_banne.png') }}" alt="" class="innr-bnnr-img ">
          <div class="in-bn-txt">
             <div class="container ">
                <nav aria-label="breadcrumb">
@@ -46,7 +46,7 @@
          <div class="container">
             <div class="row">
                <div class="result_div">
-                  <h3>Result: {{ @$allNews->count() }} news Found </h3>
+                  <h3>Result: {{ $allNews->count() }} news Found </h3>
                   
                </div>
 
@@ -54,54 +54,79 @@
 
             <div class="total_news">
                <div class="row">
-                @if(@$allNews->isNotEmpty())
-                 @foreach($allNews as $data)
-                  <div class="col-lg-4 col-md-6 col-sm-6">
-                     <div class="news_box">
-                           <div class="news_imgs">
-                             @if(@$data->posted_by == 'U')
-                              <div class="spans"><p> {{ date('d',strtotime(@$data->created_at)) }} <span>{{ date('M',strtotime(@$data->created_at)) }}</span></p> </div>
-                              @else 
-                              <div class="spans"><p> {{ @$data->news_date?date('d',strtotime(@$data->news_date)):'' }} <span>{{@$data->news_date?date('M',strtotime(@$data->news_date)):'' }}</span></p> </div> 
-                              @endif
-                              <a href="{{ route('news.details',@$data->slug) }}"> 
-                                  @if(@$data->image != null)
-                                 <img src="{{ URL::to('storage/app/public/images/news_image') }}/{{ @$data->image }}" alt=""> 
+                  @if(@$allNews->isNotEmpty())
+                     @foreach($allNews as $data)
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                           <div class="news_box">
+                              <div class="news_imgs">
+                                 @if($data->author_id == auth()->id())
+                                    <div class="spans"><p> {{ date('d',strtotime($data->created_at)) }} <span>{{ date('M',strtotime($data->created_at)) }}</span></p> </div>
+                                 @else 
+                                    <div class="spans"><p> {{ $data->created_at?date('d',strtotime($data->created_at)):'' }} <span>{{$data->created_at?date('M',strtotime($data->created_at)):'' }}</span></p> </div> 
                                  @endif
-                               </a>
-                           </div>
-                           <div class="news_text">
-                              <div class="news_info">
-                                 <div class="adm_namee"> 
-                                 <img src="{{ url('public/images/user.png') }}" alt="">
-                                    <p>Posted by, <span>
-                                    @if(@$data->posted_by == 'U')
-                                    {{ @$data->getUser->first_name.' '.@$data->getUser->last_name }}
-                                    @else
-                                    Admin
-                                    @endif
-                                    </span></p>
-                                 </div>
-                               
-                                 <h2> <a href="{{ route('news.details',@$data->slug) }}">
-                                 @if(strlen(@$data->news_title)>100)
-                                 {{ substr(@$data->news_title,0,100) }}
-                                 @else
-                                 {{ @$data->news_title }}
-                                 @endif
-                                 </a> </h2>
+                                 <a href="{{ route('news.details',$data->slug) }}"> 
+                                    @if($data->cover_image)
+                                       @php
+                                          // Image path stored in DB (already relative to public/)
+                                          // Example: images/news_covers/example.jpg
+                                          $imageFile = ltrim($data->cover_image, '/');
 
-                                 <div class="read_more_b">
-                                    <a href="{{ route('news.details',@$data->slug) }}">Read More <img src="{{ url('public/images/chevrone.png') }}" alt=""> </a>
+                                          // Absolute filesystem path for existence check
+                                          $imageFullPath = public_path($imageFile);
+
+                                          // Fallback if missing
+                                          if (!file_exists($imageFullPath)) {
+                                                $imageFile = 'default_images/default.jpg';
+                                          }
+
+                                          // Prefix from config ('' locally, '/public' on production)
+                                          $prefix = trim(config('app.public_path_prefix'), '/');
+
+                                          // Build final public URL
+                                          $imageUrl = $prefix
+                                                ? url($prefix . '/' . $imageFile)
+                                                : url($imageFile);
+                                       @endphp
+
+                                       <img src="{{ $imageUrl }}" alt="{{ $data->title ?? 'News Image' }}">
+                                    @endif
+                                 </a>
+                              </div>
+                              <div class="news_text">
+                                 <div class="news_info">
+                                    <div class="adm_namee"> 
+                                    <img src="{{ asset('images/user.png') }}" alt="">
+                                       <p>Posted by, <span>
+                                          @if($data->author_id == auth()->id())
+                                             {{-- {{ @$data->getUser->first_name.' '.@$data->getUser->last_name }} --}}User Full Name
+                                          @else
+                                             Admin
+                                          @endif
+                                          </span>
+                                       </p>
+                                    </div>
+                                 
+                                    <h2>
+                                       <a href="{{ route('news.details',$data->slug) }}">
+                                          @if(strlen($data->title)>100)
+                                             {{ substr($data->title,0,100) }}
+                                          @else
+                                             {{ $data->title }}
+                                          @endif
+                                       </a>
+                                    </h2>
+
+                                    <div class="read_more_b">
+                                       <a href="{{ route('news.details',$data->slug) }}">Read More <img src="{{ asset('images/chevrone.png') }}" alt=""> </a>
+                                    </div>
                                  </div>
                               </div>
                            </div>
                         </div>
-                  </div>
-                  @endforeach
-                      @else
-                      <h2><center>No Data Found</center></h2>
-                      @endif
+                        @endforeach
+                     @else
+                        <h2><center>No Data Found</center></h2>
+                     @endif
 
                   {{--<div class="col-lg-4 col-md-6 col-sm-6">
                      <div class="news_box">
@@ -347,7 +372,7 @@
 
 
                   <div class="pagination_box">
-                  {{@$allNews->appends(request()->except(['page', '_token']))->links('pagination')}}
+                  {{-- {{$allNews->appends(request()->except(['page', '_token']))->links('pagination')}} --}}
 
 
                   </div>

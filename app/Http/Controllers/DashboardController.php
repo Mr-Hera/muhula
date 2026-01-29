@@ -330,6 +330,36 @@ class DashboardController extends Controller
         }
     }
 
+    // DASHBOARD: MANAGE USERS
+    public function manageUsersIndex()
+    {
+        $users = User::with([
+            'county',
+            'constituency',
+            'ward',
+            'curriculum',
+        ])->latest()->get();
+
+        return view('dashboard.manage_users', compact('users'));
+    }
+
+    public function manageUsersEdit(User $user)
+    {
+        return view('dashboard.manage_users_edit', compact('user'));
+    }
+
+    public function manageUsersDestroy(User $user)
+    {
+        // Prevent deleting self
+        if (auth()->id() === $user->id) {
+            return back()->with('error', 'You cannot delete your own account.');
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'User deleted successfully.');
+    }
+
     // DASHBOARD: MY_SCHOOL
     public function mySchool(){
         $user = Auth::user();
