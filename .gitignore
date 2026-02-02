@@ -21,3 +21,5 @@ yarn-error.log
 .env_old.txt
 env_old.txt
 /public/images
+composer.lock
+package-json.lock

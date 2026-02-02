@@ -433,6 +433,100 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function manageNews()
+    {
+        $articles = NewsArticle::with('author')
+            ->latest()
+            ->get();
+
+        return view('dashboard.manage_news', compact('articles'));
+    }
+
+    public function updateNews(Request $request)
+    {
+        $request->validate([
+            'news_id'      => 'required|exists:news_articles,id',
+            'title'        => 'required|string|max:255',
+            'excerpt'      => 'nullable|string',
+            'body'         => 'required|string',
+            'cover_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'is_published' => 'required|boolean',
+        ]);
+
+        $article = NewsArticle::findOrFail($request->news_id);
+
+        $data = $request->only([
+            'title',
+            'excerpt',
+            'body',
+            'is_published',
+        ]);
+
+        // 🔁 Regenerate slug
+        $data['slug'] = Str::slug($request->title);
+
+        // 📸 Handle cover image upload (PUBLIC folder strategy)
+        if ($request->hasFile('cover_image') && $request->file('cover_image')->isValid()) {
+
+            // Delete old image if exists
+            if ($article->cover_image) {
+                $oldPath = public_path($article->cover_image);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+
+            $file = $request->file('cover_image');
+
+            // Sanitize title for filename
+            $sanitizedTitle = Str::slug($request->title, '_');
+
+            // Unique filename
+            $imageName = $sanitizedTitle . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            // Destination directory
+            $destination = public_path('images/news_covers');
+
+            // Ensure directory exists
+            if (!file_exists($destination)) {
+                mkdir($destination, 0775, true);
+            }
+
+            // Move file
+            $file->move($destination, $imageName);
+
+            // Save relative path
+            $data['cover_image'] = 'images/news_covers/' . $imageName;
+        }
+
+        // 🕒 Handle publish timestamp
+        if ($request->is_published && ! $article->published_at) {
+            $data['published_at'] = now();
+        }
+
+        if (! $request->is_published) {
+            $data['published_at'] = null;
+        }
+
+        $article->update($data);
+
+        return back()->with('success', 'News updated successfully.');
+    }
+
+    public function destroyNews(NewsArticle $news)
+    {
+        if ($news->cover_image) {
+            $imagePath = public_path($news->cover_image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        $news->delete();
+
+        return back()->with('success', 'News deleted successfully.');
+    }
+
     public function createNewsSave(Request $request)
     {
         // 1️⃣ Validate request
@@ -448,24 +542,6 @@ class DashboardController extends Controller
 
         // 3️⃣ Handle cover image upload
         $coverImagePath = null;
-
-        // stores to storage
-        // if ($request->hasFile('news_image') && $request->file('news_image')->isValid()) {
-        //     $file = $request->file('news_image');
-
-        //     // Sanitize news title for filename
-        //     $sanitizedTitle = Str::slug($validated['news_title'], '_');
-
-        //     // Create unique filename: title_timestamp_random.ext
-        //     $imageName = $sanitizedTitle . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-        //     // Destination inside storage/app/public/images/news_covers
-        //     $destination = storage_path('app/public/images/news_covers');
-        //     $file->move($destination, $imageName);
-
-        //     // Relative path for DB (like your school images)
-        //     $coverImagePath = 'images/news_covers/' . $imageName;
-        // }
 
         // stores to public folder
         if ($request->hasFile('news_image') && $request->file('news_image')->isValid()) {
