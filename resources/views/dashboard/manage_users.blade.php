@@ -84,7 +84,7 @@
 
                                        {{-- Phone --}}
                                        <td>
-                                          <small>{{ $user->phone ?? 'No phone' }}</small>
+                                          <small>{{ $user->phone ?? '—' }}</small>
                                        </td>
 
                                        {{-- Type --}}
@@ -94,13 +94,13 @@
 
                                        {{-- Verified --}}
                                        <td>
-                                          @if($user->updated_at && $user->updated_at->gt($user->created_at))
+                                          @if($user->is_email_verified)
                                              <span class="badge bg-success">
                                                    <i class="fa fa-check-circle"></i> Verified
                                              </span>
                                              <br>
                                              <small class="text-muted">
-                                                   {{ $user->updated_at->format('d M Y, H:i') }}
+                                                   {{ $user->email_verified_at->format('d M Y, H:i') }}
                                              </small>
                                           @else
                                              <span class="badge bg-secondary">
@@ -229,7 +229,7 @@
                                                       <div class="col-md-12">
                                                          <label class="form-label">Email Verification</label>
 
-                                                         @if($user->email_verified_at)
+                                                         @if($user->is_email_verified)
                                                             <span class="badge bg-success">
                                                                   <i class="fa fa-check-circle"></i>
                                                                   Verified on {{ $user->email_verified_at->format('d M Y') }}

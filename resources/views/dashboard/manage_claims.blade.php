@@ -41,7 +41,7 @@
                                 @foreach($claims as $claim)
                                     <tr>
                                         <td>{{ $claim->first_name }} {{ $claim->last_name }}</td>
-                                        <td>{{ $claim->position_name ?? 'N/A' }}</td>
+                                        <td>{{ $claim->position_name ?? '—' }}</td>
                                         <td>{{ $claim->school_name }}</td>
                                         <td>
                                             <span class="badge
