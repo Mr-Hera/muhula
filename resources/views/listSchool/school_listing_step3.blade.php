@@ -53,139 +53,164 @@
                         
                        
                         <div class="ad-schl-card adscl-crd7">
-                           <h2>School Services Offered: <span style="color: red;">*</span></h2>
-                           <form action="{{ route('school.listing.services.processing') }}" method="post" enctype="multipart/form-data" id="rulesForm">
-                              @csrf
+                            <h2>School Services Offered: <span style="color: red;">*</span></h2>
+                            <form action="{{ route('school.listing.services.processing') }}" method="post" enctype="multipart/form-data" id="rulesForm">
+                                @csrf
                               
-                              <div class="row">
-                                 <div class="col-12">
-                                    <div class="dash_input">
-                                       <ul class="rules-list">
-                                          @foreach ($extended_school_services as $service)
-                                             <li style="text-transform: none !important;">
-                                                {{ $service->name }}
-                                                <label class="switch">
-                                                   <input
-                                                      type="checkbox"
-                                                      name="extended_school_services_id[]"
-                                                      value="{{ $service->id }}"
-                                                      {{ in_array($service->id, old('extended_school_services_id', $extended_services['extended_school_services_id'] ?? [])) ? 'checked' : '' }}
-                                                   />
-                                                   <span class="slider round"></span>
-                                                </label>
-                                             </li>
-                                          @endforeach
-                                       </ul>
-                                       @error('extended_school_services_id')
-                                          <small class="text-danger">{{ $message }}</small>
-                                       @enderror
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="dash_input">
+                                        <ul class="rules-list">
+                                            @foreach ($extended_school_services as $service)
+                                                <li style="text-transform: none !important;">
+                                                    {{ $service->name }}
+                                                    <label class="switch">
+                                                    <input
+                                                        type="checkbox"
+                                                        name="extended_school_services_id[]"
+                                                        value="{{ $service->id }}"
+                                                        {{ in_array($service->id, old('extended_school_services_id', $extended_services['extended_school_services_id'] ?? [])) ? 'checked' : '' }}
+                                                    />
+                                                    <span class="slider round"></span>
+                                                    </label>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                        @error('extended_school_services_id')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                        </div>
                                     </div>
-                                 </div>
-                                 <div class="col-12">
-                                    <h3 class="ratio-hd">Day learning period <span style="color: red;">*</span></h3>
-                                    <div class="row">
-                                       <div class="col-sm-6 col-12">
-                                          <div class="dash_input">
-                                             <label>From</label>
-                                             <select name="day_learn_period_from" id="day_learn_period_from">
-                                                <option value="">Select</option>  
-                                                @foreach (range(1,17) as $number) 
-                                                   @php
-                                                      $time = str_pad($number, 2, '0', STR_PAD_LEFT) . ':00';
-                                                      // Load saved value (from DB/session)
-                                                      $savedFrom = old('day_learn_period_from', $operation_hours[0]['starts_at'] ?? null);
-                                                   @endphp
-                                                   <option value="{{ $time }}" {{ $savedFrom == $time ? 'selected' : '' }}>
-                                                      {{ $time }}
-                                                   </option>
-                                                @endforeach
-                                             </select>
-                                             @error('day_learn_period_from')
-                                                <small class="text-danger">{{ $message }}</small>
-                                             @enderror
-                                          </div>
-                                       </div>
+                                    <div class="col-12">
+                                        <h3 class="ratio-hd">Day learning period <span style="color: red;">*</span></h3>
+                                        <div class="row">
+                                        <div class="col-sm-6 col-12">
+                                            <div class="dash_input">
+                                                <label>From</label>
+                                                <select name="day_learn_period_from" id="day_learn_period_from">
+                                                    <option value="">Select</option>  
+                                                    @foreach (range(1,17) as $number) 
+                                                    @php
+                                                        $time = str_pad($number, 2, '0', STR_PAD_LEFT) . ':00';
+                                                        // Load saved value (from DB/session)
+                                                        $savedFrom = old('day_learn_period_from', $operation_hours[0]['starts_at'] ?? null);
+                                                    @endphp
+                                                    <option value="{{ $time }}" {{ $savedFrom == $time ? 'selected' : '' }}>
+                                                        {{ $time }}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('day_learn_period_from')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
 
-                                       <div class="col-sm-6 col-6">
-                                          <div class="dash_input">
-                                             <label>Until</label>
-                                             <select name="day_learn_period_until" id="day_learn_period_until">
+                                        <div class="col-sm-6 col-6">
+                                            <div class="dash_input">
+                                                <label>Until</label>
+                                                <select name="day_learn_period_until" id="day_learn_period_until">
+                                                    <option value="">Select</option>
+                                                    @foreach (range(1,17) as $number) 
+                                                    @php
+                                                        $time = str_pad($number, 2, '0', STR_PAD_LEFT) . ':00';
+                                                        $savedUntil = old('day_learn_period_until', $operation_hours[0]['ends_at'] ?? null);
+                                                    @endphp
+                                                    <option value="{{ $time }}" {{ $savedUntil == $time ? 'selected' : '' }}>
+                                                        {{ $time }}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('day_learn_period_until')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <h3 class="ratio-hd mt-3p">Evening Studies <span style="color: red;">*</span></h3>
+                                        <div class="row">
+                                        <div class="col-sm-6 col-12">
+                                            <div class="dash_input">
+                                                <label>From</label>
+                                                <select name="evening_studies_from" id="evening_studies_from">
                                                 <option value="">Select</option>
-                                                @foreach (range(1,17) as $number) 
-                                                   @php
-                                                      $time = str_pad($number, 2, '0', STR_PAD_LEFT) . ':00';
-                                                      $savedUntil = old('day_learn_period_until', $operation_hours[0]['ends_at'] ?? null);
-                                                   @endphp
-                                                   <option value="{{ $time }}" {{ $savedUntil == $time ? 'selected' : '' }}>
-                                                      {{ $time }}
-                                                   </option>
-                                                @endforeach
-                                             </select>
-                                             @error('day_learn_period_until')
-                                                <small class="text-danger">{{ $message }}</small>
-                                             @enderror
-                                          </div>
-                                       </div>
+                                                    @foreach (range(17,24) as $number) 
+                                                    @if($number < 10)
+                                                        @php
+                                                            $time1 = '0'.$number.':00';
+                                                        @endphp
+                                                        <option value="{{ $time1 }}" {{ old('evening_studies_from') == $time ? 'selected' : '' }} >{{ $time1 }}</option>
+                                                    @else
+                                                        @php
+                                                            $time2 = $number.':00';
+                                                        @endphp
+                                                        <option value="{{$time2}}" {{ old('evening_studies_from') == $time ? 'selected' : '' }} >{{$time2}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                                @error('evening_studies_from')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-6">
+                                            <div class="dash_input">
+                                                <label>Until</label>
+                                                <select name="evening_studies_until" id="evening_studies_until">
+                                                <option value="">Select</option>
+                                                    @foreach (range(17,24) as $number) 
+                                                    @if($number < 10)
+                                                        @php
+                                                            $time1 = '0'.$number.':00';
+                                                        @endphp
+                                                        <option value="{{ $time1 }}" {{ old('evening_studies_until') == $time ? 'selected' : '' }} >{{ $time1 }}</option>
+                                                    @else
+                                                        @php
+                                                            $time2 = $number.':00';
+                                                        @endphp
+                                                        <option value="{{$time2}}" {{ old('evening_studies_until') == $time ? 'selected' : '' }} >{{$time2}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                                @error('evening_studies_until')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        </div>
                                     </div>
-                                 </div>
-                                 <div class="col-12">
-                                    <h3 class="ratio-hd mt-3p">Evening Studies <span style="color: red;">*</span></h3>
-                                    <div class="row">
-                                       <div class="col-sm-6 col-12">
-                                          <div class="dash_input">
-                                             <label>From</label>
-                                             <select name="evening_studies_from" id="evening_studies_from">
-                                             <option value="">Select</option>
-                                                @foreach (range(17,24) as $number) 
-                                                   @if($number < 10)
-                                                      @php
-                                                         $time1 = '0'.$number.':00';
-                                                      @endphp
-                                                      <option value="{{ $time1 }}" {{ old('evening_studies_from') == $time ? 'selected' : '' }} >{{ $time1 }}</option>
-                                                   @else
-                                                      @php
-                                                         $time2 = $number.':00';
-                                                      @endphp
-                                                      <option value="{{$time2}}" {{ old('evening_studies_from') == $time ? 'selected' : '' }} >{{$time2}}</option>
-                                                   @endif
-                                                @endforeach
-                                             </select>
-                                             @error('evening_studies_from')
-                                                <small class="text-danger">{{ $message }}</small>
-                                             @enderror
-                                          </div>
-                                       </div>
-                                       <div class="col-sm-6 col-6">
-                                          <div class="dash_input">
-                                             <label>Until</label>
-                                             <select name="evening_studies_until" id="evening_studies_until">
-                                             <option value="">Select</option>
-                                                @foreach (range(17,24) as $number) 
-                                                   @if($number < 10)
-                                                      @php
-                                                         $time1 = '0'.$number.':00';
-                                                      @endphp
-                                                      <option value="{{ $time1 }}" {{ old('evening_studies_until') == $time ? 'selected' : '' }} >{{ $time1 }}</option>
-                                                   @else
-                                                      @php
-                                                         $time2 = $number.':00';
-                                                      @endphp
-                                                      <option value="{{$time2}}" {{ old('evening_studies_until') == $time ? 'selected' : '' }} >{{$time2}}</option>
-                                                   @endif
-                                                @endforeach
-                                             </select>
-                                             @error('evening_studies_until')
-                                                <small class="text-danger">{{ $message }}</small>
-                                             @enderror
-                                          </div>
-                                       </div>
+                                    <div class="col-12">
+                                        <button class="submit-ratio" type="submit">+ &nbsp;Save</button>
                                     </div>
-                                 </div>
-                                 <div class="col-12">
-                                     <button class="submit-ratio" type="submit">+ &nbsp;Save</button>
-                                 </div>
-                             </div>
-                           </form>                        
+                                </div>
+                            </form>
+                            @if($operation_hours->count())
+                                <div class="row mt-3">
+                                    @foreach($operation_hours as $hour)
+                                        <div class="col-md-4 col-sm-6 col-12">
+                                            <div class="card shadow-sm mb-3">
+                                                <div class="card-body p-3">
+                                                    <h5 class="mb-2 text-success">
+                                                        {{ $hour->period_of_day }}
+                                                    </h5>
+
+                                                    <p class="mb-1">
+                                                        <strong>From:</strong>
+                                                        {{ \Carbon\Carbon::parse($hour->starts_at)->format('H:i') }}
+                                                    </p>
+
+                                                    <p class="mb-0">
+                                                        <strong>Until:</strong>
+                                                        {{ \Carbon\Carbon::parse($hour->ends_at)->format('H:i') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif                       
                         </div>
 
                         {{-- FEES --}}
@@ -261,8 +286,8 @@
                         </div>
 
                         <div class="ad-schl-card adscl-crd7">
-                           <h2>Teacher-Student ratio: <span style="color: red;">*</span></h2>
-                           <form action="{{ route('school.listing.step4.ratio.processing') }}" method="post" enctype="multipart/form-data" id="ratioForm">
+                            <h2>Teacher-Student ratio: <span style="color: red;">*</span></h2>
+                            <form action="{{ route('school.listing.step4.ratio.processing') }}" method="post" enctype="multipart/form-data" id="ratioForm">
                               @csrf
                               
                               <div class="row align-items-end">
@@ -272,26 +297,20 @@
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                           <div class="dash_input">
                                              <label>Total</label>
-                                             <input type="number" name="total_students" id="total_student" placeholder="Enter here" min="0" @if ($school_population)
-                                                value="{{ $school_population['total_students'] }}"
-                                             @endif>
+                                             <input type="number" name="total_students" id="total_student" placeholder="Enter here" min="0">
                                              <label id="total_student-error" class="error" for="total_student" style="display:none;">Please enter valid number</label>
                                           </div>
                                        </div>
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-6">
                                           <div class="dash_input">
                                              <label>Boys</label>
-                                             <input type="number" name="student_boys" id="student_boys" placeholder="Enter here" min="0" @if ($school_population)
-                                                value="{{ $school_population['student_boys'] }}"
-                                             @endif>
+                                             <input type="number" name="student_boys" id="student_boys" placeholder="Enter here" min="0">
                                           </div>
                                        </div>
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-6">
                                           <div class="dash_input">
                                              <label>Girls</label>
-                                             <input type="number" name="student_girls" id="student_girls" placeholder="Enter here" min="0" @if ($school_population)
-                                                value="{{ $school_population['student_girls'] }}"
-                                             @endif>
+                                             <input type="number" name="student_girls" id="student_girls" placeholder="Enter here" min="0">
                                           </div>
                                        </div>
                                     </div>
@@ -302,25 +321,19 @@
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                           <div class="dash_input">
                                              <label>Total</label>
-                                             <input type="number" name="total_teachers" id="total_teacher" placeholder="Enter here" min="0" @if ($school_population)
-                                                value="{{ $school_population['total_students'] }}"
-                                             @endif>
+                                             <input type="number" name="total_teachers" id="total_teacher" placeholder="Enter here" min="0">
                                           </div>
                                        </div>
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-6">
                                           <div class="dash_input">
                                              <label>Male</label>
-                                             <input type="number" name="teacher_male" id="teacher_male" placeholder="Enter here" min="0" @if ($school_population)
-                                                value="{{ $school_population['teacher_male'] }}"
-                                             @endif>
+                                             <input type="number" name="teacher_male" id="teacher_male" placeholder="Enter here" min="0">
                                           </div>
                                        </div>
                                        <div class="col-lg-4 col-md-4 col-sm-4 col-6">
                                           <div class="dash_input">
                                              <label>Female</label>
-                                             <input type="number" name="teacher_female" id="teacher_female" placeholder="Enter here" min="0" @if ($school_population)
-                                                value="{{ $school_population['teacher_female'] }}"
-                                             @endif>
+                                             <input type="number" name="teacher_female" id="teacher_female" placeholder="Enter here" min="0">
                                           </div>
                                        </div>
                                        <div class="col-12">
@@ -329,333 +342,632 @@
                                     </div>
                                  </div>
                               </div>
-                           </form>                        
+                            </form>
+                            @if($school_population && (
+                                $school_population['total_students'] !== null || 
+                                $school_population['total_teachers'] !== null
+                            ))
+                                <div class="row mt-3">
+                                    <!-- Students Card -->
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="card shadow-sm mb-3">
+                                            <div class="card-body p-3">
+                                                <h5 class="mb-2 text-success">Students</h5>
+                                                @if($school_population['total_students'] !== null)
+                                                    <p class="mb-1">
+                                                        <strong>Total:</strong> {{ $school_population['total_students'] }}
+                                                    </p>
+                                                @endif
+                                                @if($school_population['student_boys'] !== null)
+                                                    <p class="mb-1">
+                                                        <strong>Boys:</strong> {{ $school_population['student_boys'] }}
+                                                    </p>
+                                                @endif
+                                                @if($school_population['student_girls'] !== null)
+                                                    <p class="mb-0">
+                                                        <strong>Girls:</strong> {{ $school_population['student_girls'] }}
+                                                    </p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Teachers Card -->
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="card shadow-sm mb-3">
+                                            <div class="card-body p-3">
+                                                <h5 class="mb-2 text-success">Teachers</h5>
+                                                @if($school_population['total_teachers'] !== null)
+                                                    <p class="mb-1">
+                                                        <strong>Total:</strong> {{ $school_population['total_teachers'] }}
+                                                    </p>
+                                                @endif
+                                                @if($school_population['teacher_male'] !== null)
+                                                    <p class="mb-1">
+                                                        <strong>Male:</strong> {{ $school_population['teacher_male'] }}
+                                                    </p>
+                                                @endif
+                                                @if($school_population['teacher_female'] !== null)
+                                                    <p class="mb-0">
+                                                        <strong>Female:</strong> {{ $school_population['teacher_female'] }}
+                                                    </p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         {{-- BRANCHES --}}
-                        <form action="{{ route('add.school.step8.save') }}" method="post" enctype="multipart/form-data" id="branchForm">
+                        <form action="{{ route('school.listing.branch.save') }}" method="POST" enctype="multipart/form-data" id="branchForm">
                             @csrf
+
                             <div class="ad-schl-card adscl-crd12">
                                 <h2>School Branch:</h2>
-                                <label>If no branches are available  
+                                <label>
+                                    If no branches are available
                                     <span style="color: red;"><b>"skip section"</b></span>
-                                </label><br>
-                                <label></label><br>
+                                </label>
+                                <br><br>
+
                                 <div class="row">
-                                <div class="col-12">
-                                    {{-- <ul class="add-grade agree schl-same">
-                                        <li>
-                                        <div class="radiobx">
-                                            <label for="">Same School Name
-                                                <input type="checkbox" name="school_master_name" id="school_master_name" value="{{ $school_branches->name ?? "Not Set" }}" class="checkme">
-                                                <span class="checkbox"></span>
-                                            </label>
-                                        </div>
-                                        </li>                              
-                                    </ul> --}}
-                                    <div class="dash_input">
-                                        <label>School Name <span style="color: red;">*</span></label>
-                                        <input type="text" name="school_name" id="school_name" placeholder="Enter here" value="{{ old('school_name', optional($schoolBranchDetails)->school_name) }}">
-                                        @error('school_name')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>School Level <span style="color: red;">*</span></label>
-                                        <select multiple name="school_type[]" id="school_type" class="filter-multi-select">
-                                        @foreach($school_levels as $level)
-                                            @if ($level->name != "General")
-                                                <option value="{{ $level->id }}" {{ in_array($level->id, old('school_type', [])) ? 'selected' : '' }}>{{ $level->name }}</option>
-                                            @endif
-                                        @endforeach
-                                        </select>
-                                        @error('school_type')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                    
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>Country <span style="color: red;">*</span></label>
-                                        <select name="country" id="country">
-                                        <option value="" disabled selected hidden>Select</option>
-                                        @foreach($countries as $country)
-                                            @if ($country->name == "Kenya")
-                                                <option value="{{ $country->id }}" {{ old('country') == $country->id ? 'selected' : '' }}>
-                                                    {{ $country->name }}
-                                                </option>
-                                            @endif
-                                        @endforeach
-                                        </select>
-                                        @error('country')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                {{--<div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>constituency</label>
-                                        <input type="text" name="constituency" id="constituency" placeholder="Enter here" value="{{ @$schoolBranchDetails->constituency }}">
-                                    </div>
-                                </div>--}}
-                                <div class="col-lg-6 col-md-6">
-                                <div class="dash_input">
-                                        <label>Town
-                                        <span class="d-inlne-block ml-1 tooltip-main position-relative">
-                                            <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                            <div class="tooltip-body position-absolute">If town is missing scroll to bottom & select other to add missing town.</div>
-                                        </span>
-                                        <span style="color: red;">*</span>
-                                        </label>
-                                        <select name="town" id="town">
-                                        <option value="">Select</option>
-                                            @foreach($counties as $county)
-                                                <option value="{{ $county->id }}" {{ old('town') == $county->id ? 'selected' : '' }}>{{ $county->name }}</option>
-                                            @endforeach
-                                        <option value="0" {{ old('town') == "0" ? 'selected' : '' }}>Other</option>
-                                        </select>
-                                        @error('town')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6" style="display:none;" id="otherTown">
-                                    <div class="dash_input">
-                                        <label>Other Town</label>
-                                        <input type="text" name="other_town" id="other_town" placeholder="Enter here" value="{{ old('other_town') }}" />
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="dash_input">
-                                        <label>Full Address <span style="color: red;">*</span></label>
-                                        <input type="text" name="full_address" id="full_address" placeholder="Enter here" value="{{ old('full_address') }}" />
-                                        @error('full_address')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="dash_input position-relative g-map">
-                                        <label>Google map location</label>
-                                        <input type="text" name="google_location" id="google_location" placeholder="Enter / paste link here" value="{{ old('google_location') }}">
-                                        <img src="{{ asset('images/google-map.png') }}" alt="" class="position-absolute">
-                                        <input type="hidden" name="google_lat" id="lat" value="{{ old('google_lat', optional($schoolBranchDetails)->google_lat) }}">
-                                        <input type="hidden" name="google_long" id="long" value="{{ old('google_lat', optional($schoolBranchDetails)->google_lat) }}">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>Email  <span style="color: red;">*</span></label>
-                                        <input type="text" name="email" id="email" placeholder="Enter here" value="{{ old('email') }}" />
-                                        @error('email')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>Phone  <span style="color: red;">*</span></label>
-                                        <input type="text" name="phone" id="phone" placeholder="Enter here" value="{{ old('phone') }}" />
-                                        @error('phone')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="step5-imgupld">
-                                        <div class="uplodimgfil upld-schl-images">
-                                        <input type="file" name="school_image[]" id="school_image" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple="">
-                                        <label for="school_image">
-                                            <img src="{{ asset('images/upload.png') }}" alt="">
-                                            <h3>Upload School Images</h3>
-                                        </label>
-                                        </div>
-                                        @error('school_image')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                        <div class="upldd-scl-imgs">
-                                        {{-- @if(@$schoolBranchImage)
-                                        @foreach($schoolBranchImage as $data)
-                                        <em class="schl-img-nw">
-                                            @if(@$data->image != null)
-                                            <img src="{{ URL::to('storage/app/public/images/school_image') }}/{{ @$data->image }}" alt="">
-                                            @endif
-                                            <a href="{{ route('school.branch.image.delete',@$data->id) }}">
-                                                <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M8.25 2.75L2.75 8.25" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    <path d="M2.75 2.75L8.25 8.25" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>                                       
-                                            </a>
-                                        </em>
-                                        @endforeach
-                                        @endif --}}
+
+                                    {{-- Branch Name --}}
+                                    <div class="col-12">
+                                        <div class="dash_input">
+                                            <label>Branch Name <span style="color: red;">*</span></label>
+                                            <input type="text"
+                                                name="name"
+                                                placeholder="Enter here"
+                                                value="{{ old('name') }}">
+                                            @error('name')
+                                                <label class="error">{{ $message }}</label>
+                                            @enderror
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-12">
-                                    <button class="submit-ratio mt-1" type="submit"><span>+</span> &nbsp;Add</button>
-                                </div>
-                            </div>
-                            </div>
-                            
-                            @if(@$school_branches->isNotEmpty())
-                            <div class="ad-schl-card adscl-crd13">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="step-5-added-loc">
-                                        
-                                        <h2>Added Branches</h2>
-                                        @foreach($school_branches as $branch)
-                                        <div class="added-subs-box position-relative">
-                                        <a href="{{ route('add.school.step8',[md5(@$schoolDetails->id),$branch->id]) }}" class="edit-subs">
-                                            <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"/>
-                                                <path d="M8.16131 5.4654L12.433 8.91713C12.5361 8.99968 12.5537 9.15117 12.4732 9.25669L7.409 15.8555C7.09066 16.2631 6.62151 16.4938 6.11886 16.5023L3.35426 16.5363C3.20682 16.538 3.0778 16.4359 3.04429 16.2895L2.41597 13.5577C2.30706 13.0556 2.41597 12.5365 2.73432 12.1365L7.82369 5.50625C7.90579 5.39987 8.05743 5.38115 8.16131 5.4654Z" fill="black"/>
-                                                <path opacity="0.4" d="M14.3455 6.86014L13.522 7.88817C13.4391 7.99285 13.2899 8.00987 13.1869 7.92647C12.1858 7.1163 9.62224 5.03725 8.91099 4.46111C8.80711 4.37601 8.79286 4.22453 8.87664 4.119L9.67083 3.13267C10.3913 2.20506 11.6479 2.11996 12.6616 2.92843L13.8261 3.85604C14.3036 4.23049 14.622 4.72408 14.7309 5.2432C14.8566 5.81423 14.7225 6.37506 14.3455 6.86014Z" fill="black"/>
-                                            </svg>                                             
-                                        </a>
-                                        <ul>
-                                            <li>
-                                                <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <g clip-path="url(#clip0_3330_670)">
-                                                    <path d="M13.6355 6.25C13.6355 10.625 7.79188 14.375 7.79188 14.375C7.79188 14.375 1.94824 10.625 1.94824 6.25C1.94824 4.75816 2.56391 3.32742 3.6598 2.27252C4.7557 1.21763 6.24205 0.625 7.79188 0.625C9.34171 0.625 10.8281 1.21763 11.924 2.27252C13.0199 3.32742 13.6355 4.75816 13.6355 6.25Z" stroke="#32CD32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    <path d="M7.79208 8.125C8.86811 8.125 9.7404 7.28553 9.7404 6.25C9.7404 5.21447 8.86811 4.375 7.79208 4.375C6.71605 4.375 5.84375 5.21447 5.84375 6.25C5.84375 7.28553 6.71605 8.125 7.79208 8.125Z" stroke="#32CD32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                </svg>                                                
-                                                <h5>{{ $branch->full_address }}</h5>
-                                            </li>
-                                            <li>
-                                                <h6>School Name&nbsp;</h6>
-                                                <p>:&nbsp; {{ $branch->school_name }}</p>
-                                            </li>
-                                            @if($branch->school_types)
-                                            <li>
-                                                <h6>School Type&nbsp;</h6>
-                                                <p>:&nbsp; 
-                                                    @if($branch->school_types)
-                                                    @foreach(@$branch->school_types as $key=>$type)
-                                                    {{ $key > 0 ?',':'' }} {{ $type->school_type }}
-                                                    @endforeach
+
+                                    {{-- School Level / Type --}}
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>School Level <span style="color: red;">*</span></label>
+                                            <select name="school_type_id">
+                                                <option value="">Select</option>
+                                                @foreach($school_levels as $level)
+                                                    @if ($level->name !== 'General')
+                                                        <option value="{{ $level->id }}"
+                                                            {{ old('school_type_id') == $level->id ? 'selected' : '' }}>
+                                                            {{ $level->name }}
+                                                        </option>
                                                     @endif
-                                                </p>
-                                            </li>
-                                            @endif
-                                            <li>
-                                                <h6>Country &nbsp;</h6>
-                                                <p>:&nbsp; {{ $branch->getCountry->name }}</p>
-                                            </li>
-                                            {{--<li>
-                                                <h6>Constituency&nbsp;</h6>
-                                                <p>:&nbsp; {{ @$branch->constituency }}</p>
-                                            </li>--}}
-                                            @if($branch->town != null)
-                                            <li>
-                                                <h6>Town&nbsp;</h6>
-                                                <p>:&nbsp; {{ $branch->getTown->city }}</p>
-                                            </li>
-                                            @endif
-                                            @if($branch->contact_email != null)
-                                            <li>
-                                                <h6>Email&nbsp;</h6>
-                                                <p>:&nbsp; {{ $branch->contact_email }}</p>
-                                            </li>
-                                            @endif
-                                            @if($branch->contact_phone != null)
-                                            <li>
-                                                <h6>Phone&nbsp;</h6>
-                                                <p>:&nbsp; {{ $branch->contact_phone }}</p>
-                                            </li>
-                                            @endif
-                                        </ul>
+                                                @endforeach
+                                            </select>
+                                            @error('school_type_id')
+                                                <label class="error">{{ $message }}</label>
+                                            @enderror
                                         </div>
-                                        @endforeach
                                     </div>
+
+                                    {{-- Country --}}
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>Country <span style="color: red;">*</span></label>
+                                            <select name="country_id">
+                                                <option value="" disabled selected hidden>Select</option>
+                                                @foreach($countries as $country)
+                                                    @if ($country->name === 'Kenya')
+                                                        <option value="{{ $country->id }}"
+                                                            {{ old('country_id') == $country->id ? 'selected' : '' }}>
+                                                            {{ $country->name }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            @error('country_id')
+                                                <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    {{-- Town / County --}}
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>
+                                                Town
+                                                <span class="d-inlne-block ml-1 tooltip-main position-relative">
+                                                    <i class="fa fa-info-circle"></i>
+                                                    <div class="tooltip-body position-absolute">
+                                                        If town is missing scroll to bottom & select other to add missing town.
+                                                    </div>
+                                                </span>
+                                                <span style="color: red;">*</span>
+                                            </label>
+
+                                            <select name="county_id" id="town">
+                                                <option value="">Select</option>
+                                                @foreach($counties as $county)
+                                                    <option value="{{ $county->id }}"
+                                                        {{ old('county_id') == $county->id ? 'selected' : '' }}>
+                                                        {{ $county->name }}
+                                                    </option>
+                                                @endforeach
+                                                <option value="0" {{ old('county_id') == '0' ? 'selected' : '' }}>Other</option>
+                                            </select>
+
+                                            @error('county_id')
+                                                <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    {{-- Other Town --}}
+                                    <div class="col-lg-6 col-md-6" style="display:none;" id="otherTown">
+                                        <div class="dash_input">
+                                            <label>Other Town</label>
+                                            <input type="text"
+                                                name="other_town"
+                                                placeholder="Enter here"
+                                                value="{{ old('other_town') }}">
+                                        </div>
+                                    </div>
+
+                                    {{-- Full Address --}}
+                                    <div class="col-12">
+                                        <div class="dash_input">
+                                            <label>Full Address <span style="color: red;">*</span></label>
+                                            <input type="text"
+                                                name="full_address"
+                                                placeholder="Enter here"
+                                                value="{{ old('full_address') }}">
+                                            @error('full_address')
+                                                <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    {{-- Google Map --}}
+                                    <div class="col-12">
+                                        <div class="dash_input position-relative g-map">
+                                            <label>Google map location</label>
+                                            <input type="text"
+                                                name="google_location"
+                                                placeholder="Enter / paste link here"
+                                                value="{{ old('google_location') }}">
+                                            <img src="{{ asset('images/google-map.png') }}" class="position-absolute">
+                                            <input type="hidden" name="google_lat" value="{{ old('google_lat') }}">
+                                            <input type="hidden" name="google_long" value="{{ old('google_long') }}">
+                                        </div>
+                                    </div>
+
+                                    {{-- Email --}}
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>Email <span style="color: red;">*</span></label>
+                                            <input type="email"
+                                                name="email"
+                                                placeholder="Enter here"
+                                                value="{{ old('email') }}">
+                                            @error('email')
+                                                <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    {{-- Phone --}}
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>Phone <span style="color: red;">*</span></label>
+                                            <input type="text"
+                                                name="phone_no"
+                                                placeholder="Enter here"
+                                                value="{{ old('phone_no') }}">
+                                            @error('phone_no')
+                                                <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    {{-- Images --}}
+                                    <div class="col-12">
+                                        <div class="step5-imgupld">
+                                            <div class="uplodimgfil upld-schl-images">
+                                                <input type="file"
+                                                    name="school_image[]"
+                                                    class="inputfile inputfile-1"
+                                                    multiple
+                                                    accept="image/*">
+                                                <label>
+                                                    <img src="{{ asset('images/upload.png') }}" alt="">
+                                                    <h3>Upload Branch Images</h3>
+                                                </label>
+                                            </div>
+
+                                            @error('school_image')
+                                                <label class="error">{{ $message }}</label>
+                                            @enderror
+
+                                            <div class="upldd-scl-imgs" id="imagePreviewContainer"></div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Submit --}}
+                                    <div class="col-12">
+                                        <button class="submit-ratio mt-1" type="submit">
+                                            <span>+</span> &nbsp;Add
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
-                            </div>
+
+                            {{-- ADDED BRANCHES --}}
+                            @if($school_branches->isNotEmpty())
+                                <div class="ad-schl-card adscl-crd13 mt-4">
+                                    <h2>Added Branches</h2>
+
+                                    @foreach($school_branches as $branch)
+                                        <div class="added-subs-box position-relative">
+
+                                            {{-- Button container --}}
+                                            {{-- <div class="branch-actions d-flex justify-content-end gap-2 mb-2"> --}}
+                                                {{-- Edit trigger --}}
+                                                {{-- <a href="javascript:void(0)"
+                                                class="branch-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editBranch{{ $branch->id }}"
+                                                title="Edit Branch">
+                                                    <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path opacity="0.4" d="M15.827 15.0049H11.319C10.8792 15.0049 10.5215 15.3683 10.5215 15.8151C10.5215 16.2627 10.8792 16.6252 11.319 16.6252H15.827C16.2668 16.6252 16.6245 16.2627 16.6245 15.8151C16.6245 15.3683 16.2668 15.0049 15.827 15.0049Z" fill="black"/>
+                                                        <path d="M8.16131 5.4654L12.433 8.91713C12.5361 8.99968 12.5537 9.15117 12.4732 9.25669L7.409 15.8555C7.09066 16.2631 6.62151 16.4938 6.11886 16.5023L3.35426 16.5363C3.20682 16.538 3.0778 16.4359 3.04429 16.2895L2.41597 13.5577C2.30706 13.0556 2.41597 12.5365 2.73432 12.1365L7.82369 5.50625C7.90579 5.39987 8.05743 5.38115 8.16131 5.4654Z" fill="black"/>
+                                                        <path opacity="0.4" d="M14.3455 6.86014L13.522 7.88817C13.4391 7.99285 13.2899 8.00987 13.1869 7.92647C12.1858 7.1163 9.62224 5.03725 8.91099 4.46111C8.80711 4.37601 8.79286 4.22453 8.87664 4.119L9.67083 3.13267C10.3913 2.20506 11.6479 2.11996 12.6616 2.92843L13.8261 3.85604C14.3036 4.23049 14.622 4.72408 14.7309 5.2432C14.8566 5.81423 14.7225 6.37506 14.3455 6.86014Z" fill="black"/>
+                                                    </svg>
+                                                </a> --}}
+
+                                                {{-- Delete trigger --}}
+                                                {{-- <a href="javascript:void(0)"
+                                                class="branch-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteBranch{{ $branch->id }}"
+                                                title="Delete Branch">
+                                                    🗑️
+                                                </a> --}}
+                                            {{-- </div> --}}
+
+                                            <ul>
+                                                <li>
+                                                    <h6>Branch Name</h6>
+                                                    <p>: {{ $branch->name }}</p>
+                                                </li>
+
+                                                <li>
+                                                    <h6>School</h6>
+                                                    <p>: {{ $school->name }}</p>
+                                                </li>
+
+                                                <li>
+                                                    <h6>County</h6>
+                                                    <p>: {{ optional($branch->county)->name }}</p>
+                                                </li>
+
+                                                {{-- @if($branch->email)
+                                                    <li>
+                                                        <h6>Email</h6>
+                                                        <p>: {{ $branch->email }}</p>
+                                                    </li>
+                                                @endif
+
+                                                @if($branch->phone_no)
+                                                    <li>
+                                                        <h6>Phone</h6>
+                                                        <p>: {{ $branch->phone_no }}</p>
+                                                    </li>
+                                                @endif --}}
+                                            </ul>
+                                        </div>
+
+                                        {{-- EDIT BRANCH MODAL --}}
+                                        <div class="modal fade" id="editBranch{{ $branch->id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                                <form method="POST" action="{{ route('school.branch.update', $branch->id) }}" enctype="multipart/form-data">
+                                                    @csrf
+                                                    @method('PUT')
+
+                                                    <div class="modal-content">
+
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Edit School Branch</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+
+                                                        <div class="modal-body">
+
+                                                            <div class="ad-schl-card adscl-crd12">
+                                                                <div class="row">
+
+                                                                    {{-- Branch Name --}}
+                                                                    <div class="col-12">
+                                                                        <div class="dash_input">
+                                                                            <label>Branch Name <span style="color:red;">*</span></label>
+                                                                            <input type="text"
+                                                                                name="name"
+                                                                                value="{{ old('name', $branch->name) }}">
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {{-- School Level / Type --}}
+                                                                    <div class="col-lg-6 col-md-6">
+                                                                        <div class="dash_input">
+                                                                            <label>School Level <span style="color:red;">*</span></label>
+                                                                            <select name="school_type_id">
+                                                                                <option value="">Select</option>
+                                                                                @foreach($school_levels as $level)
+                                                                                    @if($level->name !== 'General')
+                                                                                        <option value="{{ $level->id }}"
+                                                                                            {{ old('school_type_id', $branch->school_type_id) == $level->id ? 'selected' : '' }}>
+                                                                                            {{ $level->name }}
+                                                                                        </option>
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {{-- Country --}}
+                                                                    <div class="col-lg-6 col-md-6">
+                                                                        <div class="dash_input">
+                                                                            <label>Country <span style="color:red;">*</span></label>
+                                                                            <select name="country_id">
+                                                                                @foreach($countries as $country)
+                                                                                    @if($country->name === 'Kenya')
+                                                                                        <option value="{{ $country->id }}"
+                                                                                            {{ old('country_id', optional($branch->county)->country_id) == $country->id ? 'selected' : '' }}>
+                                                                                            {{ $country->name }}
+                                                                                        </option>
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {{-- Town / County --}}
+                                                                    <div class="col-lg-6 col-md-6">
+                                                                        <div class="dash_input">
+                                                                            <label>
+                                                                                Town
+                                                                                <span class="d-inlne-block ml-1 tooltip-main position-relative">
+                                                                                    <i class="fa fa-info-circle"></i>
+                                                                                    <div class="tooltip-body position-absolute">
+                                                                                        If town is missing scroll to bottom & select other to add missing town.
+                                                                                    </div>
+                                                                                </span>
+                                                                                <span style="color:red;">*</span>
+                                                                            </label>
+
+                                                                            <select name="county_id">
+                                                                                <option value="">Select</option>
+                                                                                @foreach($counties as $county)
+                                                                                    <option value="{{ $county->id }}"
+                                                                                        {{ old('county_id', $branch->county_id) == $county->id ? 'selected' : '' }}>
+                                                                                        {{ $county->name }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                                <option value="0">Other</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {{-- Full Address --}}
+                                                                    <div class="col-12">
+                                                                        <div class="dash_input">
+                                                                            <label>Full Address <span style="color:red;">*</span></label>
+                                                                            <input type="text"
+                                                                                name="full_address"
+                                                                                value="{{ old('full_address', optional($branch->address)->address_text) }}">
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {{-- Google Map --}}
+                                                                    <div class="col-12">
+                                                                        <div class="dash_input position-relative g-map">
+                                                                            <label>Google map location</label>
+                                                                            <input type="text"
+                                                                                name="google_location"
+                                                                                value="{{ old('google_location', optional($branch->address)->google_location) }}">
+                                                                            <img src="{{ asset('images/google-map.png') }}" class="position-absolute">
+
+                                                                            <input type="hidden" name="google_lat"
+                                                                                value="{{ old('google_lat', optional($branch->address)->lat) }}">
+                                                                            <input type="hidden" name="google_long"
+                                                                                value="{{ old('google_long', optional($branch->address)->lng) }}">
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {{-- Email --}}
+                                                                    <div class="col-lg-6 col-md-6">
+                                                                        <div class="dash_input">
+                                                                            <label>Email <span style="color:red;">*</span></label>
+                                                                            <input type="email"
+                                                                                name="email"
+                                                                                value="{{ old('email', $branch->email) }}">
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {{-- Phone --}}
+                                                                    <div class="col-lg-6 col-md-6">
+                                                                        <div class="dash_input">
+                                                                            <label>Phone <span style="color:red;">*</span></label>
+                                                                            <input type="text"
+                                                                                name="phone_no"
+                                                                                value="{{ old('phone_no', $branch->phone_no) }}">
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {{-- Images --}}
+                                                                    <div class="col-12">
+                                                                        <div class="step5-imgupld">
+                                                                            <div class="uplodimgfil upld-schl-images">
+                                                                                <input type="file"
+                                                                                    name="school_image[]"
+                                                                                    class="inputfile inputfile-1"
+                                                                                    multiple
+                                                                                    accept="image/*">
+                                                                                <label>
+                                                                                    <img src="{{ asset('images/upload.png') }}" alt="">
+                                                                                    <h3>Upload Branch Images</h3>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button"
+                                                                    class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">
+                                                                Cancel
+                                                            </button>
+                                                            <button type="submit"
+                                                                    class="btn btn-success">
+                                                                Save changes
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        {{-- END EDIT BRANCH MODAL --}}
+
+                                        {{-- DELETE BRANCH MODAL --}}
+                                        <div class="modal fade" id="deleteBranch{{ $branch->id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <form method="POST"
+                                                    action="{{ route('school.branch.delete', $branch->id) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <div class="modal-content">
+
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title text-danger">Delete Branch</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+
+                                                        <div class="modal-body">
+                                                            <p>
+                                                                Are you sure you want to delete the branch
+                                                                <strong>{{ $branch->name }}</strong>?
+                                                            </p>
+                                                            <p class="text-muted mb-0">
+                                                                This action cannot be undone.
+                                                            </p>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button"
+                                                                    class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">
+                                                                Cancel
+                                                            </button>
+
+                                                            <button type="submit"
+                                                                    class="btn btn-danger">
+                                                                Yes, Delete
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        {{-- END DELETE BRANCH MODAL --}}
+
+                                    @endforeach
+                                </div><br>
                             @endif
-                        </form><br>
+                        </form>
 
                         {{-- RESULTS --}}
-                        <form action="{{ route('add.school.step7.save') }}" method="post" id="resultForm">
+                        <form action="{{ route('school.listing.results.save') }}" method="post" id="resultForm">
                             @csrf
                             
                             <div class="ad-schl-card adscl-crd12">
-                            <div class="row">
-                                <h2>Results <span style="color: red;">*</span></h2>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>Exam <span style="color: red;">*</span></label>
-                                        <select name="exam" id="">
-                                        <option value="" disabled {{ old('exam') ? '' : 'selected' }}>Select</option>
-                                        <option value="Half Yearly" {{ old('exam') == 'Half Yearly' ? 'selected' : '' }}>Half Yearly</option>
-                                        <option value="Annual" {{ old('exam') == 'Annual' ? 'selected' : '' }}>Annual</option>
-                                        <option value="Board Exam" {{ old('exam') == 'Board Exam' ? 'selected' : '' }}>Board Exam</option>
-                                        </select>
-                                        @error('exam')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
+                                <div class="row">
+                                    <h2>Results <span style="color: red;">*</span></h2>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>Exam <span style="color: red;">*</span></label>
+                                            <select name="exam" id="">
+                                            <option value="" disabled {{ old('exam') ? '' : 'selected' }}>Select</option>
+                                            <option value="Half Yearly" {{ old('exam') == 'Half Yearly' ? 'selected' : '' }}>Half Yearly</option>
+                                            <option value="Annual" {{ old('exam') == 'Annual' ? 'selected' : '' }}>Annual</option>
+                                            <option value="Board Exam" {{ old('exam') == 'Board Exam' ? 'selected' : '' }}>Board Exam</option>
+                                            </select>
+                                            @error('exam')
+                                            <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>Ranking position <span style="color: red;">*</span></small></label>
+                                            <input type="number" name="ranking_position" placeholder="Enter here" min="0" value="{{ old('ranking_position') }}" />
+                                            @error('ranking_position')
+                                            <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>Region <span style="color: red;">*</span></label>
+                                            <select name="region" id="">
+                                            <option value="" disabled {{ old('region') ? '' : 'selected' }}>Select</option>
+                                            <option value="International" {{ old('region') == 'International' ? 'selected' : '' }}>International</option>
+                                            <option value="National" {{ old('region') == 'National' ? 'selected' : '' }}>National</option>
+                                            <option value="Country" {{ old('region') == 'Country' ? 'selected' : '' }}>Country</option>
+                                            <option value="N/A" {{ old('region') == 'N/A' ? 'selected' : '' }}>N/A</option>
+                                            </select>
+                                            @error('region')
+                                            <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input">
+                                            <label>Mean score points <span style="color: red;">*</span></label>
+                                            <input type="text" name="mean_score_point" placeholder="Enter here" value="{{ old('mean_score_point') }}" />
+                                            @error('mean_score_point')
+                                            <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input position-relative g-map">
+                                            <label>Mean Grade <span style="color: red;">*</span></label>
+                                            <input type="text" name="mean_grade" placeholder="Enter Here" value="{{ old('mean_grade') }}" />
+                                            @error('mean_grade')
+                                            <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="dash_input position-relative g-map">
+                                            <label>Number of candidates <span style="color: red;">*</span></label>
+                                            <input type="text" name="no_of_candidate" placeholder="Enter Here" value="{{ old('no_of_candidate') }}" />
+                                            @error('no_of_candidate')
+                                            <label class="error">{{ $message }}</label>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <button class="submit-ratio mt-1" type="submit">Save</button>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>Ranking position <span style="color: red;">*</span></small></label>
-                                        <input type="number" name="ranking_position" placeholder="Enter here" min="0" value="{{ old('ranking_position') }}" />
-                                        @error('ranking_position')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>Region <span style="color: red;">*</span></label>
-                                        <select name="region" id="">
-                                        <option value="" disabled {{ old('region') ? '' : 'selected' }}>Select</option>
-                                        <option value="International" {{ old('region') == 'International' ? 'selected' : '' }}>International</option>
-                                        <option value="National" {{ old('region') == 'National' ? 'selected' : '' }}>National</option>
-                                        <option value="Country" {{ old('region') == 'Country' ? 'selected' : '' }}>Country</option>
-                                        <option value="N/A" {{ old('region') == 'N/A' ? 'selected' : '' }}>N/A</option>
-                                        </select>
-                                        @error('region')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input">
-                                        <label>Mean score points <span style="color: red;">*</span></label>
-                                        <input type="text" name="mean_score_point" placeholder="Enter here" value="{{ old('mean_score_point') }}" />
-                                        @error('mean_score_point')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input position-relative g-map">
-                                        <label>Mean Grade <span style="color: red;">*</span></label>
-                                        <input type="text" name="mean_grade" placeholder="Enter Here" value="{{ old('mean_grade') }}" />
-                                        @error('mean_grade')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <div class="dash_input position-relative g-map">
-                                        <label>Number of candidates <span style="color: red;">*</span></label>
-                                        <input type="text" name="no_of_candidate" placeholder="Enter Here" value="{{ old('no_of_candidate') }}" />
-                                        @error('no_of_candidate')
-                                        <label class="error">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="col-12">
-                                    <button class="submit-ratio mt-1" type="submit">Save</button>
-                                </div>
-                            </div>
                             </div>
 
                             @if($examPerformanceRecords->count() > 0)
@@ -857,6 +1169,38 @@
              },
         })
    })
+</script>
+
+{{-- school branch images preview --}}
+<script>
+document.getElementById('school_image').addEventListener('change', function (event) {
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    previewContainer.innerHTML = ''; // clear old previews
+
+    const files = event.target.files;
+
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const wrapper = document.createElement('em');
+            wrapper.classList.add('schl-img-nw');
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = 'Preview';
+
+            wrapper.appendChild(img);
+            previewContainer.appendChild(wrapper);
+        };
+
+        reader.readAsDataURL(file);
+    });
+});
 </script>
 
 <script>

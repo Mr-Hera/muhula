@@ -59,7 +59,7 @@
                                         name="email"
                                         id="email"
                                         value="{{ old('email') }}"
-                                        placeholder="admin@muhula.com"
+                                        placeholder="Enter Email"
                                     >
                                 </div>
 
