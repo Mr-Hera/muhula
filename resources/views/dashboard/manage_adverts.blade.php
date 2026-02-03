@@ -79,14 +79,21 @@
                                     </td>
 
                                     <td class="d-flex gap-2">
-                                       <!-- Replace Button -->
-                                       <button class="btn btn-sm btn-warning"
-                                          data-bs-toggle="modal"
-                                          data-bs-target="#replaceAdvertModal"
-                                          data-id="{{ $advert->id }}"
-                                          data-type="{{ $advert->type }}"
-                                       >
-                                          <i class="fa fa-edit"></i>
+                                       <!-- Edit Button -->
+                                       <button class="btn btn-sm text-white"
+                                             data-bs-toggle="modal"
+                                             data-bs-target="#replaceAdvertModal"
+                                             data-id="{{ $advert->id }}"
+                                             data-type="{{ $advert->type }}"
+                                             style="
+                                                   background-image: linear-gradient(
+                                                      89.66deg,
+                                                      rgb(146, 208, 80) -12.49%,
+                                                      rgb(50, 205, 50) 113.27%
+                                                   );
+                                                   border: none;
+                                             ">
+                                          <i class="fa fa-edit"></i> Edit
                                        </button>
 
                                        <!-- Delete -->

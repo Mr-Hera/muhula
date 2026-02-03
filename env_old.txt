@@ -3,6 +3,7 @@ APP_ENV=local
 APP_KEY=base64:GH6rYp32GEulIvPfTCTTVzkoe6Xp5WZGomqoSZ497cA=
 APP_DEBUG=true
 APP_URL=https://muhula.com/
+PUBLIC_PATH_PREFIX=/public
 
 LOG_CHANNEL=stack
 LOG_DEPRECATIONS_CHANNEL=null

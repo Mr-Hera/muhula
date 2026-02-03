@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\NewsArticle;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactUsNotificationMail;
+use Illuminate\Support\Facades\Request;
 
 class ContentController extends Controller
 {
@@ -47,11 +47,23 @@ class ContentController extends Controller
 
         return back()->with('success', 'Your message has been sent successfully.');
     }
+
+    public function newsList(Request $request){
+        $allNews = NewsArticle::all();
+        return view('content.news')->with([
+            'allNews' => $allNews,
+        ]);
+    }
     
-    public function newsDetails($slug){
-        $article_record = NewsArticle::where('slug', $slug)->first();
-        return view('content.news_details')->with([
-        'article_record' => $article_record,
+    public function newsDetails($slug)
+    {
+        $article = NewsArticle::with(['author', 'categories'])
+            ->where('slug', $slug)
+            ->where('is_published', true)
+            ->firstOrFail();
+
+        return view('content.news_details', [
+            'article' => $article,
         ]);
     }
 }
