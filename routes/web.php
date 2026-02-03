@@ -145,8 +145,10 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::post('add-school-fees-processing', [SchoolController::class, 'processSchoolFees'])->name('school.listing.fees.processing');
         Route::post('add-school-services-processing', [SchoolController::class, 'processSchoolServices'])->name('school.listing.services.processing');
         Route::post('add-school-ratio-processing', [SchoolController::class, 'processRatio'])->name('school.listing.step4.ratio.processing');
-        Route::post('add-school-branch-processing', [SchoolController::class, 'processSchoolBranch'])->name('school.listing.branch.processing');
         Route::post('add-school-results-processing', [SchoolController::class, 'processSchoolResults'])->name('school.listing.results.save');
+        Route::post('add-school-branch-processing', [SchoolController::class, 'processSchoolBranch'])->name('school.listing.branch.save');
+        Route::put('school-branch/{branch}', [SchoolController::class, 'updateSchoolBranch'])->name('school.branch.update');
+        Route::delete('school-branch/{branch}', [SchoolController::class, 'deleteSchoolBranch'])->name('school.branch.delete');
 
         Route::get('add-school-success', [SchoolController::class, 'schoolListingSuccessPage'])->name('school.listing.success');
     });
