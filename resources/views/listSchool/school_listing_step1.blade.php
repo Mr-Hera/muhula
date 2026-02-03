@@ -213,23 +213,41 @@
                      <div class="row">
                         {{-- 🔹 School Logo --}}
                         <div class="col-12">
-                              <div class="dash_input">
-                                 <label for="school_logo">School Logo (Optional)</label>
-                                 <div class="row align-items-center">
-                                    <div class="col-lg-6 col-sm-6">
-                                          <div class="uplodimgfil2">
-                                             <input type="file" name="school_logo" id="school_logo" class="inputfile2 inputfile-1">
-                                             <label for="school_logo">
-                                                <h3>Click here to upload</h3>
-                                                <img src="{{ asset('images/upload1.png') }}" alt="">
-                                             </label>
-                                          </div>
-                                          @error('school_logo')
-                                             <small class="text-danger">{{ $message }}</small>
-                                          @enderror
+                           <div class="dash_input">
+                              <label for="school_logo">School Logo (Optional)</label>
+
+                              <div class="row align-items-center">
+                                 <div class="col-lg-6 col-sm-6">
+                                    <div class="uplodimgfil2">
+                                       <input
+                                          type="file"
+                                          name="school_logo"
+                                          id="school_logo"
+                                          class="inputfile2 inputfile-1"
+                                          accept="image/*"
+                                       >
+                                       <label for="school_logo">
+                                          <h3>Click here to upload</h3>
+                                          <img src="{{ asset('images/upload1.png') }}" alt="">
+                                       </label>
                                     </div>
+
+                                    @error('school_logo')
+                                       <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                  </div>
                               </div>
+
+                              {{-- 🔹 Thumbnail Preview --}}
+                              <div class="mt-3" id="logoPreviewWrapper" style="display:none;">
+                                 <img
+                                    id="logoPreview"
+                                    src=""
+                                    alt="School Logo Preview"
+                                    style="max-width: 150px; max-height: 150px; border-radius: 6px; border: 1px solid #ddd;"
+                                 >
+                              </div>
+                           </div>
                         </div>
 
                         {{-- 🔹 School Ownership --}}
@@ -417,7 +435,6 @@
 
 @section('script')
 @include('includes.scripts')
-@endsection
 
 <script>
    function toggleNewCountyInput(select) {
@@ -439,3 +456,31 @@
       }
    });
 </script>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+      const logoInput = document.getElementById('school_logo');
+      const previewWrapper = document.getElementById('logoPreviewWrapper');
+      const previewImage = document.getElementById('logoPreview');
+
+      logoInput.addEventListener('change', function () {
+         const file = this.files[0];
+
+         if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+               previewImage.src = e.target.result;
+               previewWrapper.style.display = 'block';
+            };
+
+            reader.readAsDataURL(file);
+         } else {
+            previewImage.src = '';
+            previewWrapper.style.display = 'none';
+         }
+      });
+   });
+</script>
+
+@endsection

@@ -14,19 +14,19 @@
          <li>
             <a href="{{ route('user.my.favourite') }}" class="{{ Route::is('user.my.favourite')?'active' : '' }}"> <span><img src="{{asset('images/heart.png')}}" alt="" ></span>  My Favourite </a>
          </li>
-         @auth
-            @if(auth()->user()->is_admin)
-               <li>
-                  <a href="{{ route('user.add.news') }}" class="{{ Route::is('user.add.news')?'active' : '' }}"> <span><img src="{{asset('images/news.PNG')}}" alt="" ></span> Add News </a>
-               </li>
-            @endif
-         @endauth
          <li>
             <a href="{{ route('user.my.review.by.me') }}" class="{{ Route::is('user.my.review.by.me','user.my.review.by.school')?'active' : '' }}"> <span><img src="{{asset('images/dash3.png')}}" alt="" ></span>  My Reviews </a>
          </li>
          <li>
             <a href="{{ route('user.message.list') }}" class="{{ Route::is('user.message.list','user.message.detail')?'active' : '' }}"> <span><img src="{{ asset('images/dash5.png') }}" alt=""></span>  Messages </a>
          </li>
+         @auth
+            @if(auth()->user()->is_admin)
+               <li>
+                  <a href="{{ route('user.add.news') }}" class="{{ Route::is('user.add.news', 'user.manage.news')?'active' : '' }}"> <span><img src="{{asset('images/dash3.PNG')}}" alt="" ></span> Manage News </a>
+               </li>
+            @endif
+         @endauth
          <li>
             <a href="{{ route('school.search') }}"> <span><img src="{{asset('images/claim-school.png')}}" alt="" ></span>Claim School </a>
          </li>
