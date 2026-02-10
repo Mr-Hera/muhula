@@ -98,9 +98,9 @@ Route::get('logout', [SocialAuthController::class, 'logout'])->name('logout');
 Route::get('sign-up', [SocialAuthController::class, 'register'])->name('user.register');
 Route::post('sign-up-save', [SocialAuthController::class, 'registerSave'])->name('user.register.save');
 
-Route::post('user-email-check', 'Auth\RegisterController@userEmailCheck')->name('user.email.check');
-Route::post('user-mobile-check', 'Auth\RegisterController@userMobileCheck')->name('user.mobile.check');
-Route::get('user-verify-email/{vcode?}/{id?}', 'Auth\RegisterController@verifyEmail')->name('verify.user.email');
+// Route::post('user-email-check', 'Auth\RegisterController@userEmailCheck')->name('user.email.check');
+// Route::post('user-mobile-check', 'Auth\RegisterController@userMobileCheck')->name('user.mobile.check');
+// Route::get('user-verify-email/{vcode?}/{id?}', 'Auth\RegisterController@verifyEmail')->name('verify.user.email');
 
 // Passwords
 Route::get('password/reset', [SocialAuthController::class, 'showLinkRequestForm'])->name('user.password.request');
@@ -109,17 +109,17 @@ Route::get('password/reset/{token?}', [SocialAuthController::class, 'showResetFo
 Route::post('password/reset', [SocialAuthController::class, 'reset'])->name('user.password.update');
 
 //Message Page
-Route::get('success', 'Auth\RegisterController@success')->name('user.success.msg');
-Route::get('error', 'Auth\RegisterController@error')->name('user.error.msg');
+// Route::get('success', 'Auth\RegisterController@success')->name('user.success.msg');
+// Route::get('error', 'Auth\RegisterController@error')->name('user.error.msg');
 
 //------SOCIAL LOGIN ROUTE-------------//
 
-Route::get('login/google', 'Auth\LoginController@redirectToProvider')->name('login.social');
-Route::get('login/google/callback', 'Auth\LoginController@handleProviderCallback')->name('login.social.callback');
-Route::post('social_login', 'Auth\LoginController@socialRegistation')->name('login.social.register');
+// Route::get('login/google', 'Auth\LoginController@redirectToProvider')->name('login.social');
+// Route::get('login/google/callback', 'Auth\LoginController@handleProviderCallback')->name('login.social.callback');
+// Route::post('social_login', 'Auth\LoginController@socialRegistation')->name('login.social.register');
 
 
-Route::group(['namespace' => 'Modules'], function() {
+Route::group([], function() {
 
     //for static page
     Route::get('about-us', [ContentController::class, 'aboutUs'])->name('about.us');
@@ -194,9 +194,9 @@ Route::group(['namespace' => 'Modules'], function() {
         // Route::get('add-school-success', [SchoolController::class, 'addSchoolSuccessPage'])->name('add.school.success');
     });
 
-    Route::post('get-class-level','School\SchoolController@getClassLevel')->name('get.class.level');
-    Route::post('get-city','School\SchoolController@getCity')->name('get.city');
-    Route::get('delete-contact/{id?}','School\SchoolController@deleteContact')->name('delete.contact');
+    // Route::post('get-class-level','School\SchoolController@getClassLevel')->name('get.class.level');
+    // Route::post('get-city','School\SchoolController@getCity')->name('get.city');
+    // Route::get('delete-contact/{id?}','School\SchoolController@deleteContact')->name('delete.contact');
 
 
     //for search school
@@ -205,26 +205,27 @@ Route::group(['namespace' => 'Modules'], function() {
     Route::get('school-details/{slug?}',[SchoolController::class, 'schoolDetails'])->name('school.details');
     Route::post('post-review',[ReviewController::class, 'postReview'])->name('post.review');
     Route::post('school-claim-save', [SchoolController::class, 'shoolClaimSave'])->name('school.claim.save');
+    Route::get('claims/{claim}/download', [SchoolController::class, 'downloadClaim'])->name('claims.download');
 
     Route::get('/school-claim/verify/{token}', [SchoolClaimController::class, 'verifyEmail'])->name('school.claim.verify');
 
     Route::post('upload-photo-save', [SchoolController::class, 'uploadPhotoSave'])->name('school.photo.save');
     Route::post('send-message-save',[MessageController::class, 'sendMessage'])->name('user.send.message');
     Route::post('add-favourite',[SchoolController::class, 'addFavourite'])->name('user.add.favourite');
-    Route::post('header-image-video-save','School\SearchSchoolController@addHeaderImageVideo')->name('user.add.header.image.video');
+    // Route::post('header-image-video-save','School\SearchSchoolController@addHeaderImageVideo')->name('user.add.header.image.video');
 
 
     Route::group(['namespace' => 'User','middleware' => 'auth', 'prefix' => 'dashboard'], function(){
 
         Route::get('', [DashboardController::class, 'dashboard'])->name('user.dashboard');
         Route::get('edit-profile', [DashboardController::class, 'profile'])->name('user.profile');
-        Route::get('profile-image-delete', 'Profile\ProfileController@profileImageDelete')->name('user.profile.image.delete');
+        // Route::get('profile-image-delete', 'Profile\ProfileController@profileImageDelete')->name('user.profile.image.delete');
         Route::post('update-profile', [SocialAuthController::class, 'updateProfile'])->name('user.update.profile');
         Route::post('email-check', [SocialAuthController::class, 'userEmailCheck'])->name('email.check');
-        Route::post('mobile-check', 'Profile\ProfileController@userMobileCheck')->name('mobile.check');
+        // Route::post('mobile-check', 'Profile\ProfileController@userMobileCheck')->name('mobile.check');
         Route::post('user-update-email', [SocialAuthController::class, 'updateEmail'])->name('user.update.email');
         Route::post('password-check', [SocialAuthController::class, 'passwordCheck'])->name('password.check');
-        Route::get('user-email-update/{vcode?}/{id?}', 'Profile\ProfileController@verifyEmail')->name('user.email.update');
+        // Route::get('user-email-update/{vcode?}/{id?}', 'Profile\ProfileController@verifyEmail')->name('user.email.update');
 
         //for my school
         Route::get('my-school', [DashboardController::class, 'mySchool'])->name('user.my.school');
@@ -232,24 +233,24 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::delete('user/schools/{school}', [SchoolController::class, 'deleteSchool'])->name('user.delete.school');
         Route::post('update-school-info', [SchoolController::class, 'schoolInfoUpdate'])->name('user.school.info.update');
         Route::post('update-school-image', [SchoolController::class, 'updateImage'])->name('user.update.school.image');
-        Route::get('school-image-status-update/{id?}', 'School\SchoolController@schoolImageStatusUpdate')->name('user.school.image.status.update');
+        // Route::get('school-image-status-update/{id?}', 'School\SchoolController@schoolImageStatusUpdate')->name('user.school.image.status.update');
         Route::post('update-school-facilities', [SchoolController::class, 'updateFacility'])->name('user.update.school.facility');
-        Route::post('update-school-ratio', 'School\SchoolController@updateSchoolRatio')->name('user.update.school.ratio');
-        Route::post('update-school-uniform', 'School\SchoolController@updateSchoolUniform')->name('user.update.school.uniform');
-        Route::get('delete-school-uniform/{id?}', 'School\SchoolController@deleteSchoolUniform')->name('user.school.uniform.delete');
+        // Route::post('update-school-ratio', 'School\SchoolController@updateSchoolRatio')->name('user.update.school.ratio');
+        // Route::post('update-school-uniform', 'School\SchoolController@updateSchoolUniform')->name('user.update.school.uniform');
+        // Route::get('delete-school-uniform/{id?}', 'School\SchoolController@deleteSchoolUniform')->name('user.school.uniform.delete');
         Route::post('update-school-rules', [SchoolController::class, 'updateSchoolRules'])->name('user.update.school.rules');
         Route::post('update-school-subject', [SchoolController::class, 'updateSchoolSubject'])->name('user.update.school.subject');
-        Route::get('user-delete-school-subject/{id?}', 'School\SchoolController@schoolSubjectDelete')->name('user.school.subject.delete');
+        // Route::get('user-delete-school-subject/{id?}', 'School\SchoolController@schoolSubjectDelete')->name('user.school.subject.delete');
 
-        Route::get('edit-school-result/{id?}/{result_id?}', 'School\SchoolController@editSchoolResult')->name('user.edit.school.result');
+        // Route::get('edit-school-result/{id?}/{result_id?}', 'School\SchoolController@editSchoolResult')->name('user.edit.school.result');
         Route::post('update-school-result', [SchoolController::class, 'updateSchoolResult'])->name('user.update.school.result');
 
         Route::get('my-favourite', [DashboardController::class, 'myFavourite'])->name('user.my.favourite');
-        Route::get('delete-favourite/{id?}', 'School\SchoolController@deleteFavourite')->name('user.favourite.delete');
+        // Route::get('delete-favourite/{id?}', 'School\SchoolController@deleteFavourite')->name('user.favourite.delete');
 
-        Route::get('create-news/{school_id?}/{news_id?}', 'School\SchoolController@createNews')->name('user.create.news');
+        // Route::get('create-news/{school_id?}/{news_id?}', 'School\SchoolController@createNews')->name('user.create.news');
         Route::post('create-news-save', [DashboardController::class, 'createNewsSave'])->name('user.create.news.save');
-        Route::get('delete-news/{id?}', 'School\SchoolController@deleteNews')->name('user.news.delete');
+        // Route::get('delete-news/{id?}', 'School\SchoolController@deleteNews')->name('user.news.delete');
 
         Route::get('add-news', [DashboardController::class, 'addNews'])->name('user.add.news')->middleware('admin');
         Route::get('manage-news', [DashboardController::class, 'manageNews'])->name('user.manage.news')->middleware('admin');
@@ -265,8 +266,8 @@ Route::group(['namespace' => 'Modules'], function() {
         //for my reviews
         Route::get('my-reviews-for-by-me', [DashboardController::class, 'myReviewsByMe'])->name('user.my.review.by.me');
         Route::get('my-reviews-for-by-school', [DashboardController::class, 'myReviewsBySchool'])->name('user.my.review.by.school');
-        Route::post('review-reply', 'Review\ReviewController@reviewReply')->name('user.review.reply');
-        Route::get('featured-review/{id?}', 'Review\ReviewController@featuredReview')->name('user.featured.review');
+        // Route::post('review-reply', 'Review\ReviewController@reviewReply')->name('user.review.reply');
+        // Route::get('featured-review/{id?}', 'Review\ReviewController@featuredReview')->name('user.featured.review');
 
         //messages
         Route::get('messages', [MessageController::class, 'messageList'])->name('user.message.list');
@@ -275,11 +276,11 @@ Route::group(['namespace' => 'Modules'], function() {
         Route::post('send-message-reply',[MessageController::class, 'replyMessage'])->name('user.send.message.reply');
 
         //for subscription
-        Route::get('subscription', 'Subscription\SubscriptionController@subscription')->name('user.subscription');
-        Route::post('purchase-subscription', 'Subscription\SubscriptionController@purchaseSubscription')->name('user.purchase.subscription');
-        Route::any('payment-success','Subscription\SubscriptionController@payment_success')->name('payment.success');
-        Route::any('payment-failed','Subscription\SubscriptionController@payment_failed')->name('payment.failed');
-        Route::get('subscription-history', 'Subscription\SubscriptionController@subscriptionHistory')->name('user.subscription.history');
+        // Route::get('subscription', 'Subscription\SubscriptionController@subscription')->name('user.subscription');
+        // Route::post('purchase-subscription', 'Subscription\SubscriptionController@purchaseSubscription')->name('user.purchase.subscription');
+        // Route::any('payment-success','Subscription\SubscriptionController@payment_success')->name('payment.success');
+        // Route::any('payment-failed','Subscription\SubscriptionController@payment_failed')->name('payment.failed');
+        // Route::get('subscription-history', 'Subscription\SubscriptionController@subscriptionHistory')->name('user.subscription.history');
 
     });
 
@@ -314,9 +315,9 @@ Route::group(['namespace' => 'Modules'], function() {
 
 
     //payment related
-    Route::get('checkout','Payment\PaymentController@checkout')->name('payment.checkout');
-    Route::post('payment','Payment\PaymentController@payment')->name('payment.payment');
-    Route::any('notification-url','User\Subscription\SubscriptionController@notification')->name('payment.notification');
+    // Route::get('checkout','Payment\PaymentController@checkout')->name('payment.checkout');
+    // Route::post('payment','Payment\PaymentController@payment')->name('payment.payment');
+    // Route::any('notification-url','User\Subscription\SubscriptionController@notification')->name('payment.notification');
 
 });
 
