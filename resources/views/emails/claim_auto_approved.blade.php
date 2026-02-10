@@ -1,7 +1,7 @@
 @component('mail::message')
 # Congratulations!
 
-Hello {{ $claim->user->name ?? 'User' }},
+Hello,
 
 Your claim for **{{ $claim->school->name }}** has been successfully **approved**.
 

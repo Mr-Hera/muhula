@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ClaimAutoApprovedMail extends Mailable
+class AdminClaimAutoApprovedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -19,7 +19,6 @@ class ClaimAutoApprovedMail extends Mailable
      */
     public function __construct(public SchoolUser $claim)
     {
-        // Force-load relations for queued mail rendering
         $this->claim->load(['user', 'school']);
     }
 
@@ -29,7 +28,7 @@ class ClaimAutoApprovedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your School Claim Has Been Approved',
+            subject: 'Admin Claim Auto Approved Mail',
         );
     }
 
@@ -39,7 +38,7 @@ class ClaimAutoApprovedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.claim_auto_approved',
+            markdown: 'emails.admin.claim_auto_approved',
         );
     }
 

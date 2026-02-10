@@ -1,5 +1,5 @@
 @component('mail::message')
-# Welcome, {{ $user->first_name }} 🎉
+# Welcome {{ $user->first_name }} 🎉
 
 We’re excited to have you join **{{ config('app.name') }}**!
 

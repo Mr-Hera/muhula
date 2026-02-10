@@ -1054,6 +1054,39 @@
 @section('script')
 @include('includes.scripts')
 
+{{-- handle uploaded school branch images --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.querySelector('input[name="school_image[]"]');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+
+    input.addEventListener('change', function () {
+        previewContainer.innerHTML = ''; // Clear previous images
+
+        const files = Array.from(this.files);
+
+        files.forEach(file => {
+            if (!file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';       // thumbnail width
+                img.style.height = '100px';      // thumbnail height
+                img.style.objectFit = 'cover';   // crop nicely
+                img.style.marginRight = '10px';  // spacing
+                img.style.marginBottom = '10px';
+                img.style.borderRadius = '5px';
+                img.style.border = '1px solid #ccc';
+                previewContainer.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    });
+});
+</script>
+
 <script>
    $(document).ready(function(){
 
