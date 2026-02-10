@@ -87,6 +87,12 @@
                                                     Delete
                                                 </button>
                                             </form>
+
+                                            <!-- Download Claim Document Button -->
+                                            <a href="{{ route('claims.download', $claim->claim_id) }}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-download"></i> Download Claim
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach

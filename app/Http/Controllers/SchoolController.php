@@ -717,12 +717,12 @@ class SchoolController extends Controller
   {
     // Validate the request
     $validated = $request->validate([
-        'total_students'   => 'required|integer|min:0',
-        'student_boys'     => 'required|integer|min:0',
-        'student_girls'    => 'required|integer|min:0',
-        'total_teachers'   => 'required|integer|min:0',
-        'teacher_male'     => 'required|integer|min:0',
-        'teacher_female'   => 'required|integer|min:0',
+      'total_students'   => 'required|integer|min:0',
+      'student_boys'     => 'required|integer|min:0',
+      'student_girls'    => 'required|integer|min:0',
+      'total_teachers'   => 'required|integer|min:0',
+      'teacher_male'     => 'required|integer|min:0',
+      'teacher_female'   => 'required|integer|min:0',
     ]);
 
     $schoolId = Session::get('school_creation.step1.school_id');
@@ -730,23 +730,23 @@ class SchoolController extends Controller
 
     // Optional: Validate consistency
     if ($validated['total_students'] != ($validated['student_boys'] + $validated['student_girls'])) {
-        return back()->withErrors(['total_students' => 'Sum of boys and girls must equal total students']);
+      return back()->withErrors(['total_students' => 'Sum of boys and girls must equal total students']);
     }
 
     if ($validated['total_teachers'] != ($validated['teacher_male'] + $validated['teacher_female'])) {
-        return back()->withErrors(['total_teachers' => 'Sum of male and female teachers must equal total teachers']);
+      return back()->withErrors(['total_teachers' => 'Sum of male and female teachers must equal total teachers']);
     }
 
     // Create or update the school population
     $schoolPopulation = $school->population()->updateOrCreate(
         ['year' => now()->year],
         [
-            'total_students'  => $validated['total_students'],
-            'total_teachers'  => $validated['total_teachers'],
-            'male_students'   => $validated['student_boys'],
-            'female_students' => $validated['student_girls'],
-            'male_teachers'   => $validated['teacher_male'],
-            'female_teachers' => $validated['teacher_female'],
+          'total_students'  => $validated['total_students'],
+          'total_teachers'  => $validated['total_teachers'],
+          'male_students'   => $validated['student_boys'],
+          'female_students' => $validated['student_girls'],
+          'male_teachers'   => $validated['teacher_male'],
+          'female_teachers' => $validated['teacher_female'],
         ]
     );
 
@@ -754,40 +754,39 @@ class SchoolController extends Controller
 
     // ✅ Pass latest data directly as array
     $schoolPopulationArray = [
-        'total_students'  => $schoolPopulation->total_students,
-        'student_boys'    => $schoolPopulation->male_students,
-        'student_girls'   => $schoolPopulation->female_students,
-        'total_teachers'  => $schoolPopulation->total_teachers,
-        'teacher_male'    => $schoolPopulation->male_teachers,
-        'teacher_female'  => $schoolPopulation->female_teachers,
+      'total_students'  => $schoolPopulation->total_students,
+      'student_boys'    => $schoolPopulation->male_students,
+      'student_girls'   => $schoolPopulation->female_students,
+      'total_teachers'  => $schoolPopulation->total_teachers,
+      'teacher_male'    => $schoolPopulation->male_teachers,
+      'teacher_female'  => $schoolPopulation->female_teachers,
     ];
 
     return redirect()->back()->with([
-        'school_population' => $schoolPopulationArray,
+      'school_population' => $schoolPopulationArray,
     ]);
   }
 
   public function processSchoolBranch(Request $request)
   {
     $validated = $request->validate([
-        'school_name'       => 'nullable|string|max:255',
-        'school_type'       => 'nullable|array',
-        'school_type.*'     => 'exists:school_types,id',
-        'country'           => 'nullable|exists:countries,id',
-        'town'              => 'nullable|exists:counties,id',
-        'full_address'      => 'nullable|string|max:255',
-        'google_location'   => 'nullable|string',
-        'google_lat'        => 'nullable|numeric',
-        'google_long'       => 'nullable|numeric',
-        'email'             => 'nullable|email',
-        'phone'             => 'nullable|string|max:20',
-        'school_image'      => 'nullable|array',
-        'school_image.*'    => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+      'name'             => 'nullable|string|max:255',
+      'school_type_id'   => 'nullable|exists:school_types,id',
+      'country_id'       => 'nullable|exists:countries,id',
+      'county_id'        => 'nullable|exists:counties,id',
+      'full_address'     => 'nullable|string|max:255',
+      'google_location'  => 'nullable|string',
+      'google_lat'       => 'nullable|numeric',
+      'google_long'      => 'nullable|numeric',
+      'email'            => 'nullable|email',
+      'phone_no'         => 'nullable|string|max:20',
+      'school_image'     => 'nullable|array',
+      'school_image.*'   => 'image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     // If user clicked "Add" without filling anything
     if (collect($validated)->filter(fn ($v) => filled($v))->isEmpty()) {
-        return redirect()->back();
+      return redirect()->back();
     }
 
     $schoolId = session('school_creation.step1.school_id');
@@ -795,68 +794,68 @@ class SchoolController extends Controller
 
     DB::transaction(function () use ($validated, $request, $school) {
 
-        /* -------------------------
-         | 1. Create address only if needed
-         ------------------------- */
-        $addressId = null;
+      /* -------------------------
+        | 1. Create address only if needed
+        ------------------------- */
+      $addressId = null;
 
-        if (
-            filled($validated['full_address'] ?? null) ||
-            filled($validated['google_location'] ?? null)
-        ) {
-            $addressId = SchoolAddress::create([
-                'address_text'     => $validated['full_address'] ?? null,
-                'google_maps_link' => $validated['google_location'] ?? null,
-                'latitude'         => $validated['google_lat'] ?? null,
-                'longitude'        => $validated['google_long'] ?? null,
-            ])->id;
+      if (
+        filled($validated['full_address'] ?? null) ||
+        filled($validated['google_location'] ?? null)
+      ) {
+        $addressId = SchoolAddress::create([
+          'address_text'     => $validated['full_address'] ?? null,
+          'google_maps_link' => $validated['google_location'] ?? null,
+          'latitude'         => $validated['google_lat'] ?? null,
+          'longitude'        => $validated['google_long'] ?? null,
+        ])->id;
+      }
+
+      /* -------------------------
+        | 2. Create branch
+        ------------------------- */
+      $branch = SchoolBranch::create([
+        'name'              => $validated['name'] ?? null,
+        'school_id'         => $school->id,
+        'school_type_id'    => $validated['school_type_id'] ?? null,
+        'county_id'         => $validated['county_id'] ?? null,
+        'school_address_id' => $addressId,
+        'email'             => $validated['email'] ?? null,
+        'phone_no'          => $validated['phone_no'] ?? null,
+      ]);
+
+      /* -------------------------
+        | 3. Upload images (robust)
+        ------------------------- */
+      if ($request->hasFile('school_image') && is_array($request->file('school_image'))) {
+
+        $destination = public_path('images/school_images');
+
+        if (!file_exists($destination)) {
+          mkdir($destination, 0755, true);
         }
 
-        /* -------------------------
-         | 2. Create branch
-         ------------------------- */
-        $branch = SchoolBranch::create([
-            'name'              => $validated['school_name'] ?? null,
-            'school_id'         => $school->id,
-            'school_type_id'    => $validated['school_type'][0] ?? null, // DB supports one
-            'county_id'         => $validated['town'] ?? null,
-            'school_address_id' => $addressId,
-            'email'             => $validated['email'] ?? null,
-            'phone_no'          => $validated['phone'] ?? null,
-        ]);
+        foreach ($request->file('school_image') as $uploadedImage) {
+          if (!$uploadedImage->isValid()) {
+            continue;
+          }
 
-        /* -------------------------
-         | 3. Upload images (robust)
-         ------------------------- */
-        if ($request->hasFile('school_image') && is_array($request->file('school_image'))) {
+          $imageName = Str::slug($school->name, '_') . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+          $uploadedImage->move($destination, $imageName);
 
-            $destination = public_path('images/school_images');
+          $savedImage = $school->images()->create([
+            'image_path' => 'images/school_images/' . $imageName,
+            'caption'    => $school->name . ' branch image',
+          ]);
 
-            if (!file_exists($destination)) {
-                mkdir($destination, 0755, true);
-            }
-
-            foreach ($request->file('school_image') as $uploadedImage) {
-                if (!$uploadedImage->isValid()) {
-                    continue;
-                }
-
-                $imageName = Str::slug($school->name, '_') . '_' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
-                $uploadedImage->move($destination, $imageName);
-
-                $savedImage = $school->images()->create([
-                    'image_path' => 'images/school_images/' . $imageName,
-                    'caption'    => $school->name . ' branch image',
-                ]);
-
-                // Assign first image as branch image
-                if (is_null($branch->school_image_id)) {
-                    $branch->update([
-                        'school_image_id' => $savedImage->id
-                    ]);
-                }
-            }
+          // Assign first image as branch image
+          if (is_null($branch->school_image_id)) {
+            $branch->update([
+              'school_image_id' => $savedImage->id
+            ]);
+          }
         }
+      }
     });
 
     return redirect()->back()->with('success', 'School branch created successfully.');
@@ -2439,6 +2438,18 @@ class SchoolController extends Controller
     );
 
     return back()->with('success', 'Claim submitted. Please check your email.');
+  }
+
+  // download school claim for manual review
+  public function downloadClaim(SchoolUser $claim) {
+    // Assuming proof_of_association is an array of file paths
+    $filePath = $claim->proof_of_association[0] ?? null;
+
+    if (! $filePath || ! Storage::disk('public')->exists($filePath)) {
+      abort(404, 'Claim file not found.');
+    }
+
+    return Storage::disk('public')->download($filePath);
   }
 
   public function addFavourite(Request $request) {
