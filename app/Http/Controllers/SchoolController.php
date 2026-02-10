@@ -2442,6 +2442,7 @@ class SchoolController extends Controller
 
   // download school claim for manual review
   public function downloadClaim(SchoolUser $claim) {
+    
     // Assuming proof_of_association is an array of file paths
     $filePath = $claim->proof_of_association[0] ?? null;
 
